@@ -1,0 +1,23 @@
+{
+  "name": "Caucasus Airfield Reference",
+  "description": "Key airfields in the Caucasus theater with frequencies and nav data",
+  "type": "reference",
+  "title": "CAUCASUS AIRFIELDS",
+  "card_type": "reference",
+  "columns": ["name", "icao", "atis", "tower", "ils", "tacan", "elev"],
+  "items": [
+    { "name": "Batumi", "icao": "UGSB", "atis": "131.000", "tower": "131.000", "ils": "110.30", "tacan": "16X", "elev": "33ft" },
+    { "name": "Kutaisi", "icao": "UGKO", "atis": "134.000", "tower": "134.000", "ils": "109.75", "tacan": "44X", "elev": "147ft" },
+    { "name": "Senaki-Kolkhi", "icao": "UGKS", "atis": "132.000", "tower": "132.000", "ils": "108.90", "tacan": "31X", "elev": "43ft" },
+    { "name": "Kobuleti", "icao": "UG5X", "atis": "133.000", "tower": "133.000", "ils": "111.50", "tacan": "67X", "elev": "59ft" },
+    { "name": "Tbilisi-Lochini", "icao": "UGTB", "atis": "138.000", "tower": "138.000", "ils": "110.30", "tacan": "25X", "elev": "1474ft" },
+    { "name": "Vaziani", "icao": "UG24", "atis": "140.000", "tower": "140.000", "ils": "108.75", "tacan": "22X", "elev": "1523ft" },
+    { "name": "Sukhumi-Babushara", "icao": "UGSS", "atis": "129.000", "tower": "129.000", "ils": "", "tacan": "", "elev": "43ft" },
+    { "name": "Gudauta", "icao": "UG23", "atis": "130.000", "tower": "130.000", "ils": "", "tacan": "", "elev": "68ft" },
+    { "name": "Sochi-Adler", "icao": "URSS", "atis": "127.000", "tower": "127.000", "ils": "", "tacan": "", "elev": "98ft" },
+    { "name": "Mineralnye Vody", "icao": "URMM", "atis": "135.000", "tower": "135.000", "ils": "", "tacan": "", "elev": "1054ft" },
+    { "name": "Nalchik", "icao": "URMN", "atis": "136.000", "tower": "136.000", "ils": "", "tacan": "", "elev": "1411ft" },
+    { "name": "Beslan", "icao": "URMO", "atis": "141.000", "tower": "141.000", "ils": "", "tacan": "", "elev": "1673ft" }
+  ],
+  "notes": "Verify frequencies in mission briefing — custom missions may override defaults."
+}
