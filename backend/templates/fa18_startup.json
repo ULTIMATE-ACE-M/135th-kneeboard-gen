@@ -1,0 +1,27 @@
+{
+  "name": "F/A-18C Startup Checklist",
+  "description": "Abbreviated startup procedure for the F/A-18C Hornet",
+  "type": "checklist",
+  "title": "F/A-18C STARTUP",
+  "card_type": "checklist",
+  "items": [
+    { "step": "1", "action": "Battery switch", "expected": "ON" },
+    { "step": "2", "action": "APU switch", "expected": "ON" },
+    { "step": "3", "action": "Wait for APU ready", "expected": "APU READY light" },
+    { "step": "4", "action": "Right engine crank", "expected": "Hold to 15%" },
+    { "step": "5", "action": "Right throttle", "expected": "IDLE at 15% N2" },
+    { "step": "6", "action": "Wait for right engine stable", "expected": "~65% RPM" },
+    { "step": "7", "action": "Left engine crank", "expected": "Hold to 15%" },
+    { "step": "8", "action": "Left throttle", "expected": "IDLE at 15% N2" },
+    { "step": "9", "action": "APU switch", "expected": "OFF" },
+    { "step": "10", "action": "FCS switch", "expected": "RESET then ON" },
+    { "step": "11", "action": "INS knob", "expected": "CV/GND ALIGN" },
+    { "step": "12", "action": "Radar", "expected": "OPR" },
+    { "step": "13", "action": "FLIR/LTD/R", "expected": "AS REQUIRED" },
+    { "step": "14", "action": "Dispenser switch", "expected": "ON" },
+    { "step": "15", "action": "ECM", "expected": "AS REQUIRED" },
+    { "step": "16", "action": "OBOGS switch", "expected": "ON" },
+    { "step": "17", "action": "Canopy", "expected": "CLOSE" }
+  ],
+  "notes": "INS alignment takes ~8 minutes for full accuracy. CV align for carrier ops."
+}
