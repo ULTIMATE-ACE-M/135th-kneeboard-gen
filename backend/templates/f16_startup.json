@@ -1,0 +1,100 @@
+{
+  "name": "F-16C Startup Checklist",
+  "description": "Abbreviated startup procedure for the F-16C Viper",
+  "type": "checklist",
+  "title": "F-16C STARTUP",
+  "card_type": "checklist",
+  "items": [
+    {
+      "step": "1",
+      "action": "MAIN PWR switch",
+      "expected": "BATT"
+    },
+    {
+      "step": "2",
+      "action": "JFS switch",
+      "expected": "START 2"
+    },
+    {
+      "step": "3",
+      "action": "Wait for RPM > 20%",
+      "expected": "RPM RISING"
+    },
+    {
+      "step": "4",
+      "action": "Throttle",
+      "expected": "IDLE"
+    },
+    {
+      "step": "5",
+      "action": "Wait for RPM stabilize",
+      "expected": "~65% RPM"
+    },
+    {
+      "step": "6",
+      "action": "MAIN PWR switch",
+      "expected": "MAIN PWR"
+    },
+    {
+      "step": "7",
+      "action": "MMC - ST STA - FCR",
+      "expected": "ON"
+    },
+    {
+      "step": "8",
+      "action": "MFD switches",
+      "expected": "ON (both)"
+    },
+    {
+      "step": "9",
+      "action": "UFC",
+      "expected": "ON"
+    },
+    {
+      "step": "10",
+      "action": "GPS switch",
+      "expected": "ON"
+    },
+    {
+      "step": "11",
+      "action": "DL switch",
+      "expected": "ON"
+    },
+    {
+      "step": "12",
+      "action": "INS knob",
+      "expected": "NORM"
+    },
+    {
+      "step": "13",
+      "action": "Wait for INS alignment",
+      "expected": "RDY"
+    },
+    {
+      "step": "14",
+      "action": "SNSR PWR panels",
+      "expected": "AS REQUIRED"
+    },
+    {
+      "step": "15",
+      "action": "CMDS switch",
+      "expected": "ON"
+    },
+    {
+      "step": "16",
+      "action": "ECM pod",
+      "expected": "AS REQUIRED"
+    },
+    {
+      "step": "17",
+      "action": "Master ARM switch",
+      "expected": "CHECK OFF"
+    },
+    {
+      "step": "18",
+      "action": "Canopy",
+      "expected": "CLOSE & LOCK"
+    }
+  ],
+  "notes": "Ensure ground crew has cleared the intake area before JFS start."
+}
