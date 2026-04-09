@@ -11,21 +11,40 @@ import StyleMatcher from './components/StyleMatcher';
 import { emptyMissionData } from './utils/defaults';
 import { previewPage, generateKneeboard } from './utils/api';
 
-const PAGES = [
-  { id: 'mission', label: 'Mission Editor', icon: '\u2708' },
-  { id: 'import', label: 'Import .miz', icon: '\uD83D\uDCC2' },
-  { id: 'reference', label: 'Reference Cards', icon: '\uD83D\uDCCB' },
-  { id: 'style', label: 'Style Matcher', icon: '\uD83C\uDFA8' },
+const NAV_PAGES = [
+  { id: 'map',       label: 'Map View',    icon: '\u2295', disabled: true  },
+  { id: 'mission',   label: 'Kneeboard',   icon: '\u2708', disabled: false },
+  { id: 'import',    label: 'Import .miz', icon: '\u229E', disabled: false },
+  { id: 'reference', label: 'Ref Cards',   icon: '\u2261', disabled: false },
+  { id: 'style',     label: 'Style Match', icon: '\u25C8', disabled: false },
+];
+
+const MISSION_TABS = [
+  { id: 'info',        label: 'Mission'   },
+  { id: 'waypoints',   label: 'Waypoints' },
+  { id: 'frequencies', label: 'Comms'     },
+  { id: 'flight',      label: 'Flight'    },
+  { id: 'threats',     label: 'Threats'   },
+  { id: 'preview',     label: 'Preview'   },
 ];
 
 export default function App() {
-  const [activePage, setActivePage] = useState('mission');
-  const [activeTab, setActiveTab] = useState('info');
-  const [missionData, setMissionData] = useState({ ...emptyMissionData });
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [previewType, setPreviewType] = useState('mission');
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState('');
+  const [activePage,   setActivePage]   = useState('mission');
+  const [activeTab,    setActiveTab]    = useState('info');
+  const [missionData,  setMissionData]  = useState({ ...emptyMissionData });
+  const [previewUrl,   setPreviewUrl]   = useState(null);
+  const [previewType,  setPreviewType]  = useState('mission');
+  const [loading,      setLoading]      = useState(false);
+  const [logs,         setLogs]         = useState([
+    { source: 'SYS', msg: 'Dashboard online. Systems nominal.', time: '--:--:--' },
+    { source: 'KBD', msg: 'Kneeboard generator ready.',         time: '--:--:--' },
+    { source: 'API', msg: 'Awaiting backend connection.',        time: '--:--:--' },
+  ]);
+
+  const addLog = useCallback((source, msg) => {
+    const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
+    setLogs(prev => [...prev.slice(-19), { source, msg, time }]);
+  }, []);
 
   const updateField = useCallback((field, value) => {
     setMissionData(prev => ({ ...prev, [field]: value }));
@@ -33,173 +52,225 @@ export default function App() {
 
   const handlePreview = useCallback(async (pageType = 'mission') => {
     setLoading(true);
-    setStatus('Generating preview...');
+    addLog('KBD', `Generating ${pageType.toUpperCase()} preview...`);
     try {
       const url = await previewPage(missionData, pageType);
       setPreviewUrl(url);
       setPreviewType(pageType);
-      setStatus('Preview ready');
+      setActiveTab('preview');
+      setActivePage('mission');
+      addLog('KBD', `${pageType.toUpperCase()} preview ready.`);
     } catch (err) {
-      setStatus(`Error: ${err.message}`);
+      addLog('ERR', err.message);
     }
     setLoading(false);
-  }, [missionData]);
+  }, [missionData, addLog]);
 
   const handleGenerate = useCallback(async () => {
     setLoading(true);
-    setStatus('Generating all pages...');
+    addLog('KBD', 'Generating all kneeboard pages...');
     try {
       const res = await generateKneeboard(missionData);
-      setStatus(`Generated ${res.data.count} pages: ${res.data.pages.join(', ')}`);
+      addLog('KBD', `Generated ${res.data.count} pages: ${res.data.pages.join(', ')}`);
     } catch (err) {
-      setStatus(`Error: ${err.message}`);
+      addLog('ERR', err.message);
     }
     setLoading(false);
-  }, [missionData]);
+  }, [missionData, addLog]);
 
   const handleMizImport = useCallback((data) => {
     setMissionData(prev => ({ ...prev, ...data }));
     setActivePage('mission');
-    setStatus('Mission data imported from .miz');
-  }, []);
+    setActiveTab('info');
+    addLog('MIZ', `Imported: ${data.mission_name || 'Unknown mission'}`);
+  }, [addLog]);
 
   return (
-    <div className="app-container">
-      {/* Header */}
-      <header className="app-header">
-        <h1>135TH KNEEBOARD GEN</h1>
-        <span className="subtitle">135th Squadron Kneeboard Generator</span>
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, alignItems: 'center' }}>
-          {status && (
-            <span className={`badge ${loading ? 'badge-amber' : 'badge-green'}`}>
-              {status}
+    <div className="dashboard">
+      <header className="dash-header">
+        <div className="dash-header-brand">
+          <span className="brand-dot" />
+          SYS DASH v1.0
+        </div>
+        <div className="dash-header-sections">
+          <div className={`dash-header-section ${activePage === 'map' ? 'active' : ''}`}>
+            <span className="section-label">OPERATIONAL AREA</span>
+            <span className="section-rule">RULE B</span>
+          </div>
+          <div className={`dash-header-section ${activePage !== 'map' ? 'active' : ''}`}>
+            <span className="section-label">135TH KNEEBOARD GENERATOR</span>
+            {loading && <span className="badge badge-amber">PROCESSING</span>}
+          </div>
+          <div className="status-bar">
+            <span className={`status-dot ${loading ? 'warning' : ''}`}>
+              {loading ? 'PROCESSING' : 'ONLINE'}
             </span>
-          )}
+          </div>
         </div>
       </header>
 
-      {/* Sidebar */}
-      <nav className="sidebar">
-        <div className="nav-section">
-          <h3>Pages</h3>
-          {PAGES.map(p => (
+      <div className="dash-body">
+        <nav className="dash-sidebar">
+          <div className="sidebar-section-label">Navigation</div>
+          {NAV_PAGES.map(p => (
             <button
               key={p.id}
-              className={`nav-btn ${activePage === p.id ? 'active' : ''}`}
-              onClick={() => setActivePage(p.id)}
+              className={`sidebar-item ${activePage === p.id ? 'active' : ''} ${p.disabled ? 'disabled' : ''}`}
+              onClick={() => !p.disabled && setActivePage(p.id)}
             >
-              <span className="icon">{p.icon}</span>
-              {p.label}
+              <span className="item-icon">{p.icon}</span>
+              <span>{p.label}</span>
             </button>
           ))}
-        </div>
-
-        <div className="nav-section">
-          <h3>Quick Actions</h3>
-          <button className="nav-btn" onClick={() => handlePreview('mission')}>
-            <span className="icon">&#128065;</span> Preview Mission
+          <div className="sidebar-divider" />
+          <div className="sidebar-section-label">Quick Gen</div>
+          <button className="sidebar-item" onClick={() => { setActivePage('mission'); handlePreview('mission'); }}>
+            <span className="item-icon">&#9655;</span>
+            <span>Prev. Msn</span>
           </button>
-          <button className="nav-btn" onClick={() => handlePreview('comms')}>
-            <span className="icon">&#128225;</span> Preview Comms
+          <button className="sidebar-item" onClick={() => { setActivePage('mission'); handlePreview('comms'); }}>
+            <span className="item-icon">&#9655;</span>
+            <span>Prev. Comms</span>
           </button>
-          <button className="nav-btn" onClick={() => handlePreview('threats')}>
-            <span className="icon">&#9888;</span> Preview Threats
+          <button className="sidebar-item" onClick={handleGenerate} disabled={loading}>
+            <span className="item-icon">&#8861;</span>
+            <span>Generate All</span>
           </button>
-          <button className="nav-btn" onClick={handleGenerate} disabled={loading}>
-            <span className="icon">&#128190;</span> Generate All
-          </button>
-        </div>
-
-        <div className="nav-section">
-          <h3>Squadron</h3>
-          <div className="form-group">
-            <label>Squadron Name</label>
+          <div className="sidebar-divider" />
+          <div className="sidebar-section-label">Squadron</div>
+          <div style={{ padding: '4px 10px 8px' }}>
             <input
               className="form-input"
+              style={{ fontSize: 10, padding: '5px 8px' }}
               value={missionData.squadron_name}
               onChange={e => updateField('squadron_name', e.target.value)}
-              placeholder="e.g. VF-84 Jolly Rogers"
+              placeholder="Squadron name..."
             />
           </div>
-        </div>
-      </nav>
+        </nav>
 
-      {/* Main content */}
-      <main className="main-content">
-        {activePage === 'mission' && (
-          <>
-            <div className="tabs">
-              {[
-                { id: 'info', label: 'Mission Info' },
-                { id: 'waypoints', label: 'Waypoints' },
-                { id: 'frequencies', label: 'Frequencies' },
-                { id: 'flight', label: 'Flight' },
-                { id: 'threats', label: 'Threats' },
-                { id: 'preview', label: 'Preview' },
-              ].map(t => (
-                <button
-                  key={t.id}
-                  className={`tab ${activeTab === t.id ? 'active' : ''}`}
-                  onClick={() => setActiveTab(t.id)}
-                >
-                  {t.label}
-                </button>
+        <main className="dash-main">
+          <div className="main-inner">
+            {activePage === 'map' && (
+              <div className="placeholder-page">
+                <div className="placeholder-icon">&#8853;</div>
+                <h3>Operational Map</h3>
+                <p>Map view — coming soon</p>
+              </div>
+            )}
+
+            {activePage === 'mission' && (
+              <>
+                <div className="section-header-bar">
+                  <h2>Kneeboard Generator</h2>
+                  <span className="breadcrumb">135TH SQN / MISSION PLANNER</span>
+                </div>
+                <div className="tabs">
+                  {MISSION_TABS.map(t => (
+                    <button
+                      key={t.id}
+                      className={`tab ${activeTab === t.id ? 'active' : ''}`}
+                      onClick={() => setActiveTab(t.id)}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+                {activeTab === 'info'        && <MissionForm data={missionData} onChange={updateField} />}
+                {activeTab === 'waypoints'   && <WaypointTable waypoints={missionData.waypoints} onChange={wps => updateField('waypoints', wps)} />}
+                {activeTab === 'frequencies' && <FrequencyTable frequencies={missionData.frequencies} onChange={f => updateField('frequencies', f)} />}
+                {activeTab === 'flight'      && <FlightTable members={missionData.flight_members} onChange={m => updateField('flight_members', m)} />}
+                {activeTab === 'threats'     && <ThreatTable threats={missionData.threats} onChange={t => updateField('threats', t)} />}
+                {activeTab === 'preview'     && <PreviewPanel previewUrl={previewUrl} previewType={previewType} onPreview={handlePreview} loading={loading} />}
+              </>
+            )}
+
+            {activePage === 'import' && (
+              <>
+                <div className="section-header-bar">
+                  <h2>Import Mission File</h2>
+                  <span className="breadcrumb">135TH SQN / MIZ PARSER</span>
+                </div>
+                <MizUploader onImport={handleMizImport} />
+              </>
+            )}
+
+            {activePage === 'reference' && (
+              <>
+                <div className="section-header-bar">
+                  <h2>Reference Card Builder</h2>
+                  <span className="breadcrumb">135TH SQN / REFERENCE</span>
+                </div>
+                <ReferenceBuilder squadronName={missionData.squadron_name} />
+              </>
+            )}
+
+            {activePage === 'style' && (
+              <>
+                <div className="section-header-bar">
+                  <h2>Style Matcher</h2>
+                  <span className="breadcrumb">135TH SQN / STYLE ANALYSIS</span>
+                </div>
+                <StyleMatcher
+                  missionData={missionData}
+                  onStyleExtracted={() => addLog('STY', 'Style profile extracted from reference image.')}
+                />
+              </>
+            )}
+          </div>
+        </main>
+
+        <aside className="dash-panel">
+          <div className="panel-section">
+            <div className="panel-section-header">Comms Log</div>
+            <div className="comms-log">
+              {logs.slice(-7).map((l, i) => (
+                <div key={i} className="entry">
+                  <span className="source">[{l.source}]</span>
+                  <span className="time"> {l.time}</span>
+                  <br />
+                  <span style={{ paddingLeft: 4 }}>{l.msg}</span>
+                </div>
               ))}
             </div>
+          </div>
 
-            {activeTab === 'info' && (
-              <MissionForm data={missionData} onChange={updateField} />
-            )}
-            {activeTab === 'waypoints' && (
-              <WaypointTable
-                waypoints={missionData.waypoints}
-                onChange={wps => updateField('waypoints', wps)}
-              />
-            )}
-            {activeTab === 'frequencies' && (
-              <FrequencyTable
-                frequencies={missionData.frequencies}
-                onChange={freqs => updateField('frequencies', freqs)}
-              />
-            )}
-            {activeTab === 'flight' && (
-              <FlightTable
-                members={missionData.flight_members}
-                onChange={m => updateField('flight_members', m)}
-              />
-            )}
-            {activeTab === 'threats' && (
-              <ThreatTable
-                threats={missionData.threats}
-                onChange={t => updateField('threats', t)}
-              />
-            )}
-            {activeTab === 'preview' && (
-              <PreviewPanel
-                previewUrl={previewUrl}
-                previewType={previewType}
-                onPreview={handlePreview}
-                loading={loading}
-              />
-            )}
-          </>
-        )}
+          <div className="panel-section">
+            <div className="panel-section-header">Mission Info</div>
+            <div className="panel-row"><span>OPERATION</span><span className="val cyan">{missionData.mission_name  || '\u2014'}</span></div>
+            <div className="panel-row"><span>THEATER</span>  <span className="val">{missionData.theater        || '\u2014'}</span></div>
+            <div className="panel-row"><span>TYPE</span>     <span className="val">{missionData.mission_type   || '\u2014'}</span></div>
+            <div className="panel-row"><span>AIRCRAFT</span> <span className="val">{missionData.aircraft_type  || '\u2014'}</span></div>
+            <div className="panel-row"><span>CALLSIGN</span> <span className="val cyan">{missionData.callsign   || '\u2014'}</span></div>
+            <div className="panel-row"><span>DEP</span>      <span className="val">{missionData.departure_airfield || '\u2014'}</span></div>
+            <div className="panel-row"><span>RCV</span>      <span className="val">{missionData.recovery_airfield  || '\u2014'}</span></div>
+            <div className="panel-row"><span>LASER</span>    <span className="val">{missionData.laser_code     || '\u2014'}</span></div>
+          </div>
 
-        {activePage === 'import' && (
-          <MizUploader onImport={handleMizImport} />
-        )}
+          <div className="panel-section">
+            <div className="panel-section-header">Flights Info</div>
+            {missionData.flight_members.length === 0 ? (
+              <div style={{ fontSize: 9, color: 'var(--text-muted)', letterSpacing: 1 }}>NO FLIGHT DATA</div>
+            ) : (
+              missionData.flight_members.slice(0, 4).map((m, i) => (
+                <div key={i} className="panel-row">
+                  <span>{m.callsign || `Flt ${m.number}`}</span>
+                  <span className="val">{m.aircraft || '\u2014'}</span>
+                </div>
+              ))
+            )}
+          </div>
 
-        {activePage === 'reference' && (
-          <ReferenceBuilder squadronName={missionData.squadron_name} />
-        )}
-
-        {activePage === 'style' && (
-          <StyleMatcher
-            missionData={missionData}
-            onStyleExtracted={(style) => setStatus('Style extracted — ready to generate matched kneeboards')}
-          />
-        )}
-      </main>
+          <div className="panel-section">
+            <div className="panel-section-header">Squadron Info</div>
+            <div className="panel-row"><span>UNIT</span>      <span className="val cyan">{missionData.squadron_name || '135TH'}</span></div>
+            <div className="panel-row"><span>STATUS</span>    <span className="val green">ACTIVE</span></div>
+            <div className="panel-row"><span>WAYPOINTS</span> <span className="val">{missionData.waypoints.length}</span></div>
+            <div className="panel-row"><span>FREQS</span>     <span className="val">{missionData.frequencies.length}</span></div>
+            <div className="panel-row"><span>THREATS</span>   <span className={`val ${missionData.threats.length > 0 ? 'red' : ''}`}>{missionData.threats.length}</span></div>
+          </div>
+        </aside>
+      </div>
     </div>
   );
-          }
+}
