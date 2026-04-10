@@ -8,11 +8,12 @@ import MizUploader from './components/MizUploader';
 import PreviewPanel from './components/PreviewPanel';
 import ReferenceBuilder from './components/ReferenceBuilder';
 import StyleMatcher from './components/StyleMatcher';
+import MissionMap from './components/MissionMap';
 import { emptyMissionData } from './utils/defaults';
 import { previewPage, generateKneeboard } from './utils/api';
 
 const NAV_PAGES = [
-  { id: 'map',       label: 'Map View',    icon: '\u2295', disabled: true  },
+  { id: 'map',       label: 'Map View',    icon: '\u2295', disabled: false },
   { id: 'mission',   label: 'Kneeboard',   icon: '\u2708', disabled: false },
   { id: 'import',    label: 'Import .miz', icon: '\u229E', disabled: false },
   { id: 'reference', label: 'Ref Cards',   icon: '\u2261', disabled: false },
@@ -109,7 +110,7 @@ export default function App() {
         </div>
       </header>
 
-      <div className="dash-body">
+      <div className={`dash-body ${activePage === 'map' ? 'map-mode' : ''}`}>
         <nav className="dash-sidebar">
           <div className="sidebar-section-label">Navigation</div>
           {NAV_PAGES.map(p => (
@@ -149,14 +150,10 @@ export default function App() {
           </div>
         </nav>
 
-        <main className="dash-main">
-          <div className="main-inner">
+        <main className={`dash-main ${activePage === 'map' ? 'map-mode' : ''}`}>
+          <div className={`main-inner ${activePage === 'map' ? 'map-mode' : ''}`}>
             {activePage === 'map' && (
-              <div className="placeholder-page">
-                <div className="placeholder-icon">&#8853;</div>
-                <h3>Operational Map</h3>
-                <p>Map view — coming soon</p>
-              </div>
+              <MissionMap missionData={missionData} onUpdateField={updateField} />
             )}
 
             {activePage === 'mission' && (
@@ -269,8 +266,4 @@ export default function App() {
             <div className="panel-row"><span>FREQS</span>     <span className="val">{missionData.frequencies.length}</span></div>
             <div className="panel-row"><span>THREATS</span>   <span className={`val ${missionData.threats.length > 0 ? 'red' : ''}`}>{missionData.threats.length}</span></div>
           </div>
-        </aside>
-      </div>
-    </div>
-  );
-}
+      

@@ -1,0 +1,402 @@
+<\!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>135th Kneeboard Generator — Mission Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root {
+  --bg-primary:#06080c;--bg-secondary:#0a0e14;--bg-tertiary:#0e1520;--bg-card:#0a1018;
+  --bg-hover:#0f1a24;--bg-active:#0d2030;--border:#152535;--border-bright:#1e3d55;
+  --text-primary:#b8ccd8;--text-secondary:#5a7a8a;--text-muted:#2a3a45;--text-bright:#e0f0ff;
+  --accent-cyan:#00d4ff;--accent-teal:#00bba8;--accent-red:#ff2233;--accent-amber:#ffaa00;
+  --accent-green:#00ff88;--accent-dim:#006688;
+  --font-mono:'JetBrains Mono','Consolas','Courier New',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-mono);font-size:13px}
+
+/* Scanline overlay */
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,180,255,0.012) 2px,rgba(0,180,255,0.012) 4px);pointer-events:none;z-index:9999}
+
+.dashboard{display:grid;grid-template-rows:38px 1fr;width:100vw;height:100vh}
+
+/* Header */
+.dash-header{display:flex;align-items:stretch;background:var(--bg-secondary);border-bottom:1px solid var(--border-bright);z-index:100}
+.dash-header-brand{display:flex;align-items:center;padding:0 14px;min-width:130px;border-right:1px solid var(--border-bright);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-cyan);white-space:nowrap;gap:7px}
+.brand-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-cyan);box-shadow:0 0 6px var(--accent-cyan);animation:pulse-dot 2s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse-dot{0%,100%{opacity:1;box-shadow:0 0 6px var(--accent-cyan)}50%{opacity:.3;box-shadow:none}}
+.dash-header-sections{display:flex;flex:1}
+.dash-header-section{flex:1;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-right:1px solid var(--border);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-secondary)}
+.dash-header-section:last-child{border-right:none;flex:0 0 auto;min-width:180px}
+.dash-header-section.active .section-label{color:var(--accent-cyan)}
+.status-bar{display:flex;align-items:center;gap:14px;padding:0 14px}
+.status-dot{display:flex;align-items:center;gap:5px;font-size:9px;letter-spacing:1px;color:var(--text-secondary)}
+.status-dot::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent-green);box-shadow:0 0 4px var(--accent-green)}
+
+/* Body */
+.dash-body{display:grid;grid-template-columns:130px 1fr;overflow:hidden}
+
+/* Sidebar */
+.dash-sidebar{background:var(--bg-secondary);border-right:1px solid var(--border-bright);display:flex;flex-direction:column;padding:8px 0;overflow-y:auto}
+.sidebar-section-label{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);padding:10px 12px 4px}
+.sidebar-item{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;border:none;background:transparent;color:var(--text-secondary);font-family:var(--font-mono);font-size:10px;letter-spacing:.5px;text-align:left;width:100%;transition:all .1s;border-left:2px solid transparent;position:relative}
+.sidebar-item:hover{background:var(--bg-hover);color:var(--text-primary);border-left-color:var(--border-bright)}
+.sidebar-item.active{background:var(--bg-active);color:var(--accent-cyan);border-left-color:var(--accent-cyan)}
+.sidebar-item.active::after{content:'';position:absolute;right:0;top:0;bottom:0;width:1px;background:var(--accent-cyan);box-shadow:0 0 6px var(--accent-cyan)}
+.sidebar-item .item-icon{font-size:12px;width:16px;text-align:center}
+.sidebar-item span:last-child{font-size:9px;letter-spacing:1px;text-transform:uppercase}
+.sidebar-divider{height:1px;background:var(--border);margin:6px 12px}
+
+/* Main */
+.dash-main{overflow:hidden;background:var(--bg-primary);position:relative;height:100%}
+
+/* Map container */
+.mission-map-container{width:100%;height:100%;display:flex;position:relative;background:var(--bg-primary)}
+.map-canvas{flex:1;position:relative;height:100%}
+.map-canvas .leaflet-container{background:#06080c\!important}
+
+/* Map sidebar */
+.map-sidebar{width:240px;min-width:240px;background:var(--bg-secondary);border-right:1px solid var(--border-bright);display:flex;flex-direction:column;overflow-y:auto;z-index:500}
+.map-sidebar-header{padding:10px 12px;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-cyan);border-bottom:1px solid var(--border-bright);background:var(--bg-tertiary)}
+.map-sidebar-toggle{position:absolute;top:10px;left:10px;z-index:1000;width:26px;height:26px;background:var(--bg-secondary);border:1px solid var(--border-bright);color:var(--accent-cyan);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono)}
+.map-sidebar-toggle:hover{background:var(--bg-active);border-color:var(--accent-cyan);box-shadow:0 0 8px rgba(0,212,255,.2)}
+
+/* Layer toggles */
+.map-layer-toggles{display:flex;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border)}
+.map-toggle{display:flex;align-items:center;gap:4px;cursor:pointer;font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:var(--text-secondary)}
+.map-toggle input[type="checkbox"]{width:10px;height:10px;accent-color:var(--accent-cyan)}
+.toggle-label.route{color:var(--accent-cyan)}
+.toggle-label.threats{color:var(--accent-red)}
+.toggle-label.airfields{color:var(--text-secondary)}
+
+/* Panels */
+.map-panel{border-bottom:1px solid var(--border)}
+.map-panel-header{display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 12px;background:transparent;border:none;color:var(--text-secondary);font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .1s}
+.map-panel-header:hover{background:var(--bg-hover);color:var(--text-primary)}
+.map-panel.expanded .map-panel-header{color:var(--accent-cyan);background:rgba(0,212,255,.04)}
+.panel-chevron{font-size:8px;color:var(--text-muted)}
+.map-panel-body{padding:4px 10px 10px}
+.map-panel-empty{font-size:9px;color:var(--text-muted);text-align:center;padding:12px 4px;line-height:1.6;letter-spacing:.5px}
+.map-panel-list{display:flex;flex-direction:column;gap:2px}
+.map-panel-item{display:flex;align-items:center;gap:6px;padding:4px 6px;font-size:9px;border-left:2px solid var(--border);transition:all .1s;cursor:pointer}
+.map-panel-item:hover{background:var(--bg-hover);border-left-color:var(--accent-cyan)}
+.map-panel-item .wp-num{color:var(--accent-cyan);font-weight:700;min-width:16px}
+.map-panel-item .wp-name{color:var(--text-primary);flex:1}
+.map-panel-item .wp-coord{color:var(--text-muted);font-size:8px}
+.map-panel-item.threat{border-left-color:rgba(255,34,51,.4)}
+.map-panel-item.threat:hover{border-left-color:var(--accent-red)}
+.map-panel-item .threat-type{color:var(--accent-red);font-weight:700;min-width:42px;font-size:8px}
+.map-panel-item .threat-name{color:var(--text-primary);flex:1}
+.map-panel-item .threat-range{color:var(--accent-amber);font-size:8px}
+.map-panel-item.airfield{border-left-color:rgba(90,122,138,.4)}
+.map-panel-item.airfield:hover{border-left-color:var(--accent-teal)}
+.map-panel-item .af-icao{color:var(--text-secondary);font-weight:700;min-width:36px;font-size:8px}
+.map-panel-item .af-name{color:var(--text-primary);flex:1;font-size:9px}
+.map-panel-item .af-freq{color:var(--accent-teal);font-size:8px}
+.map-panel-stat{font-size:8px;color:var(--text-muted);text-align:center;padding-top:6px;letter-spacing:1px}
+
+/* Info panel */
+.map-panel-info{display:flex;flex-direction:column;gap:4px}
+.map-panel-info .info-row{display:flex;justify-content:space-between;font-size:9px;color:var(--text-secondary)}
+.map-panel-info .info-row span:last-child{color:var(--text-primary);font-weight:500}
+.map-panel-info .info-row.cursor span:last-child{color:var(--accent-cyan)}
+.info-divider{height:1px;background:var(--border);margin:4px 0}
+
+/* Map overlays */
+.map-coord-readout{position:absolute;bottom:10px;left:10px;z-index:1000;padding:4px 10px;background:rgba(6,8,12,.85);border:1px solid var(--border);color:var(--accent-cyan);font-family:var(--font-mono);font-size:10px;letter-spacing:1px;pointer-events:none}
+.map-mission-tag{position:absolute;top:10px;right:10px;z-index:1000;padding:4px 10px;background:rgba(6,8,12,.85);border:1px solid var(--border);color:var(--text-secondary);font-family:var(--font-mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;pointer-events:none}
+.map-legend{position:absolute;bottom:10px;right:10px;z-index:1000;padding:8px 12px;background:rgba(6,8,12,.88);border:1px solid var(--border);font-size:8px;display:flex;flex-direction:column;gap:3px}
+.legend-item{display:flex;align-items:center;gap:6px;color:var(--text-secondary);letter-spacing:.5px}
+.legend-swatch{width:12px;height:3px}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg-secondary)}
+::-webkit-scrollbar-thumb{background:var(--border-bright)}
+::-webkit-scrollbar-thumb:hover{background:var(--accent-dim)}
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <header class="dash-header">
+    <div class="dash-header-brand"><span class="brand-dot"></span>SYS DASH v1.0</div>
+    <div class="dash-header-sections">
+      <div class="dash-header-section active"><span class="section-label">OPERATIONAL AREA</span><span style="color:var(--accent-dim);font-size:8px">RULE B</span></div>
+      <div class="dash-header-section"><span class="section-label">135TH KNEEBOARD GENERATOR</span></div>
+      <div class="dash-header-section" style="flex:0 0 auto;min-width:180px;border-right:none"><div class="status-bar"><span class="status-dot">ONLINE</span></div></div>
+    </div>
+  </header>
+  <div class="dash-body">
+    <nav class="dash-sidebar">
+      <div class="sidebar-section-label">Navigation</div>
+      <button class="sidebar-item active" id="nav-map"><span class="item-icon">&#8853;</span><span>Map View</span></button>
+      <button class="sidebar-item" id="nav-mission"><span class="item-icon">&#9992;</span><span>Kneeboard</span></button>
+      <button class="sidebar-item" id="nav-import"><span class="item-icon">&#8862;</span><span>Import .miz</span></button>
+      <button class="sidebar-item" id="nav-ref"><span class="item-icon">&#8801;</span><span>Ref Cards</span></button>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section-label">Squadron</div>
+      <div style="padding:4px 10px 8px;font-size:9px;color:var(--accent-cyan);letter-spacing:1px">135TH VFIGHTERW</div>
+    </nav>
+    <main class="dash-main">
+      <div class="mission-map-container">
+        <button class="map-sidebar-toggle" id="sidebarToggle" title="Toggle panel">&#9664;</button>
+        <div class="map-sidebar" id="mapSidebar">
+          <div class="map-sidebar-header">MISSION OVERLAY</div>
+          <div class="map-layer-toggles">
+            <label class="map-toggle"><input type="checkbox" id="toggleRoute" checked/><span class="toggle-label route">Route</span></label>
+            <label class="map-toggle"><input type="checkbox" id="toggleThreats" checked/><span class="toggle-label threats">Threats</span></label>
+            <label class="map-toggle"><input type="checkbox" id="toggleAirfields" checked/><span class="toggle-label airfields">Airfields</span></label>
+          </div>
+          <div id="panelsContainer"></div>
+        </div>
+        <div class="map-canvas">
+          <div id="map" style="width:100%;height:100%"></div>
+          <div class="map-coord-readout" id="coordReadout">Click map for coordinates</div>
+          <div class="map-mission-tag">OP THUNDER REACH / CAUCASUS</div>
+          <div class="map-legend">
+            <div class="legend-item"><div class="legend-swatch" style="background:var(--accent-cyan)"></div>ROUTE</div>
+            <div class="legend-item"><div class="legend-swatch" style="background:var(--accent-green)"></div>DEPARTURE</div>
+            <div class="legend-item"><div class="legend-swatch" style="background:var(--accent-red)"></div>RECOVERY / THREAT</div>
+            <div class="legend-item"><div class="legend-swatch" style="background:var(--accent-amber)"></div>BULLSEYE / EWR</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+// ── Data ──
+const AIRFIELDS = [
+  {name:'Batumi',icao:'UGSB',tower:'131.000',ils:'110.30',tacan:'16X',elev:'33ft',lat:41.6103,lon:41.5997},
+  {name:'Kutaisi',icao:'UGKO',tower:'134.000',ils:'109.75',tacan:'44X',elev:'147ft',lat:42.1766,lon:42.4826},
+  {name:'Senaki-Kolkhi',icao:'UGKS',tower:'132.000',ils:'108.90',tacan:'31X',elev:'43ft',lat:42.2396,lon:42.0478},
+  {name:'Kobuleti',icao:'UG5X',tower:'133.000',ils:'111.50',tacan:'67X',elev:'59ft',lat:41.9308,lon:41.8631},
+  {name:'Tbilisi-Lochini',icao:'UGTB',tower:'138.000',ils:'110.30',tacan:'25X',elev:'1474ft',lat:41.6692,lon:44.9547},
+  {name:'Vaziani',icao:'UG24',tower:'140.000',ils:'108.75',tacan:'22X',elev:'1523ft',lat:41.6293,lon:45.0287},
+  {name:'Sukhumi-Babushara',icao:'UGSS',tower:'129.000',ils:'',tacan:'',elev:'43ft',lat:42.8582,lon:41.1281},
+  {name:'Gudauta',icao:'UG23',tower:'130.000',ils:'',tacan:'',elev:'68ft',lat:43.1041,lon:40.5783},
+  {name:'Sochi-Adler',icao:'URSS',tower:'127.000',ils:'',tacan:'',elev:'98ft',lat:43.4500,lon:39.9566},
+  {name:'Mineralnye Vody',icao:'URMM',tower:'135.000',ils:'',tacan:'',elev:'1054ft',lat:44.2191,lon:43.0819},
+  {name:'Nalchik',icao:'URMN',tower:'136.000',ils:'',tacan:'',elev:'1411ft',lat:43.5133,lon:43.6366},
+  {name:'Beslan',icao:'URMO',tower:'141.000',ils:'',tacan:'',elev:'1673ft',lat:43.2051,lon:44.6066},
+];
+
+// Demo mission — a SEAD package out of Kutaisi
+const WAYPOINTS = [
+  {num:0,name:'KUTAISI',lat:42.1766,lon:42.4826,alt:147,spd:0,tos:'05:00',action:'STARTUP'},
+  {num:1,name:'DEPOT',lat:42.35,lon:42.20,alt:15000,spd:420,tos:'05:12',action:'CLIMB'},
+  {num:2,name:'PUSH',lat:42.60,lon:42.80,alt:22000,spd:480,tos:'05:22',action:'FENCE IN'},
+  {num:3,name:'IP NORTH',lat:43.00,lon:43.40,alt:25000,spd:500,tos:'05:30',action:'ATTACK'},
+  {num:4,name:'TARGET',lat:43.15,lon:43.65,alt:20000,spd:520,tos:'05:34',action:'SEAD STRIKE'},
+  {num:5,name:'EGRESS',lat:42.80,lon:43.10,alt:18000,spd:480,tos:'05:40',action:'FENCE OUT'},
+  {num:6,name:'SENAKI',lat:42.2396,lon:42.0478,alt:5000,spd:350,tos:'05:52',action:'RECOVERY'},
+];
+
+const THREATS = [
+  {name:'SA-11 Buk M1',type:'SAM',lat:43.20,lon:43.60,range:20,notes:'Primary target'},
+  {name:'SA-6 Gainful',type:'SAM',lat:43.35,lon:43.30,range:15,notes:'Supporting battery'},
+  {name:'SA-15 Tor',type:'SAM',lat:43.10,lon:43.80,range:8,notes:'Point defense'},
+  {name:'ZSU-23-4',type:'AAA',lat:43.22,lon:43.55,range:3,notes:'Near primary'},
+  {name:'Flat Face EWR',type:'EWR',lat:43.50,lon:43.50,range:45,notes:'Early warning'},
+  {name:'SA-8 Osa',type:'SAM',lat:42.90,lon:44.10,range:10,notes:'Flank coverage'},
+];
+
+const BULLSEYE = {lat:42.80,lon:43.00};
+
+// ── Icons ──
+function svgIcon(svg,size,anchor){
+  return L.divIcon({html:svg,className:'',iconSize:size,iconAnchor:anchor||[size[0]/2,size[1]/2]});
+}
+
+function wpIcon(num,isFirst,isLast){
+  const c=isFirst?'#00ff88':isLast?'#ff2233':'#00d4ff';
+  const l=isFirst?'DEP':isLast?'RCV':num;
+  return svgIcon('<svg width="28" height="28" viewBox="0 0 28 28"><polygon points="14,2 26,14 14,26 2,14" fill="none" stroke="'+c+'" stroke-width="1.5" opacity="0.9"/><text x="14" y="16" text-anchor="middle" fill="'+c+'" font-size="8" font-family="monospace" font-weight="bold">'+l+'</text></svg>',[28,28]);
+}
+
+const bullseyeIcon=svgIcon('<svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="none" stroke="#ffaa00" stroke-width="1" opacity="0.8"/><circle cx="18" cy="18" r="10" fill="none" stroke="#ffaa00" stroke-width="1" opacity="0.6"/><circle cx="18" cy="18" r="4" fill="none" stroke="#ffaa00" stroke-width="1" opacity="0.8"/><circle cx="18" cy="18" r="1.5" fill="#ffaa00"/><line x1="18" y1="0" x2="18" y2="6" stroke="#ffaa00" stroke-width="0.8" opacity="0.5"/><line x1="18" y1="30" x2="18" y2="36" stroke="#ffaa00" stroke-width="0.8" opacity="0.5"/><line x1="0" y1="18" x2="6" y2="18" stroke="#ffaa00" stroke-width="0.8" opacity="0.5"/><line x1="30" y1="18" x2="36" y2="18" stroke="#ffaa00" stroke-width="0.8" opacity="0.5"/></svg>',[36,36]);
+
+const afIcon=svgIcon('<svg width="22" height="22" viewBox="0 0 22 22"><rect x="3" y="9" width="16" height="4" fill="none" stroke="#5a7a8a" stroke-width="1" rx="1"/><line x1="11" y1="5" x2="11" y2="17" stroke="#5a7a8a" stroke-width="0.8"/></svg>',[22,22]);
+
+function threatMarkerIcon(type){
+  const colors={SAM:'#ff2233',AAA:'#ff6644',MANPAD:'#ff8855',EWR:'#ffaa00',Fighter:'#ff2233'};
+  const c=colors[type]||'#ff2233';
+  return svgIcon('<svg width="24" height="24" viewBox="0 0 24 24"><polygon points="12,3 22,21 2,21" fill="none" stroke="'+c+'" stroke-width="1.5"/><text x="12" y="18" text-anchor="middle" fill="'+c+'" font-size="7" font-family="monospace" font-weight="bold">\!</text></svg>',[24,24]);
+}
+
+// ── Format helpers ──
+function fmtCoord(lat,lon){
+  return (lat>=0?'N':'S')+Math.abs(lat).toFixed(4)+' '+(lon>=0?'E':'W')+Math.abs(lon).toFixed(4);
+}
+const nmToM=nm=>nm*1852;
+
+// ── Init Map ──
+const map=L.map('map',{center:[42.5,42.5],zoom:7,zoomControl:false,attributionControl:false});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{maxZoom:18}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:18,opacity:0.4}).addTo(map);
+
+// Layer groups
+const routeGroup=L.layerGroup().addTo(map);
+const threatGroup=L.layerGroup().addTo(map);
+const airfieldGroup=L.layerGroup().addTo(map);
+
+// ── Bullseye ──
+const beMarker=L.marker([BULLSEYE.lat,BULLSEYE.lon],{icon:bullseyeIcon}).addTo(map);
+beMarker.bindTooltip('BULLSEYE',{permanent:true,direction:'right',offset:[18,0],className:'map-tt be-tt'});
+
+// ── Route + Waypoints ──
+function drawRoute(){
+  routeGroup.clearLayers();
+  const latlngs=WAYPOINTS.map(w=>[w.lat,w.lon]);
+  L.polyline(latlngs,{color:'#00d4ff',weight:1.5,opacity:0.7,dashArray:'8 4'}).addTo(routeGroup);
+  // Leg distance lines
+  for(let i=0;i<WAYPOINTS.length-1;i++){
+    const a=WAYPOINTS[i],b=WAYPOINTS[i+1];
+    const midLat=(a.lat+b.lat)/2, midLon=(a.lon+b.lon)/2;
+    const dist=map.distance([a.lat,a.lon],[b.lat,b.lon])/1852;
+    const lbl=L.marker([midLat,midLon],{icon:L.divIcon({html:'<div style="color:#00d4ff88;font-size:7px;font-family:monospace;white-space:nowrap;letter-spacing:1px">'+dist.toFixed(0)+' NM</div>',className:'',iconSize:[40,12]})}).addTo(routeGroup);
+  }
+  WAYPOINTS.forEach((wp,i)=>{
+    const m=L.marker([wp.lat,wp.lon],{icon:wpIcon(wp.num,i===0,i===WAYPOINTS.length-1)}).addTo(routeGroup);
+    m.bindTooltip('<div style="color:#00d4ff;font-weight:700;font-size:9px;letter-spacing:1px;margin-bottom:2px">WP '+wp.num+' - '+wp.name+'</div><div style="color:#5a7a8a;font-size:8px">ALT: '+wp.alt+' ft</div><div style="color:#5a7a8a;font-size:8px">SPD: '+wp.spd+' kts</div>'+(wp.tos?'<div style="color:#5a7a8a;font-size:8px">TOS: '+wp.tos+'</div>':'')+'<div style="color:#5a7a8a;font-size:8px">ACT: '+wp.action+'</div>',{direction:'right',offset:[14,0],className:'map-tt'});
+  });
+}
+
+// ── Threats ──
+function drawThreats(){
+  threatGroup.clearLayers();
+  THREATS.forEach(t=>{
+    if(t.range>0){
+      const circColor=t.type==='EWR'?'#ffaa00':'#ff2233';
+      L.circle([t.lat,t.lon],{radius:nmToM(t.range),color:circColor,weight:1,opacity:0.6,fillColor:circColor,fillOpacity:0.06,dashArray:t.type==='EWR'?'6 3':undefined}).addTo(threatGroup);
+    }
+    const m=L.marker([t.lat,t.lon],{icon:threatMarkerIcon(t.type)}).addTo(threatGroup);
+    const hdrColor=t.type==='EWR'?'#ffaa00':'#ff2233';
+    m.bindTooltip('<div style="color:'+hdrColor+';font-weight:700;font-size:9px;letter-spacing:1px;margin-bottom:2px">'+t.name+'</div><div style="color:#5a7a8a;font-size:8px">TYPE: '+t.type+'</div><div style="color:#5a7a8a;font-size:8px">RANGE: '+t.range+' NM</div>'+(t.notes?'<div style="color:#5a7a8a;font-size:8px">'+t.notes+'</div>':''),{direction:'right',offset:[12,0],className:'map-tt'});
+  });
+}
+
+// ── Airfields ──
+function drawAirfields(){
+  airfieldGroup.clearLayers();
+  AIRFIELDS.forEach(af=>{
+    const m=L.marker([af.lat,af.lon],{icon:afIcon}).addTo(airfieldGroup);
+    m.bindTooltip(af.icao,{direction:'top',offset:[0,-12],className:'map-tt af-tt'});
+    m.bindPopup('<div style="font-family:monospace;background:#0a1018;color:#b8ccd8;min-width:140px"><div style="font-size:10px;font-weight:700;color:#00d4ff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #152535">'+af.name+'</div><div style="font-size:9px;color:#5a7a8a;margin-bottom:2px"><span style="color:#2a3a45;font-size:8px;letter-spacing:1px;margin-right:6px">ICAO:</span>'+af.icao+'</div><div style="font-size:9px;color:#5a7a8a;margin-bottom:2px"><span style="color:#2a3a45;font-size:8px;letter-spacing:1px;margin-right:6px">TWR:</span>'+af.tower+'</div>'+(af.ils?'<div style="font-size:9px;color:#5a7a8a;margin-bottom:2px"><span style="color:#2a3a45;font-size:8px;letter-spacing:1px;margin-right:6px">ILS:</span>'+af.ils+'</div>':'')+(af.tacan?'<div style="font-size:9px;color:#5a7a8a;margin-bottom:2px"><span style="color:#2a3a45;font-size:8px;letter-spacing:1px;margin-right:6px">TCN:</span>'+af.tacan+'</div>':'')+'<div style="font-size:9px;color:#5a7a8a"><span style="color:#2a3a45;font-size:8px;letter-spacing:1px;margin-right:6px">ELEV:</span>'+af.elev+'</div></div>',{className:'map-pop'});
+  });
+}
+
+drawRoute(); drawThreats(); drawAirfields();
+
+// ── Tooltip styles injected ──
+const ttStyle=document.createElement('style');
+ttStyle.textContent='.map-tt{background:rgba(6,8,12,.92)\!important;border:1px solid #1e3d55\!important;color:#b8ccd8\!important;font-family:monospace\!important;font-size:9px\!important;padding:4px 8px\!important;border-radius:0\!important;box-shadow:0 2px 12px rgba(0,0,0,.5)\!important}.map-tt::before{border-right-color:#1e3d55\!important}.be-tt{color:#ffaa00\!important;font-weight:700\!important;letter-spacing:2px\!important;font-size:8px\!important}.af-tt{font-size:8px\!important;color:#5a7a8a\!important;letter-spacing:1px\!important}.map-pop .leaflet-popup-content-wrapper{background:rgba(10,16,24,.95)\!important;border:1px solid #1e3d55\!important;border-radius:0\!important;box-shadow:0 4px 20px rgba(0,0,0,.6)\!important}.map-pop .leaflet-popup-tip{background:rgba(10,16,24,.95)\!important}.map-pop .leaflet-popup-close-button{color:#2a3a45\!important}';
+document.head.appendChild(ttStyle);
+
+// ── Coord readout ──
+map.on('click',function(e){
+  document.getElementById('coordReadout').textContent=fmtCoord(e.latlng.lat,e.latlng.lng);
+});
+
+// ── Sidebar panels ──
+const PANELS=[
+  {id:'waypoints',label:'WAYPOINTS',icon:'\u25C7'},
+  {id:'threats',label:'THREATS',icon:'\u26A0'},
+  {id:'airfields',label:'AIRFIELDS',icon:'\u2708'},
+  {id:'info',label:'MAP INFO',icon:'\u2139'},
+];
+let expandedPanel='waypoints';
+
+function renderPanels(){
+  const container=document.getElementById('panelsContainer');
+  let html='';
+  PANELS.forEach(p=>{
+    const expanded=expandedPanel===p.id;
+    html+='<div class="map-panel'+(expanded?' expanded':'')+'">';
+    html+='<button class="map-panel-header" data-panel="'+p.id+'"><span>'+p.icon+' '+p.label+'</span><span class="panel-chevron">'+(expanded?'\u25B4':'\u25BE')+'</span></button>';
+    if(expanded){
+      html+='<div class="map-panel-body">';
+      if(p.id==='waypoints'){
+        html+='<div class="map-panel-list">';
+        WAYPOINTS.forEach(wp=>{
+          html+='<div class="map-panel-item" data-wplat="'+wp.lat+'" data-wplon="'+wp.lon+'"><span class="wp-num">'+wp.num+'</span><span class="wp-name">'+wp.name+'</span><span class="wp-coord">'+fmtCoord(wp.lat,wp.lon)+'</span></div>';
+        });
+        html+='</div><div class="map-panel-stat">'+WAYPOINTS.length+' waypoints plotted</div>';
+      } else if(p.id==='threats'){
+        html+='<div class="map-panel-list">';
+        THREATS.forEach(t=>{
+          html+='<div class="map-panel-item threat" data-tlat="'+t.lat+'" data-tlon="'+t.lon+'"><span class="threat-type">'+t.type+'</span><span class="threat-name">'+t.name+'</span><span class="threat-range">'+t.range+'nm</span></div>';
+        });
+        html+='</div>';
+      } else if(p.id==='airfields'){
+        html+='<div class="map-panel-list">';
+        AIRFIELDS.forEach(af=>{
+          html+='<div class="map-panel-item airfield" data-aflat="'+af.lat+'" data-aflon="'+af.lon+'"><span class="af-icao">'+af.icao+'</span><span class="af-name">'+af.name+'</span><span class="af-freq">'+af.tower+'</span></div>';
+        });
+        html+='</div>';
+      } else if(p.id==='info'){
+        html+='<div class="map-panel-info">';
+        html+='<div class="info-row"><span>THEATER</span><span>CAUCASUS</span></div>';
+        html+='<div class="info-row"><span>MISSION</span><span>OP THUNDER REACH</span></div>';
+        html+='<div class="info-row"><span>TYPE</span><span>SEAD</span></div>';
+        html+='<div class="info-row"><span>AIRCRAFT</span><span>F-16C BLK 50</span></div>';
+        html+='<div class="info-row"><span>CALLSIGN</span><span>VIPER 1-1</span></div>';
+        html+='<div class="info-row"><span>BULLSEYE</span><span>'+fmtCoord(BULLSEYE.lat,BULLSEYE.lon)+'</span></div>';
+        html+='<div class="info-divider"></div>';
+        html+='<div class="info-row"><span>THREATS</span><span style="color:#ff2233">'+THREATS.length+' ACTIVE</span></div>';
+        html+='<div class="info-row"><span>WAYPOINTS</span><span>'+WAYPOINTS.length+'</span></div>';
+        html+='</div>';
+      }
+      html+='</div>';
+    }
+    html+='</div>';
+  });
+  container.innerHTML=html;
+
+  // Panel click handlers
+  container.querySelectorAll('.map-panel-header').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      expandedPanel=expandedPanel===btn.dataset.panel?null:btn.dataset.panel;
+      renderPanels();
+    });
+  });
+
+  // Click-to-fly on list items
+  container.querySelectorAll('[data-wplat]').forEach(el=>{
+    el.addEventListener('click',()=>map.flyTo([+el.dataset.wplat,+el.dataset.wplon],10,{duration:0.8}));
+  });
+  container.querySelectorAll('[data-tlat]').forEach(el=>{
+    el.addEventListener('click',()=>map.flyTo([+el.dataset.tlat,+el.dataset.tlon],10,{duration:0.8}));
+  });
+  container.querySelectorAll('[data-aflat]').forEach(el=>{
+    el.addEventListener('click',()=>map.flyTo([+el.dataset.aflat,+el.dataset.aflon],11,{duration:0.8}));
+  });
+}
+renderPanels();
+
+// ── Toggle layers ──
+document.getElementById('toggleRoute').addEventListener('change',function(){
+  this.checked?map.addLayer(routeGroup):map.removeLayer(routeGroup);
+});
+document.getElementById('toggleThreats').addEventListener('change',function(){
+  this.checked?map.addLayer(threatGroup):map.removeLayer(threatGroup);
+});
+document.getElementById('toggleAirfields').addEventListener('change',function(){
+  this.checked?map.addLayer(airfieldGroup):map.removeLayer(airfieldGroup);
+});
+
+// ── Sidebar toggle ──
+let sidebarOpen=true;
+document.getElementById('sidebarToggle').addEventListener('click',function(){
+  sidebarOpen=\!sidebarOpen;
+  document.getElementById('mapSidebar').style.display=sidebarOpen?'flex':'none';
+  this.innerHTML=sidebarOpen?'&#9664;':'&#9654;';
+});
+</script>
+</body>
+</html>

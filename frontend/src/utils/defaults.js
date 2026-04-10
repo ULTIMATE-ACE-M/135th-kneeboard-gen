@@ -61,6 +61,8 @@ export const emptyThreat = {
   name: '',
   type: 'SAM',
   location: '',
+  lat: '',
+  lon: '',
   range_nm: '',
   notes: '',
 };
@@ -81,5 +83,3 @@ export const AIRCRAFT_TYPES = [
   'AV-8B', 'JF-17', 'M-2000C', 'Mirage F1',
   'AH-64D', 'UH-1H', 'Mi-24P', 'Ka-50',
   'Su-27', 'Su-33', 'MiG-29', 'J-11A',
-  'F-4E', 'F-15C',
-];

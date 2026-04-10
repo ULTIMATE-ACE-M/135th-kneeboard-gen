@@ -27,6 +27,8 @@ export default function WaypointTable({ waypoints, onChange }) {
           <tr>
             <th>#</th>
             <th>Name</th>
+            <th>Lat</th>
+            <th>Lon</th>
             <th>Alt (ft)</th>
             <th>Speed (kts)</th>
             <th>TOS</th>
@@ -41,20 +43,11 @@ export default function WaypointTable({ waypoints, onChange }) {
                 <input value={wp.number} onChange={e => updateRow(i, 'number', parseInt(e.target.value) || 0)} style={{width: 40}} />
               </td>
               <td><input value={wp.name} onChange={e => updateRow(i, 'name', e.target.value)} placeholder="WP name" /></td>
+              <td><input value={wp.lat} onChange={e => updateRow(i, 'lat', e.target.value)} placeholder="42.50" style={{width: 65}} /></td>
+              <td><input value={wp.lon} onChange={e => updateRow(i, 'lon', e.target.value)} placeholder="44.00" style={{width: 65}} /></td>
               <td><input value={wp.alt_ft} onChange={e => updateRow(i, 'alt_ft', parseInt(e.target.value) || 0)} style={{width: 70}} /></td>
               <td><input value={wp.speed_kts} onChange={e => updateRow(i, 'speed_kts', parseInt(e.target.value) || 0)} style={{width: 70}} /></td>
               <td><input value={wp.tos} onChange={e => updateRow(i, 'tos', e.target.value)} placeholder="HH:MM" style={{width: 70}} /></td>
               <td><input value={wp.action} onChange={e => updateRow(i, 'action', e.target.value)} placeholder="Action" /></td>
               <td>
                 <button className="btn btn-sm btn-danger" onClick={() => removeRow(i)}>X</button>
-              </td>
-            </tr>
-          ))}
-          {waypoints.length === 0 && (
-            <tr><td colSpan={7} style={{textAlign: 'center', color: 'var(--text-muted)', padding: 20}}>No waypoints yet. Click "+ Add Waypoint" to start.</td></tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-            }

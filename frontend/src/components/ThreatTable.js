@@ -23,6 +23,8 @@ export default function ThreatTable({ threats, onChange }) {
           <tr>
             <th>Name</th>
             <th>Type</th>
+            <th>Lat</th>
+            <th>Lon</th>
             <th>Location</th>
             <th>Range (nm)</th>
             <th>Notes</th>
@@ -38,17 +40,9 @@ export default function ThreatTable({ threats, onChange }) {
                   {THREAT_TYPES.map(tt => <option key={tt} value={tt}>{tt}</option>)}
                 </select>
               </td>
+              <td><input value={t.lat} onChange={e => updateRow(i, 'lat', e.target.value)} placeholder="42.50" style={{width: 65}} /></td>
+              <td><input value={t.lon} onChange={e => updateRow(i, 'lon', e.target.value)} placeholder="44.00" style={{width: 65}} /></td>
               <td><input value={t.location} onChange={e => updateRow(i, 'location', e.target.value)} placeholder="N42 E044" /></td>
               <td><input value={t.range_nm} onChange={e => updateRow(i, 'range_nm', e.target.value)} placeholder="20" style={{width: 60}} /></td>
               <td><input value={t.notes} onChange={e => updateRow(i, 'notes', e.target.value)} placeholder="Notes" /></td>
-              <td><button className="btn btn-sm btn-danger" onClick={() => removeRow(i)}>X</button></td>
-            </tr>
-          ))}
-          {threats.length === 0 && (
-            <tr><td colSpan={6} style={{textAlign: 'center', color: 'var(--text-muted)', padding: 20}}>No threats added.</td></tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-            }
+              <td><button className="btn btn-sm btn-
