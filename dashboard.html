@@ -1142,4 +1142,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('qg-comms').addEventListener('click', () => handlePreview('comms'));
   document.getElementById('qg-threats').addEventListener('click', () => handlePreview('threats'));
   document.getElementById('qg-download').addEventListener('click', downloadAllCards);
-  document.getElementById('sqn-input').addEventListener('change', e => { state.mission.squadron_name = e.target.va
+  document.getElementById('sqn-input').addEventListener('change', e => { state.mission.squadron_name = e.target.value; renderRightPanel(); });
+  render();
+});
+</script>
+</body>
+</html>
