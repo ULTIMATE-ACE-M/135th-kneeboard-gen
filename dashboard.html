@@ -1090,7 +1090,7 @@ window._refreshColorPickers=function(){
 };
 window._refreshStylePreview=function(){
   var pvt=window._pvTab||'msn';
-  var m=window._missionData||{callsign:'VIPER 1',mission_name:'Sample Mission',departure_airfield:'BATUMI',recovery_airfield:'BATUMI',awacs_callsign:'DARKSTAR',awacs_freq:'255.000',tac_freq:'270.000',frequencies:[{name:'GROUND',frequency:'121.000'},{name:'TOWER',frequency:'138.000'}]};
+  var m=(typeof state!=='undefined'?state.mission:null)||{};
   var fn=pvt==='msn'?renderMissionCard:pvt==='comms'?renderCommsCard:pvt==='threats'?renderThreatsCard:renderPresetCard;
   try{var url=fn(m);var img=document.getElementById('kb-style-preview');if(img&&url){img.src=url;}}catch(e){}
 };
