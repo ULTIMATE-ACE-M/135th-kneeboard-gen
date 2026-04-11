@@ -1012,9 +1012,25 @@ function renderReferencePage(){const wrap=document.createElement('div');wrap.inn
 let styleState={loading:false,style:null,refPreview:null,styledPreview:null,error:''};
 function _addTplCard(g,name,du){var isA=window._kbTemplateName===name;var c=document.createElement('div');c.style.cssText='cursor:pointer;border:2px solid '+(isA?'#4fc3f7':'#1e2e3e')+';border-radius:4px;overflow:hidden;background:#0a141e;transition:border-color 0.15s;';var img=document.createElement('img');img.src=du;img.alt=name;img.style.cssText='width:100%;height:80px;object-fit:cover;object-position:top;display:block;';var lbl=document.createElement('div');lbl.style.cssText='font-size:8px;color:'+(isA?'#4fc3f7':'#557')+';padding:3px 4px;font-family:"Courier New",monospace;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;text-align:center;background:#090f17;';lbl.textContent=name.replace(/\.(png|jpg|jpeg)$/i,'');c.appendChild(img);c.appendChild(lbl);c.onclick=function(){window._kbTemplateName=name;window._kbStyleId=null;var bi=new Image();bi.onload=function(){window._kbBgImage=bi;render();};bi.src=du;};c.onmouseenter=function(){if(window._kbTemplateName!==name)this.style.borderColor='#2a4a5a';};c.onmouseleave=function(){this.style.borderColor=(window._kbTemplateName===name)?'#4fc3f7':'#1e2e3e';};g.appendChild(c);}
 function renderStylePage() {
-  const wrap = document.createElement('div');
-  wrap.style.cssText = 'width:100%;height:calc(100vh - var(--header-height));overflow:hidden;flex:1;';
-  const iframe = document.createElement('iframe');
+  var mc = document.getElementById('main-content');
+  var panel = document.querySelector('.dash-panel');
+  mc.style.maxWidth = 'none';
+  mc.style.width = '100%';
+  mc.style.flex = '1 1 auto';
+  if (panel) panel.style.display = 'none';
+  var obs = new MutationObserver(function() {
+    if (!mc.querySelector('iframe')) {
+      mc.style.maxWidth = '';
+      mc.style.width = '';
+      mc.style.flex = '';
+      if (panel) panel.style.display = '';
+      obs.disconnect();
+    }
+  });
+  obs.observe(mc, {childList: true});
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'width:100%;height:calc(100vh - 38px);overflow:hidden;flex:1;';
+  var iframe = document.createElement('iframe');
   iframe.src = 'kneeboard-builder.html?v=5';
   iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;background:#0a0e14;';
   wrap.appendChild(iframe);
