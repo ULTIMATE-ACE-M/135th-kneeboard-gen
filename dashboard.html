@@ -266,6 +266,17 @@ if(pf){
 }
 const ps=document.getElementById('panel-squadron');
 if(ps)ps.innerHTML=[row('UNIT',m.squadron_name||'135TH','cyan'),row('STATUS','ACTIVE','green'),row('CALLSIGN',m.callsign||'—','cyan')].join('');}
+const AWACS_DB={
+'Overlord':{freq:'251.000',mod:'AM',platform:'E-3A'},
+'Magic':{freq:'264.000',mod:'AM',platform:'E-2D'},
+'Darkstar':{freq:'247.000',mod:'AM',platform:'E-3A'},
+'Focus':{freq:'235.000',mod:'AM',platform:'E-3A'},
+'Wizard':{freq:'124.000',mod:'AM',platform:'E-3A'},
+'Chalice':{freq:'241.000',mod:'AM',platform:'E-3A'},
+'Texaco':{freq:'251.000',mod:'AM',platform:'KC-135'},
+'Shell':{freq:'262.000',mod:'AM',platform:'KC-135'},
+'Arco':{freq:'276.000',mod:'AM',platform:'KC-130'},
+};
 
 function render(){const mc=document.getElementById('main-content');if(!mc)return;mc.innerHTML='';if(state.page==='map')mc.appendChild(renderMapPage());if(state.page==='mission')mc.appendChild(renderMissionPage());if(state.page==='import')mc.appendChild(renderImportPage());if(state.page==='reference')mc.appendChild(renderReferencePage());if(state.page==='style')mc.appendChild(renderStylePage());if(state.page==='map'){document.querySelector('.dash-body').classList.add('map-mode');document.querySelector('.dash-main').classList.add('map-mode');document.getElementById('main-content').classList.add('map-mode');}else{document.querySelector('.dash-body').classList.remove('map-mode');document.querySelector('.dash-main').classList.remove('map-mode');document.getElementById('main-content').classList.remove('map-mode');}renderRightPanel();renderCommsLog();document.querySelectorAll('.sidebar-item[data-page]').forEach(b=>{b.classList.toggle('active',b.dataset.page===state.page);});const sqn=document.getElementById('sqn-input');if(sqn&&document.activeElement!==sqn)sqn.value=state.mission.squadron_name;}
 
