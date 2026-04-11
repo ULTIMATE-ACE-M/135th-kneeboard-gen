@@ -455,7 +455,7 @@ function BlockContent({ type, config, w, h }) {
         </div>
         {Array.from({length:rows},(_,i)=>(
           <div key={i} style={{display:'grid', gridTemplateColumns:fw, gap:'2px', marginBottom:'2px'}}>
-            {fc.map((_,j)=><div key={j} style={{borderBottom:'1px solid #192a36', minHeight:'13px'}}/>)}
+            {fc.map((_,j)=><div key={j} style={{borderBottom:'1px solid #192a36',minHeight:'13px',color:cfg.rows&&cfg.rows[i]&&cfg.rows[i][j]?'#9de0b4':undefined}}>{cfg.rows&&cfg.rows[i]?cfg.rows[i][j]||'':''}</div>)}
           </div>
         ))}
       </div>
@@ -523,7 +523,7 @@ function BlockContent({ type, config, w, h }) {
         {fields.slice(0,rows).map(f=>(
           <Row key={f}>
             <span style={label()}>{f}</span>
-            <div style={cell()}/>
+            <div style={{...cell(),color:cfg.values&&cfg.values[f]?'#9de0b4':undefined}}>{cfg.values&&cfg.values[f]||''}</div>
           </Row>
         ))}
       </div>
@@ -1453,6 +1453,18 @@ function PalBtn({type,onClick}){
 /* ══════════════════════════════════════════
    MAIN APP
 ══════════════════════════════════════════ */
+function getAutoFill(type,md){
+  if(!md)return{};
+  const v=(x)=>x||'';
+  if(type==='header')return{title:[md.callsign,md.mission_name].filter(Boolean).join(' · ')||'135TH SQN · MISSION KNEEBOARD'};
+  if(type==='mission')return{values:{CALLSIGN:v(md.callsign),MISSION:v(md.mission_name),DEPARTURE:v(md.departure_airfield),ARRIVAL:v(md.recovery_airfield),TOT:v(md.time_on_target),DATE:v(md.date),THEATER:v(md.theater),TYPE:v(md.mission_type),LEAD:v(md.flight_lead),PKG:v(md.callsign),SQUAWK:v(md.squawk),LASER:v(md.laser_code),BINGO:v(md.bingo_fuel),JOKER:v(md.joker_fuel),WEATHER:v(md.weather),ROE:v(md.roe)}};
+  if(type==='flight')return{rows:[[1,[md.callsign,md.flight_lead].filter(Boolean).join(' / ')||'',v(md.mission_type),v(md.date)]]};
+  if(type==='comms')return{rows:[['AIRFIELD',v(md.airfield_comms),''],[v(md.awacs_callsign)||'AWACS',v(md.awacs_freq),''],['TAC',v(md.tac_freq),''],['ATIS/GUARD','121.500','']]};
+  if(type==='iff')return{values:{'MODE 3':v(md.squawk),SQUAWK:v(md.squawk)}};
+  if(type==='recovery')return{rows:[[v(md.departure_airfield),v(md.airfield_comms),'HOME'],[v(md.recovery_airfield),'','RCVY']]};
+  if(type==='pilots')return{rows:[[1,v(md.callsign),'','']]};
+  return{};
+}
 function App(){
   const[pages,setPages]=useState([[], []]);
   const[pageIdx,setPageIdx]=useState(0);
@@ -1469,9 +1481,10 @@ function App(){
 
   const setBlocks=fn=>setPages(p=>{const np=[...p];np[pageIdx]=typeof fn==='function'?fn(np[pageIdx]):fn;return np;});
   const pushUndo=snap=>setUndo(s=>[...s.slice(-30),snap]);
+  const [missionData,setMissionData]=useState(null);
+  useEffect(()=>{const _h=e=>{if(e&&e.data&&e.data.type==='mission-data')setMissionData(e.data.mission);};window.addEventListener('message',_h);return()=>window.removeEventListener('message',_h);},[]);
   const doUndo=()=>{if(!undo.length)return;setBlocks(JSON.parse(undo[undo.length-1]));setUndo(s=>s.slice(0,-1));setSel(null);};
-  const addBlock=(type,cfg)=>{pushUndo(JSON.stringify(blocks));setBlocks(b=>[...b,mkBlock(type,20+(b.length%5)*6,20+(b.length%7)*8,cfg)]);};
-  const delSel=()=>{if(!sel)return;const b=blocks.find(x=>x.id===sel);if(b?.locked)return;pushUndo(JSON.stringify(blocks));setBlocks(b=>b.filter(x=>x.id!==sel));setSel(null);};
+  const addBlock=(type,cfg)=>{pushUndo(JSON.stringify(blocks));const _af=missionData?getAutoFill(type,missionData):{};setBlocks(b=>[...b,mkBlock(type,20+(b.length%5)*6,20+(b.length%7)*8,Object.assign({},_af,cfg||{}))]);};  const delSel=()=>{if(!sel)return;const b=blocks.find(x=>x.id===sel);if(b?.locked)return;pushUndo(JSON.stringify(blocks));setBlocks(b=>b.filter(x=>x.id!==sel));setSel(null);};
   const dupSel=()=>{if(!sel)return;const b=blocks.find(x=>x.id===sel);if(!b)return;pushUndo(JSON.stringify(blocks));const nb={...b,id:_uid++,x:b.x+10,y:b.y+10};setBlocks(bl=>[...bl,nb]);setSel(nb.id);};
   const updProp=(k,v)=>{if(!sel)return;setBlocks(b=>b.map(x=>x.id===sel?{...x,[k]:v}:x));};
   const updCfg=cfg=>{if(!sel)return;setBlocks(b=>b.map(x=>x.id===sel?{...x,config:cfg}:x));};
@@ -1606,13 +1619,15 @@ function App(){
             fontSize:'12px',letterSpacing:'1px'}}>UNDO</button>
           <div style={{width:'1px',background:'#192535',height:'16px',margin:'0 2px'}}/>
           <button onClick={()=>{
-            const blob=new Blob([JSON.stringify({v:1,pages,savedTemplates},null,0)],{type:'application/json'});
+            const _sp={v:1,pages,savedTemplates};
+            const blob=new Blob([JSON.stringify(_sp,null,0)],{type:'application/json'});
             const a=document.createElement('a');
             a.href=URL.createObjectURL(blob);
             a.download='kneeboard-layout.json';
             a.click();
             URL.revokeObjectURL(a.href);
-          }} style={{background:'#070b10',color:'#00d4ff',border:'1px solid #1a3a5a',padding:'4px 10px',
+            if(window.parent!==window){try{window.parent.postMessage({type:'kneeboard-saved',name:(missionData&&missionData.mission_name)||'Custom Kneeboard',callsign:(missionData&&missionData.callsign)||'',data:_sp},'*');}catch(_){}}
+          }}style={{background:'#070b10',color:'#00d4ff',border:'1px solid #1a3a5a',padding:'4px 10px',
             cursor:'pointer',fontSize:'12px',letterSpacing:'1px'}}>SAVE</button>
           <label style={{background:'#070b10',color:'#506070',border:'1px solid #192535',padding:'4px 10px',
             cursor:'pointer',fontSize:'12px',letterSpacing:'1px'}}>
