@@ -670,11 +670,7 @@ function renderFlightTab(){
         checkboxes.forEach(function(c,i){if(c.checked)sel.push(i);});
         state.mission.selectedFlights=sel;
         if(sel.length>0){
-          var primary=state.mission.flights[sel[0]];
           state.mission.selectedFlight=sel[0];
-          state.mission.waypoints=(primary.waypoints||[]).map(function(wp,wi){return{name:wp.name||('WP'+wi),lat:wp.lat,lon:wp.lon,alt:wp.alt||0,speed:wp.speed||0};});
-          state.mission.aircraft_type=primary.type||state.mission.aircraft_type;
-          state.mission.callsign=primary.name||state.mission.callsign;
         }else{state.mission.selectedFlight=-1;}
         render();
       });
