@@ -618,8 +618,6 @@ function renderFrequenciesTab(){return makeTableTab('Frequencies','frequencies',
 function renderFlightTab(){
   var m=state.mission;
   if(!m.flights)m.flights=[];
-  var container=document.getElementById('tab-content');
-  if(!container)return;
   var mTypes=['SEAD','DEAD','CAP','CAS','STRIKE','OCA','DCA','ESCORT','REFUEL','AWACS','CSAR','RECCE','EW','BARCAP','TARCAP','PKG'];
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function updatePanelFlights(){
@@ -648,12 +646,12 @@ function renderFlightTab(){
     var selOpts=mTypes.map(function(t){return '<option value="'+t+'"'+(f.type===t?' selected':'')+'>'+t+'</option>';}).join('');
     rows+='<div style="background:#1a2332;border:1px solid #2a3a52;border-radius:6px;padding:8px;margin-bottom:6px">';
     rows+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">';
-    rows+='<span style="color:#4fc3f7;font-size:13px;cursor:pointer" title="Drag to reorder">&#9776;</span>';
-    rows+='<input type="text" placeholder="Flight Name" value="'+esc(f.name)+'" style="flex:2;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:4px 6px;font-size:12px" onchange="state.mission.flights['+fi+'].name=this.value;renderFlightTab()">';
-    rows+='<select style="flex:1;min-width:80px;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:4px;font-size:11px" onchange="state.mission.flights['+fi+'].type=this.value;renderFlightTab()">'+selOpts+'</select>';
-    rows+='<input type="text" placeholder="Freq MHz" value="'+esc(f.freq||'')+'" style="width:80px;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:4px 6px;font-size:12px" onchange="state.mission.flights['+fi+'].freq=this.value;renderFlightTab()">';
-    rows+='<button onclick="(function(){if(!state.mission.flights['+fi+'].aircraft)state.mission.flights['+fi+'].aircraft=[];state.mission.flights['+fi+'].aircraft.push({id:\'ac\'+Date.now(),callsign:\'\',acType:\'\'});renderFlightTab();})()" style="background:#1a3a2a;border:1px solid #2a6a4a;border-radius:4px;color:#4fc;padding:3px 8px;font-size:11px;cursor:pointer">+ AC</button>';
-    rows+='<button onclick="state.mission.flights.splice('+fi+',1);renderFlightTab()" style="background:#3a1a1a;border:1px solid #6a2a2a;border-radius:4px;color:#f88;padding:3px 6px;font-size:11px;cursor:pointer">&#10005;</button>';
+    rows+='<span style="color:#4fc3f7;font-size:13px">&#9776;</span>';
+    rows+='<input type="text" placeholder="Flight Name" value="'+esc(f.name)+'" style="flex:2;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:4px 6px;font-size:12px" onchange="state.mission.flights['+fi+'].name=this.value;render()">';
+    rows+='<select style="flex:1;min-width:80px;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:4px;font-size:11px" onchange="state.mission.flights['+fi+'].type=this.value;render()">'+selOpts+'</select>';
+    rows+='<input type="text" placeholder="Freq MHz" value="'+esc(f.freq||'')+'" style="width:80px;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:4px 6px;font-size:12px" onchange="state.mission.flights['+fi+'].freq=this.value;render()">';
+    rows+='<button onclick="(function(){if(!state.mission.flights['+fi+'].aircraft)state.mission.flights['+fi+'].aircraft=[];state.mission.flights['+fi+'].aircraft.push({id:\'ac\'+Date.now(),callsign:\'\',acType:\'\'});render();})()" style="background:#1a3a2a;border:1px solid #2a6a4a;border-radius:4px;color:#4fc;padding:3px 8px;font-size:11px;cursor:pointer">+ AC</button>';
+    rows+='<button onclick="state.mission.flights.splice('+fi+',1);render()" style="background:#3a1a1a;border:1px solid #6a2a2a;border-radius:4px;color:#f88;padding:3px 6px;font-size:11px;cursor:pointer">&#10005;</button>';
     rows+='</div>';
     if(f.aircraft&&f.aircraft.length>0){
       f.aircraft.forEach(function(ac,ai){
@@ -661,14 +659,15 @@ function renderFlightTab(){
         rows+='<div style="display:flex;align-items:center;gap:5px;padding:2px 0 2px 18px">';
         rows+='<span style="color:#666;font-size:12px">'+(isl?'&#9492;':'&#9500;')+'</span>';
         rows+='<span style="color:#555;font-size:10px;min-width:14px;text-align:right">'+(ai+1)+'</span>';
-        rows+='<input type="text" placeholder="Callsign" value="'+esc(ac.callsign)+'" style="flex:1;background:#0a1520;border:1px solid #1a3a52;border-radius:4px;color:#c0d8e8;padding:3px 5px;font-size:11px" onchange="state.mission.flights['+fi+'].aircraft['+ai+'].callsign=this.value;renderFlightTab()">';
-        rows+='<input type="text" placeholder="Aircraft Type" value="'+esc(ac.acType||'')+'" style="flex:1;background:#0a1520;border:1px solid #1a3a52;border-radius:4px;color:#c0d8e8;padding:3px 5px;font-size:11px" onchange="state.mission.flights['+fi+'].aircraft['+ai+'].acType=this.value;renderFlightTab()">';
-        rows+='<button onclick="state.mission.flights['+fi+'].aircraft.splice('+ai+',1);renderFlightTab()" style="background:#2a1515;border:1px solid #5a2a2a;border-radius:4px;color:#f66;padding:2px 5px;font-size:10px;cursor:pointer">&#10005;</button>';
+        rows+='<input type="text" placeholder="Callsign" value="'+esc(ac.callsign)+'" style="flex:1;background:#0a1520;border:1px solid #1a3a52;border-radius:4px;color:#c0d8e8;padding:3px 5px;font-size:11px" onchange="state.mission.flights['+fi+'].aircraft['+ai+'].callsign=this.value;render()">';
+        rows+='<input type="text" placeholder="Aircraft Type" value="'+esc(ac.acType||'')+'" style="flex:1;background:#0a1520;border:1px solid #1a3a52;border-radius:4px;color:#c0d8e8;padding:3px 5px;font-size:11px" onchange="state.mission.flights['+fi+'].aircraft['+ai+'].acType=this.value;render()">';
+        rows+='<button onclick="state.mission.flights['+fi+'].aircraft.splice('+ai+',1);render()" style="background:#2a1515;border:1px solid #5a2a2a;border-radius:4px;color:#f66;padding:2px 5px;font-size:10px;cursor:pointer">&#10005;</button>';
         rows+='</div>';
       });
     }
     rows+='</div>';
   });
+  var container=document.createElement('div');
   container.innerHTML='<div style="padding:12px;max-height:calc(100vh - 120px);overflow-y:auto">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
     +'<h3 style="margin:0;color:#4fc3f7;font-size:14px;letter-spacing:1px">FLIGHT ROSTER</h3>'
@@ -683,79 +682,78 @@ function renderFlightTab(){
     +'<input id="new-flight-name" type="text" placeholder="Flight Name (e.g. Weasel 1)" style="flex:2;min-width:120px;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:5px 8px;font-size:12px">'
     +'<select id="new-flight-type" style="flex:1;min-width:90px;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:5px;font-size:11px">'+typeOpts+'</select>'
     +'<input id="new-flight-freq" type="text" placeholder="Freq MHz" style="width:90px;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:5px 8px;font-size:12px">'
-    +'<button onclick="(function(){var nm=document.getElementById(\'new-flight-name\').value.trim();if(!nm)return;if(!state.mission.flights)state.mission.flights=[];state.mission.flights.push({id:\'f\'+Date.now(),name:nm,type:document.getElementById(\'new-flight-type\').value,freq:document.getElementById(\'new-flight-freq\').value.trim(),aircraft:[]});renderFlightTab();})()" style="background:#1a3a5a;border:1px solid #2a6a9a;border-radius:4px;color:#7cf;padding:5px 14px;font-size:11px;cursor:pointer;font-weight:bold">ADD</button>'
+    +'<button onclick="(function(){var nm=document.getElementById(\'new-flight-name\').value.trim();if(!nm)return;if(!state.mission.flights)state.mission.flights=[];state.mission.flights.push({id:\'f\'+Date.now(),name:nm,type:document.getElementById(\'new-flight-type\').value,freq:document.getElementById(\'new-flight-freq\').value.trim(),aircraft:[]});render();})()" style="background:#1a3a5a;border:1px solid #2a6a9a;border-radius:4px;color:#7cf;padding:5px 14px;font-size:11px;cursor:pointer;font-weight:bold">ADD</button>'
     +'</div></div></div>';
-  updatePanelFlights();
+  setTimeout(function(){updatePanelFlights();},0);
+  return container;
 }
 function renderThreatsTab(){
-  var wrap=document.getElementById('tab-content');
-  if(!wrap)return;
   var filter=window._threatFilter||'ALL';
   var search=window._threatSearch||'';
   var DB=[
-    {s:'SA-2 GUIDELINE',n:'RU',t:'SAM',rng:'45',alt:'60,000',lv:'HIGH',i:'Fixed. SARH. ARM vuln. Notch & dive tactics.'},
-    {s:'SA-3 GOA',n:'RU',t:'SAM',rng:'22',alt:'45,000',lv:'MED',i:'Fixed/semi-mobile. Better vs low-alt than SA-2. SARH.'},
-    {s:'SA-5 GAMMON',n:'RU',t:'SAM',rng:'300',alt:'100,000',lv:'HIGH',i:'Very long range. Fixed. High-alt area denial.'},
-    {s:'SA-6 GAINFUL',n:'RU',t:'SAM',rng:'24',alt:'39,000',lv:'HIGH',i:'Mobile. All-weather. SARH. Notch reduces Pk.'},
-    {s:'SA-8 GECKO',n:'RU',t:'SAM',rng:'10',alt:'15,000',lv:'MED',i:'Self-contained. SARH + IR. Short range.'},
-    {s:'SA-9 GASKIN',n:'RU',t:'SAM',rng:'8',alt:'10,000',lv:'LOW',i:'IR only. Tail-chase geometry. Flares effective.'},
-    {s:'SA-10 GRUMBLE',n:'RU',t:'SAM',rng:'90',alt:'100,000',lv:'CRIT',i:'S-300PS. Highest DCS threat. Multi-target LOAL.'},
-    {s:'SA-11 GADFLY',n:'RU',t:'SAM',rng:'32',alt:'72,000',lv:'HIGH',i:'BUK-M1. Mobile. Multi-target capable. SARH.'},
-    {s:'SA-13 GOPHER',n:'RU',t:'SAM',rng:'5',alt:'10,000',lv:'LOW',i:'IR only. Passive SHORAD. Flares effective.'},
-    {s:'SA-15 GAUNTLET',n:'RU',t:'SAM',rng:'12',alt:'20,000',lv:'MED',i:'TOR-M1. Self-contained. Fast reaction time.'},
-    {s:'SA-19 GRISON',n:'RU',t:'SAM/AAA',rng:'8',alt:'11,000',lv:'HIGH',i:'Tunguska. 30mm guns + SAM combo. Radar & IR. Kill fast.'},
-    {s:'HAWK MIM-23',n:'NATO',t:'SAM',rng:'40',alt:'45,000',lv:'HIGH',i:'3-radar system. All-weather. Mobile. Med-altitude specialist.'},
-    {s:'PATRIOT PAC-2',n:'NATO',t:'SAM',rng:'70',alt:'80,000',lv:'CRIT',i:'Long range. Multi-target. TBM capable. LPI radar.'},
-    {s:'ROLAND',n:'NATO',t:'SAM',rng:'8',alt:'18,000',lv:'MED',i:'Short range mobile. All-weather. Fast reaction.'},
-    {s:'AVENGER M1097',n:'US',t:'SAM',rng:'5',alt:'10,000',lv:'LOW',i:'Stinger on HMMWV. IR guided. Organic SHORAD.'},
-    {s:'LINEBACKER M6',n:'US',t:'SAM',rng:'5',alt:'10,000',lv:'LOW',i:'Stinger on Bradley IFV. Organic SHORAD.'},
-    {s:'ZSU-23-4 SHILKA',n:'RU',t:'AAA',rng:'2.5',alt:'8,000',lv:'MED',i:'Radar 23mm quad. Lethal vs low/slow. Gun Dish radar.'},
-    {s:'ZU-23 (Towed)',n:'RU',t:'AAA',rng:'2',alt:'5,000',lv:'LOW',i:'Towed twin 23mm. Optically aimed. Threat below 5,000ft.'},
-    {s:'ZU-23 (BTR-D)',n:'RU',t:'AAA',rng:'2',alt:'5,000',lv:'LOW',i:'Vehicle-mounted 23mm. Ubiquitous. Low-alt only.'},
-    {s:'57mm S-60',n:'RU',t:'AAA',rng:'6',alt:'20,000',lv:'MED',i:'Radar directed medium flak. Fire Can radar director.'},
-    {s:'85mm KS-19',n:'RU',t:'AAA',rng:'8',alt:'35,000',lv:'MED',i:'Heavy radar-directed flak. Medium altitude threat.'},
-    {s:'GEPARD',n:'NATO',t:'AAA',rng:'3.5',alt:'10,000',lv:'MED',i:'Twin 35mm radar-directed. Very effective at low altitude.'},
-    {s:'M163 VULCAN',n:'US',t:'AAA',rng:'1.5',alt:'5,000',lv:'LOW',i:'M168 20mm on M113. Close-in SHORAD. Point defense.'},
-    {s:'BOFORS L/60',n:'NATO',t:'AAA',rng:'3',alt:'10,000',lv:'LOW',i:'40mm optical. Low-and-slow aircraft threat.'},
-    {s:'SA-7 GRAIL',n:'RU',t:'MANPADS',rng:'4.5',alt:'9,000',lv:'LOW',i:'1st gen IR. Tail-chase only. Flares highly effective.'},
-    {s:'SA-14 GREMLIN',n:'RU',t:'MANPADS',rng:'5',alt:'10,500',lv:'LOW',i:'Improved SA-7. Limited all-aspect capability.'},
-    {s:'SA-16 GIMLET',n:'RU',t:'MANPADS',rng:'5.2',alt:'11,000',lv:'MED',i:'Igla-1. All-aspect. IFF interrogator. Flare resistant.'},
-    {s:'SA-18 IGLA',n:'RU',t:'MANPADS',rng:'5.2',alt:'11,500',lv:'MED',i:'Best MANPADS in DCS. All-aspect IR seeker.'},
-    {s:'FIM-92 STINGER',n:'US',t:'MANPADS',rng:'4.8',alt:'10,000',lv:'MED',i:'IR/UV dual-band. All-aspect. CM resistant.'},
+    {s:'SA-2 GUIDELINE',t:'SAM',rng:'45',alt:'60,000',lv:'HIGH',i:'Fixed. SARH. ARM vuln. Notch & dive tactics.'},
+    {s:'SA-3 GOA',t:'SAM',rng:'22',alt:'45,000',lv:'MED',i:'Fixed/semi-mobile. Better vs low-alt. SARH.'},
+    {s:'SA-5 GAMMON',t:'SAM',rng:'300',alt:'100,000',lv:'HIGH',i:'Very long range. Fixed. High-alt area denial.'},
+    {s:'SA-6 GAINFUL',t:'SAM',rng:'24',alt:'39,000',lv:'HIGH',i:'Mobile. All-weather. SARH. Notch reduces Pk.'},
+    {s:'SA-8 GECKO',t:'SAM',rng:'10',alt:'15,000',lv:'MED',i:'Self-contained. SARH + IR. Short range.'},
+    {s:'SA-9 GASKIN',t:'SAM',rng:'8',alt:'10,000',lv:'LOW',i:'IR only. Tail-chase. Flares effective.'},
+    {s:'SA-10 GRUMBLE',t:'SAM',rng:'90',alt:'100,000',lv:'CRIT',i:'S-300PS. Highest DCS threat. Multi-target LOAL.'},
+    {s:'SA-11 GADFLY',t:'SAM',rng:'32',alt:'72,000',lv:'HIGH',i:'BUK-M1. Mobile. Multi-target. SARH.'},
+    {s:'SA-13 GOPHER',t:'SAM',rng:'5',alt:'10,000',lv:'LOW',i:'IR only. Passive SHORAD. Flares effective.'},
+    {s:'SA-15 GAUNTLET',t:'SAM',rng:'12',alt:'20,000',lv:'MED',i:'TOR-M1. Self-contained. Fast reaction time.'},
+    {s:'SA-19 GRISON',t:'SAM/AAA',rng:'8',alt:'11,000',lv:'HIGH',i:'Tunguska. 30mm + SAM. Radar & IR. Kill fast.'},
+    {s:'HAWK MIM-23',t:'SAM',rng:'40',alt:'45,000',lv:'HIGH',i:'3-radar system. All-weather. Mobile. Med-alt.'},
+    {s:'PATRIOT PAC-2',t:'SAM',rng:'70',alt:'80,000',lv:'CRIT',i:'Long range. Multi-target. TBM capable. LPI radar.'},
+    {s:'ROLAND',t:'SAM',rng:'8',alt:'18,000',lv:'MED',i:'Short range mobile. All-weather. Fast reaction.'},
+    {s:'AVENGER M1097',t:'SAM',rng:'5',alt:'10,000',lv:'LOW',i:'Stinger on HMMWV. IR guided. Organic SHORAD.'},
+    {s:'LINEBACKER M6',t:'SAM',rng:'5',alt:'10,000',lv:'LOW',i:'Stinger on Bradley IFV. Organic SHORAD.'},
+    {s:'ZSU-23-4 SHILKA',t:'AAA',rng:'2.5',alt:'8,000',lv:'MED',i:'Radar 23mm quad. Lethal vs low/slow.'},
+    {s:'ZU-23 (Towed)',t:'AAA',rng:'2',alt:'5,000',lv:'LOW',i:'Towed twin 23mm. Optical aim. Below 5,000ft.'},
+    {s:'ZU-23 (BTR-D)',t:'AAA',rng:'2',alt:'5,000',lv:'LOW',i:'Vehicle 23mm. Ubiquitous. Low-alt only.'},
+    {s:'57mm S-60',t:'AAA',rng:'6',alt:'20,000',lv:'MED',i:'Radar directed medium flak. Fire Can director.'},
+    {s:'85mm KS-19',t:'AAA',rng:'8',alt:'35,000',lv:'MED',i:'Heavy radar flak. Medium altitude threat.'},
+    {s:'GEPARD',t:'AAA',rng:'3.5',alt:'10,000',lv:'MED',i:'Twin 35mm radar-directed. Very effective low-alt.'},
+    {s:'M163 VULCAN',t:'AAA',rng:'1.5',alt:'5,000',lv:'LOW',i:'M168 20mm on M113. Close-in SHORAD.'},
+    {s:'BOFORS L/60',t:'AAA',rng:'3',alt:'10,000',lv:'LOW',i:'40mm optical. Low-and-slow aircraft threat.'},
+    {s:'SA-7 GRAIL',t:'MANPADS',rng:'4.5',alt:'9,000',lv:'LOW',i:'1st gen IR. Tail-chase only. Flares effective.'},
+    {s:'SA-14 GREMLIN',t:'MANPADS',rng:'5',alt:'10,500',lv:'LOW',i:'Improved SA-7. Limited all-aspect capability.'},
+    {s:'SA-16 GIMLET',t:'MANPADS',rng:'5.2',alt:'11,000',lv:'MED',i:'Igla-1. All-aspect. IFF interrogator. Flare resistant.'},
+    {s:'SA-18 IGLA',t:'MANPADS',rng:'5.2',alt:'11,500',lv:'MED',i:'Best MANPADS in DCS. All-aspect IR seeker.'},
+    {s:'FIM-92 STINGER',t:'MANPADS',rng:'4.8',alt:'10,000',lv:'MED',i:'IR/UV dual-band. All-aspect. CM resistant.'},
   ];
   var filtered=DB.filter(function(d){
-    var tok=(filter==='ALL'||d.t===filter);
-    var sok=!search||(d.s.toUpperCase().indexOf(search.toUpperCase())>=0||d.i.toUpperCase().indexOf(search.toUpperCase())>=0);
-    return tok&&sok;
+    return (filter==='ALL'||d.t===filter)&&(!search||(d.s.toUpperCase().indexOf(search.toUpperCase())>=0||d.i.toUpperCase().indexOf(search.toUpperCase())>=0));
   });
   function lvCol(l){return {HIGH:'#f97316',CRIT:'#ef4444',MED:'#eab308',LOW:'#4ade80'}[l]||'#888';}
   var fbtns=['ALL','SAM','AAA','MANPADS','SAM/AAA'].map(function(ft){
     var act=(window._threatFilter||'ALL')===ft;
-    return '<button onclick="window._threatFilter=\''+ft+'\';renderThreatsTab()" style="background:'+(act?'#1a3a5a':'#0d1b2a')+';border:1px solid '+(act?'#4fc3f7':'#2a4a6a')+';border-radius:4px;color:'+(act?'#4fc3f7':'#888')+';padding:3px 10px;font-size:11px;cursor:pointer">'+ ft +'</button>';
+    return '<button onclick="window._threatFilter=\''+ft+'\';render()" style="background:'+(act?'#1a3a5a':'#0d1b2a')+';border:1px solid '+(act?'#4fc3f7':'#2a4a6a')+';border-radius:4px;color:'+(act?'#4fc3f7':'#888')+';padding:3px 10px;font-size:11px;cursor:pointer">'+ ft +'</button>';
   }).join('');
   var rows=filtered.map(function(d){
     return '<tr style="border-bottom:1px solid #0f1e2f">'
       +'<td style="padding:5px 6px;color:#e0e8f0;font-weight:bold;white-space:nowrap;font-size:11px">'+d.s+'</td>'
-      +'<td style="padding:5px 6px;color:#aaa;font-size:10px;white-space:nowrap">'+d.t+'</td>'
-      +'<td style="padding:5px 6px;color:#ccc;font-size:11px;text-align:right">'+d.rng+'</td>'
-      +'<td style="padding:5px 6px;color:#ccc;font-size:11px;text-align:right">'+d.alt+'</td>'
+      +'<td style="padding:5px 4px;color:#aaa;font-size:10px;white-space:nowrap">'+d.t+'</td>'
+      +'<td style="padding:5px 4px;color:#ccc;font-size:11px;text-align:right">'+d.rng+'</td>'
+      +'<td style="padding:5px 4px;color:#ccc;font-size:11px;text-align:right">'+d.alt+'</td>'
       +'<td style="padding:5px 6px"><span style="color:'+lvCol(d.lv)+';font-weight:bold;font-size:10px;letter-spacing:0.5px">'+d.lv+'</span></td>'
       +'<td style="padding:5px 6px;color:#aaa;font-size:10px">'+d.i+'</td>'
       +'</tr>';
   }).join('');
+  var wrap=document.createElement('div');
   wrap.innerHTML='<div style="padding:12px;max-height:calc(100vh - 120px);overflow-y:auto">'
-    +'<h3 style="margin:0 0 10px;color:#f97316;font-size:14px;letter-spacing:1px">THREAT DATABASE — DCS SAM / AAA / MANPADS</h3>'
+    +'<h3 style="margin:0 0 10px;color:#f97316;font-size:14px;letter-spacing:1px">THREAT DATABASE \u2014 DCS SAM / AAA / MANPADS</h3>'
     +'<div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">'+fbtns+'</div>'
-    +'<input type="text" placeholder="Search system or notes..." value="'+search+'" oninput="window._threatSearch=this.value;renderThreatsTab()" style="width:100%;box-sizing:border-box;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:5px 8px;font-size:12px;margin-bottom:10px">'
+    +'<input type="text" placeholder="Search system or notes..." value="'+search+'" oninput="window._threatSearch=this.value;render()" style="width:100%;box-sizing:border-box;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:5px 8px;font-size:12px;margin-bottom:10px">'
     +'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">'
     +'<tr style="color:#4fc3f7;border-bottom:2px solid #1a3a5a;font-size:11px">'
     +'<th style="text-align:left;padding:4px 6px">SYSTEM</th>'
-    +'<th style="text-align:left;padding:4px 6px">TYPE</th>'
-    +'<th style="text-align:right;padding:4px 6px">RNG nm</th>'
-    +'<th style="text-align:right;padding:4px 6px">ALT ft</th>'
+    +'<th style="text-align:left;padding:4px 4px">TYPE</th>'
+    +'<th style="text-align:right;padding:4px 4px">RNG nm</th>'
+    +'<th style="text-align:right;padding:4px 4px">ALT ft</th>'
     +'<th style="text-align:left;padding:4px 6px">THREAT</th>'
     +'<th style="text-align:left;padding:4px 6px">NOTES</th>'
     +'</tr>'+rows+'</table></div></div>';
+  return wrap;
 }
 
 function renderPreviewTab(){const wrap=document.createElement('div');const card=document.createElement('div');card.className='card';card.innerHTML='<div class="card-header"><h2>Preview</h2><span class="badge badge-green">CLIENT-SIDE RENDERING</span></div>';const btnGroup=document.createElement('div');btnGroup.className='btn-group';btnGroup.style.marginBottom='16px';[['mission','Mission Card','btn-primary'],['comms','Comms Card','btn-ghost'],['threats','Threat Card','btn-ghost']].forEach(([type,label,cls])=>{const btn=document.createElement('button');btn.className='btn '+cls;btn.textContent=label;btn.addEventListener('click',()=>handlePreview(type));btnGroup.appendChild(btn);});card.appendChild(btnGroup);if(state.previewUrl){const meta=document.createElement('div');meta.style.marginBottom='8px';meta.innerHTML='<span class="badge badge-green">'+(state.previewType||'').toUpperCase()+'</span><span style="margin-left:8px;font-size:11px;color:var(--text-muted)">768 \u00d7 1024</span>';card.appendChild(meta);const img=document.createElement('img');img.src=state.previewUrl;img.alt='Kneeboard preview';img.style.maxWidth='100%';card.appendChild(img);const dlBtn=document.createElement('button');dlBtn.className='btn btn-success';dlBtn.textContent='Download PNG';dlBtn.style.marginTop='12px';dlBtn.addEventListener('click',()=>downloadPng(state.previewUrl,'kneeboard_'+state.previewType+'.png'));card.appendChild(dlBtn);}else{card.innerHTML+='<div class="preview-empty"><div class="icon">\uD83D\uDDBC</div><p>Click a button above to generate a preview</p><p style="margin-top:8px;font-size:11px">Fill in mission data first, then preview each page type</p></div>';}wrap.appendChild(card);return wrap;}
