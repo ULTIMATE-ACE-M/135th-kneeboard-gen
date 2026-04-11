@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>135th Kneeboard Builder</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { background: #0a0e14; color: #e0e0e0; font-family: 'Courier New', monospace; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #0a0e14; }
+::-webkit-scrollbar-thumb { background: #1a3a5a; border-radius: 2px; }
+input[type=number]::-webkit-inner-spin-button { opacity: 0.4; }
+button, input, select, textarea { font-family: 'Courier New', monospace; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef, useEffect } = React;
+
+
+const _DUMMY_REMOVED_X_ = {
+  '_placeholder': {
+    name:'placeholder',
+    stations:[
+      {id:'9',  label:'9',  x:3,   cap:['AIM-9X','AIM-9M','AIM-9L','CATM']},
+      {id:'8',  label:'8',  x:13,  cap:['AIM-120C','AIM-120D','GBU-38 (JDAM)','GBU-12 (LGB)','MK-82','FUEL TANK','AGM-65 MAVERICK']},
+      {id:'7',  label:'7',  x:24,  cap:['AIM-120C','AIM-120D','GBU-38 (JDAM)','GBU-12 (LGB)','MK-82','FUEL TANK','AGM-88 HARM']},
+      {id:'6',  label:'6',  x:36,  cap:['AIM-120C','GBU-31 (JDAM)','GBU-12 (LGB)','MK-84','AGM-88 HARM','FUEL TANK']},
+      {id:'5R', label:'5R', x:43,  cap:['AIM-120C','TGP (SNIPER)','TGP (LITENING)','HTS POD']},
+      {id:'CL', label:'CL', x:50,  cap:['GBU-31 (JDAM)','GBU-38 (JDAM)','MK-84','FUEL TANK']},
+      {id:'5L', label:'5L', x:57,  cap:['AIM-120C','TGP (SNIPER)','TGP (LITENING)','HTS POD']},
+      {id:'4',  label:'4',  x:64,  cap:['AIM-120C','GBU-31 (JDAM)','GBU-12 (LGB)','MK-84','AGM-88 HARM','FUEL TANK']},
+      {id:'3',  label:'3',  x:76,  cap:['AIM-120C','AIM-120D','GBU-38 (JDAM)','GBU-12 (LGB)','MK-82','FUEL TANK','AGM-88 HARM']},
+      {id:'2',  label:'2',  x:87,  cap:['AIM-120C','AIM-120D','GBU-38 (JDAM)','GBU-12 (LGB)','MK-82','FUEL TANK','AGM-65 MAVERICK']},
+      {id:'1',  label:'1',  x:97,  cap:['AIM-9X','AIM-9M','AIM-9L','CATM']},
+    ],
+    svgViewBox:'0 0 460 95',
+    svgBody: `
+      <polygon points="230,3 240,12 244,28 244,82 230,85 216,82 216,28 220,12" fill="#1e3040" stroke="#2a4a60" stroke-width="1"/>
+      <ellipse cx="230" cy="18" rx="9" ry="11" fill="#182838" stroke="#2a4a60" stroke-width="0.8"/>
+      <rect x="218" y="60" width="24" height="18" rx="5" fill="#101820" stroke="#2a4060" stroke-width="0.8"/>
+      <polygon points="216,32 216,42 50,72 44,65 216,26" fill="#1e3040" stroke="#2a4a60" stroke-width="1"/>
+      <polygon points="244,32 244,42 410,72 416,65 244,26" fill="#1e3040" stroke="#2a4a60" stroke-width="1"/>
+      <polygon points="44,65 6,70 5,64 50,72" fill="#1e3040" stroke="#2a4a60" stroke-width="0.8"/>
+      <polygon points="416,65 454,70 455,64 410,72" fill="#1e3040" stroke="#2a4a60" stroke-width="0.8"/>
+      <line x1="230" y1="3" x2="230" y2="85" stroke="#2a4a60" stroke-width="0.4" stroke-dasharray="3,4"/>
+    `,
+    stationY: 72,
+  },
+  'F/A-18C': {
+    name:'F/A-18C Hornet',
+    stations:[
+      {id:'9',  label:'9',  x:3,   cap:['AIM-9X','AIM-9M','CATM']},
+      {id:'8',  label:'8',  x:13,  cap:['AIM-120C','AIM-120D','GBU-38 (JDAM)','GBU-12 (LGB)','AGM-65 MAVERICK','FUEL TANK']},
+      {id:'7',  label:'7',  x:23,  cap:['AIM-120C','GBU-38 (JDAM)','GBU-12 (LGB)','AGM-88 HARM','FUEL TANK']},
+      {id:'6',  label:'6',  x:34,  cap:['GBU-31 (JDAM)','GBU-12 (LGB)','MK-84','AGM-88 HARM','FUEL TANK']},
+      {id:'5',  label:'5',  x:43,  cap:['TGP (SNIPER)','TGP (LITENING)','FUEL TANK']},
+      {id:'CL', label:'CL', x:50,  cap:['GBU-31 (JDAM)','GBU-38 (JDAM)','MK-84','FUEL TANK']},
+      {id:'4',  label:'4',  x:57,  cap:['TGP (SNIPER)','TGP (LITENING)','FUEL TANK']},
+      {id:'3',  label:'3',  x:66,  cap:['GBU-31 (JDAM)','GBU-12 (LGB)','MK-84','AGM-88 HARM','FUEL TANK']},
+      {id:'2',  label:'2',  x:77,  cap:['AIM-120C','GBU-38 (JDAM)','GBU-12 (LGB)','AGM-88 HARM','FUEL TANK']},
+      {id:'1',  label:'1',  x:87,  cap:['AIM-120C','AIM-120D','GBU-38 (JDAM)','GBU-12 (LGB)','AGM-65 MAVERICK','FUEL TANK']},
+      {id:'1W', label:'1W', x:97,  cap:['AIM-9X','AIM-9M','CATM']},
+    ],
+    svgViewBox:'0 0 460 95',
+    svgBody:`
+      <polygon points="218,4 230,2 242,4 248,18 250,40 250,82 230,86 210,82 210,40 212,18" fill="#1e3040" stroke="#2a4a60" stroke-width="1"/>
+      <ellipse cx="218" cy="22" rx="7" ry="9" fill="#101820" stroke="#2a4060" stroke-width="0.8"/>
+      <ellipse cx="242" cy="22" rx="7" ry="9" fill="#101820" stroke="#2a4060" stroke-width="0.8"/>
+      <ellipse cx="230" cy="14" rx="10" ry="8" fill="#182838" stroke="#2a4060" stroke-width="0.8"/>
+      <polygon points="210,30 210,44 50,74 44,67 210,24" fill="#1e3040" stroke="#2a4a60" stroke-width="1"/>
+      <polygon points="250,30 250,44 410,74 416,67 250,24" fill="#1e3040" stroke="#2a4a60" stroke-width="1"/>
+      <polygon points="44,67 6,72 5,66 50,74" fill="#1e3040" stroke="#2a4a60" stroke-width="0.8"/>
+      <polygon points="416,67 454,72 455,66 410,74" fill="#1e3040" stroke="#2a4a60" stroke-width="0.8"/>
+      <polygon points="225,60 218,82 212,80 218,58" fill="#182838" stroke="#2a4060" stroke-width="0.5"/>
+      <polygon points="235,60 242,82 248,80 242,58" fill="#182838" stroke="#2a4060" stroke-width="0.5"/>
+      <line x1="230" y1="2" x2="230" y2="86" stroke="#2a4a60" stroke-width="0.4" stroke-dasharray="3,4"/>
+    `,
+    stationY: 74,
+  },
+  'A-10C': {
+    name:'A-10C Warthog',
+    stations:[
+      {id:'11', label:'11', x:3,   cap:['AIM-9M','AIM-9L','CATM']},
+      {id:'10', label:'10', x:11,  cap:['AIM-9M','AGM-65 MAVERICK','GBU-38 (JDAM)','MK-82','CBU-97']},
+      {id:'9',  label:'9',  x:20,  cap:['AGM-65 MAVERICK','GBU-38 (JDAM)','GBU-12 (LGB)','MK-82','CBU-97']},
+      {id:'8',  label:'8',  x:29,  cap:['AGM-65 MAVERICK','GBU-38 (JDAM)','GBU-12 (LGB)','MK-82','CBU-97']},
+      {id:'7',  label:'7',  x:38,  cap:['AGM-65 MAVERICK','GBU-31 (JDAM)','GBU-12 (LGB)','MK-84','CBU-97','FUEL TANK']},
+      {id:'CL', label:'G', x:50,   cap:['GAU-8 (BUILT-IN)']},
+      {id:'5',  label:'5',  x:62,  cap:['AGM-65 MAVERICK','GBU-31 (JDAM)','GBU-12 (LGB)','MK-84','CBU-97','FUEL TANK']},
+      {id:'4',  label:'4',  x:71,  cap:['AGM-65 MAVERICK','GBU-38 (JDAM)','GBU-12 (LGB)','MK-82','CBU-97']},
+      {id:'3',  label:'3',  x:80,  cap:['AGM-65 MAVERICK','GBU-38 (JDAM)','GBU-12 (LGB)','MK-82','CBU-97']},
+      {id:'2',  label:'2',  x:89,  cap:['AIM-9M','AGM-65 MAVERICK','GBU-38 (JDAM)','MK-82','CBU-97']},
+      {id:'1',  label:'1',  x:97,  cap:['AIM-9M','AIM-9L','CATM']},
+    ],
+    svgViewBox:'0 0 460 95',
+    svgBody:`
+      <polygon points="222,5 230,3 238,5 242,16 242,84 230,87 218,84 218,16" fill="#1e3040" stroke="#2a4a60" stroke-width="1"/>
+      <ellipse cx="230" cy="18" rx="11" ry="8" fill="#182838" stroke="#2a4060" stroke-width="0.8"/>
+      <polygon points="218,30 218,38 18,55 16,48 218,26" fill="#1e3040" stroke="#2a4a60" stroke-width="1"/>
+      <polygon points="242,30 242,38 442,55 444,48 242,26" fill="#1e3040" stroke="#2a4a60" stroke-width="1"/>
+      <polygon points="16,48 4,52 4,46 18,55" fill="#1e3040" stroke="#2a4a60" stroke-width="0.8"/>
+      <polygon points="444,48 456,52 456,46 442,55" fill="#1e3040" stroke="#2a4a60" stroke-width="0.8"/>
+      <rect x="216" y="26" width="8" height="30" rx="3" fill="#101820" stroke="#2a4060" stroke-width="0.8"/>
+      <rect x="236" y="26" width="8" height="30" rx="3" fill="#101820" stroke="#2a4060" stroke-width="0.8"/>
+      <ellipse cx="230" cy="52" rx="9" ry="7" fill="#0e1a24" stroke="#2a4060" stroke-width="0.8"/>
+      <line x1="230" y1="3" x2="230" y2="87" stroke="#2a4a60" stroke-width="0.4" stroke-dasharray="3,4"/>
+    `,
+    stationY: 55,
+  },
+  'F-15E': {
+    name:'F-15E Strike Eagle',
+    stations:[
+      {id:'1A', label:'1A', x:4,   cap:['AIM-9X','AIM-9M','CATM']},
+      {id:'1B', label:'1B', x:12,  cap:['AIM-120C','AIM-120D','GBU-38 (JDAM)','GBU-12 (LGB)','FUEL TANK']},
+      {id:'2',  label:'2',  x:22,  cap:['AIM-120C','GBU-12 (LGB)','GBU-38 (JDAM)','MK-82','JSOW']},
+      {id:'3',  label:'3',  x:33,  cap:['GBU-31 (JDAM)','GBU-12 (LGB)','MK-84','AGM-88 HARM','FUEL TANK']},
+      {id:'4',  label:'4',  x:43,  cap:['TGP (SNIPER)','TGP (LITENING)','FUEL TANK']},
+      {id:'5',  label:'5',  x:50,  cap:['GBU-31 (JDAM)','GBU-38 (JDAM)','MK-84','FUEL TANK']},
+      {id:'6',  label:'6',  x:57,  cap:['TGP (SNIPER)','TGP (LITENING)','FUEL TANK']},
+      {id:'7',  label:'7',  x:67,  cap:['GBU-31 (JDAM)','GBU-12 (LGB)','MK-84','AGM-88 HARM','FUEL TANK']},
+      {id:'8',  label:'8',  x:78,  cap:['AIM-120C','GBU-12 (LGB)','GBU-38 (JDAM)','MK-82','JSOW']},
+      {id:'9B', label:'9B', x:88,  cap:['AIM-120C','AIM-120D','GBU-38 (JDAM)','GBU-12 (LGB)','FUEL TANK']},
+      {id:'9A', label:'9A', x:96,  cap:['AIM-9X','AIM-9M','CATM']},
+    ],
+    svgViewBox:'0 0 460 95',
+    svgBody:`
+      <polygon points="224,4 230,2 236,4 244,16 248,36 248,82 230,86 212,82 212,36 216,16" fill="#1e3040" stroke="#2a4a60" stroke-width="1"/>
+      <ellipse cx="222" cy="20" rx="7" ry="10" fill="#101820" stroke="#2a4060" stroke-width="0.8"/>
+      <ellipse cx="238" cy="20" rx="7" ry="10" fill="#101820" stroke="#2a4060" stroke-width="0.8"/>
+      <ellipse cx="230" cy="13" rx="11" ry="7" fill="#182838" stroke="#2a4060" stroke-width="0.8"/>
+      <polygon points="212,28 212,42 46,76 40,69 212,22" fill="#1e3040" stroke="#2a4a60" stroke-width="1"/>
+      <polygon points="248,28 248,42 414,76 420,69 248,22" fill="#1e3040" stroke="#2a4a60" stroke-width="1"/>
+      <polygon points="40,69 6,74 5,68 46,76" fill="#1e3040" stroke="#2a4a60" stroke-width="0.8"/>
+      <polygon points="420,69 454,74 455,68 414,76" fill="#1e3040" stroke="#2a4a60" stroke-width="0.8"/>
+      <polygon points="218,58 214,82 220,84 224,60" fill="#182838" stroke="#2a4060" stroke-width="0.5"/>
+      <polygon points="242,58 246,82 240,84 236,60" fill="#182838" stroke="#2a4060" stroke-width="0.5"/>
+    `,
+    stationY: 0,
+  },
+};
+
+/* ══════════════════════════════════════════
+   BLOCK DEFINITIONS
+   label, group, defaultW, defaultH, accent,
+   defaultConfig: { title, rowCount, cols, layout }
+══════════════════════════════════════════ */
+const BLOCK_DEFS = {
+  /* ── LAYOUT ── */
+  header:    { label:'Header Bar',        group:'LAYOUT',   dW:460, dH:38,  accent:'#00d4ff', dC:{ title:'135TH SQN  ·  MISSION KNEEBOARD', rowCount:1, cols:[] }},
+  divider:   { label:'Section Divider',   group:'LAYOUT',   dW:460, dH:22,  accent:'#304050', dC:{ title:'SECTION', rowCount:1, cols:[] }},
+  flight:    { label:'Flight Info',       group:'LAYOUT',   dW:460, dH:60,  accent:'#00d4ff', dC:{ title:'FLIGHT', rowCount:2, cols:['#','CALLSIGN / LEAD','MISSION','DATE'] }},
+  /* ── MISSION ── */
+  mission:   { label:'Mission Info',      group:'MISSION',  dW:220, dH:170, accent:'#00d4ff', dC:{ title:'MISSION INFO',    rowCount:8,  cols:['CALLSIGN','MISSION','DEPARTURE','ARRIVAL','PACKAGE','TANKER','TOT','ALT'] }},
+  timeline:  { label:'Timeline',          group:'MISSION',  dW:280, dH:190, accent:'#00d4ff', dC:{ title:'MISSION TIMELINE', rowCount:8, cols:['TIME','EVENT','REMARKS'] }},
+  bullseye:  { label:'Bullseye Ref',      group:'MISSION',  dW:200, dH:150, accent:'#00ff88', dC:{ title:'BULLSEYE',        rowCount:6,  cols:['BRG','RNG','ALT'] }},
+  pilots:    { label:'Pilot Roster',      group:'MISSION',  dW:320, dH:160, accent:'#00d4ff', dC:{ title:'PILOTS',          rowCount:4,  cols:['#','PILOT','LASER','M3 IFF'] }},
+  assets:    { label:'Support Assets',    group:'MISSION',  dW:460, dH:130, accent:'#80c0ff', dC:{ title:'SUPPORT ASSETS',  rowCount:4,  cols:['TYPE','CALLSIGN','COM','TCN','BULLS'] }},
+  /* ── COMMS ── */
+  comms:     { label:'Comms Table',       group:'COMMS',    dW:240, dH:190, accent:'#00d4ff', dC:{ title:'COMMS',           rowCount:6,  cols:['AGENCY','FREQ','NOTES'] }},
+  commplan:  { label:'Comm Plan (7-col)', group:'COMMS',    dW:460, dH:80,  accent:'#00d4ff', dC:{ title:'PRI COMM PLAN',   rowCount:3,  cols:['AGENCY','CH','FREQ','TCN','ALT','SPEED','ICLS'] }},
+  dualcomm:  { label:'Dual Comm (135th)', group:'COMMS',    dW:460, dH:260, accent:'#00d4ff', dC:{ title:'135TH VFS',       rowCount:20, cols:['FUNCTION','CALLSIGN','FREQ'], topRows:1 }},
+  radio:     { label:'Radio Presets',     group:'COMMS',    dW:220, dH:140, accent:'#00d4ff', dC:{ title:'RADIO PRESETS',   rowCount:7,  cols:['#','LABEL','FREQ'] }},
+  iff:       { label:'IFF / Squawk',      group:'COMMS',    dW:200, dH:140, accent:'#80c0ff', dC:{ title:'IFF / SQUAWK',    rowCount:5,  cols:['MODE','CODE','REMARKS'] }},
+  uhfvhf:    { label:'UHF / VHF Comms',  group:'COMMS',    dW:460, dH:280, accent:'#00d4ff', dC:{ title:'COMMS',           rowCount:10, cols:['UHF AGENCY','UHF FREQ','PRESET','VHF AGENCY','VHF FREQ'] }},
+  /* ── INTEL ── */
+  threats:   { label:'Threat List',       group:'INTEL',    dW:220, dH:180, accent:'#ff4444', dC:{ title:'THREATS',         rowCount:6,  cols:['TYPE','LOCATION'] }},
+  roe:       { label:'ROE / CAS',         group:'INTEL',    dW:240, dH:150, accent:'#ff8040', dC:{ title:'ROE / CAS',       rowCount:6,  cols:['RULE','REMARKS'] }},
+  rwr:       { label:'RWR Threat Ref',    group:'INTEL',    dW:460, dH:280, accent:'#ff4444', dC:{ title:'RWR & HARM THREAT DATABASE', rowCount:12, cols:['RWR','HARM','RNG KM','THREAT NAME'] }},
+  /* ── NAV ── */
+  waypoints: { label:'Waypoints',         group:'NAV',      dW:300, dH:210, accent:'#00ff88', dC:{ title:'WAYPOINTS',       rowCount:9,  cols:['WP','NAME','COORDS','ALT'] }},
+  flightplan:{ label:'Flight Plan',       group:'NAV',      dW:460, dH:200, accent:'#00ff88', dC:{ title:'FLIGHT PLAN',     rowCount:9,  cols:['#','WP DESCRIPTION','ELEV','REMARKS'] }},
+  recovery:  { label:'Recovery / Divert', group:'NAV',      dW:240, dH:150, accent:'#00ff88', dC:{ title:'RECOVERY / DIVERT', rowCount:5, cols:['FIELD','FREQ','REMARKS'] }},
+  airfield:  { label:'Airfield Data',     group:'NAV',      dW:380, dH:130, accent:'#00ff88', dC:{ title:'AIRFIELD',        rowCount:3,  cols:['','AIRBASE','RWY','ILS'] }},
+  /* ── LOADOUT ── */
+  loadout:   { label:'Loadout / Stores',  group:'LOADOUT',  dW:240, dH:160, accent:'#ffd080', dC:{ title:'LOADOUT',         rowCount:6,  cols:['STATION','STORE','QTY'] }},
+  fuel:      { label:'Fuel Planning',     group:'LOADOUT',  dW:220, dH:150, accent:'#ffd080', dC:{ title:'FUEL PLANNING',   rowCount:6,  cols:['STATE','FUEL (LBS)'] }},
+  /* ── CHECKS ── */
+  fence:     { label:'FENCE Check',       group:'CHECKS',   dW:200, dH:170, accent:'#ff8040', dC:{ title:'FENCE CHECK',     rowCount:8,  cols:['FENCE-IN','FENCE-OUT'] }},
+  weather:   { label:'Weather / ATIS',    group:'CHECKS',   dW:220, dH:130, accent:'#80c0ff', dC:{ title:'WEATHER / ATIS',  rowCount:7,  cols:['WINDS','VIS','CEILING','QNH','METAR','ATIS','TEMP/DEW'] }},
+  notes:     { label:'Notes',             group:'CHECKS',   dW:220, dH:130, accent:'#ffd080', dC:{ title:'NOTES',           rowCount:9,  cols:[] }},
+  /* ── CUSTOM ── */
+  custom:    { label:'Custom Block',      group:'CUSTOM',   dW:220, dH:150, accent:'#a080ff', dC:{ title:'CUSTOM', rowCount:6, cols:[], layout:'rows', accent:'#a080ff', titleAlign:'left', titleStyle:'line', rowSep:'solid', bgTint:'', colWidths:'', compact:false, numberedRows:false, fontScale:'normal', colCount:2 }},
+};
+
+const GROUPS = ['LAYOUT','MISSION','COMMS','INTEL','NAV','LOADOUT','CHECKS','CUSTOM'];
+
+/* ══════════════════════════════════════════
+   CONTENT RENDERERS
+══════════════════════════════════════════ */
+function _LoadoutVisBlock_REMOVED({ config, w, h, accent }) {
+  const cfg = config || {};
+  const acName = cfg.aircraft || 'F-16C';
+  const loadout = cfg.stations || {};
+  const [activeStation, setActiveStation] = useState(null);
+  const [pickerWeapon, setPickerWeapon] = useState('—');
+
+  // When a station is clicked, open its picker
+  function openPicker(stId) {
+    setActiveStation(stId);
+    setPickerWeapon(loadout[stId] || '—');
+  }
+
+  // Called when weapon is chosen in picker — bubbles up via config update
+  // We store selection in a window-level callback set by the block
+  function confirmPick(weapon) {
+    if (window._loadoutSetStation) window._loadoutSetStation(activeStation, weapon);
+    setActiveStation(null);
+  }
+
+  const svgW = 460, svgH = Math.max(85, h - 60);
+  const scaleX = (pct) => Math.round(pct / 100 * svgW);
+
+  return (
+    <div style={{ width:'100%', height:'100%', overflow:'hidden', padding:'4px 5px',
+                  fontSize:'10px', fontFamily:"'Courier New',monospace", position:'relative', background:'#0d1b2a' }}>
+
+      {/* Aircraft type label */}
+      <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'3px' }}>
+        <span style={{ color:accent, fontSize:'12px', fontWeight:'bold', letterSpacing:'1px' }}>
+          ${cfg.title || 'LOADOUT'}
+        </span>
+        <span style={{ color:'#405060', fontSize:'10px' }}>— ${ac.name}</span>
+      </div>
+
+      {/* SVG aircraft diagram */}
+      <div style={{ position:'relative' }}>
+        <svg viewBox={ac.svgViewBox} width="100%" height={svgH}
+             style={{ display:'block', overflow:'visible' }}>
+          {/* Aircraft silhouette */}
+          <g dangerouslySetInnerHTML={{ __html: ac.svgBody }} />
+
+          {/* Station indicators */}
+          {ac.stations.map(st => {
+            const x = scaleX(st.x);
+            const y = ac.stationY + 6;
+            const loaded = loadout[st.id] && loadout[st.id] !== '—';
+            const isActive = activeStation === st.id;
+            return (
+              <g key={st.id} onClick={() => openPicker(st.id)}
+                 style={{ cursor:'pointer' }}>
+                {/* Drop line */}
+                <line x1={x} y1={ac.stationY} x2={x} y2={y}
+                      stroke={loaded ? accent : '#2a4060'} strokeWidth="1"/>
+                {/* Station dot */}
+                <circle cx={x} cy={y + 5} r={isActive ? 6 : 5}
+                        fill={loaded ? accent : '#1a3050'}
+                        stroke={isActive ? '#ffffff' : loaded ? accent : '#2a5070'}
+                        strokeWidth={isActive ? 1.5 : 1}/>
+                {/* Station label */}
+                <text x={x} y={y + 17} textAnchor="middle"
+                      fill={loaded ? accent : '#405060'} fontSize="9">
+                  ${st.label}
+                </text>
+                {/* Weapon abbreviated */}
+                {${loaded && (
+                  <text x={x} y={ac.stationY - 4} textAnchor="middle"
+                        fill={accent} fontSize="8"
+                        style={{ fontFamily:"'Courier New',monospace" }}>
+                    ${(loadout[st.id] || '').replace(' (LGB)','').replace(' (JDAM)','').replace(' (LJDAM)','').slice(0,8)}
+                  </text>
+                )}}
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      {/* Station picker overlay */}
+      {${activeStation && (
+        <div style={{ position:'absolute', inset:0, background:'rgba(7,11,16,0.92)',
+                      display:'flex', flexDirection:'column', alignItems:'center',
+                      justifyContent:'center', zIndex:100, padding:'8px' }}>
+          <div style={{ color:accent, fontSize:'12px', marginBottom:'6px', letterSpacing:'1px' }}>
+            STATION ${activeStation}
+          </div>
+          {/* Capability hint */}
+          <div style={{ color:'#405060', fontSize:'9px', marginBottom:'8px', textAlign:'center' }}>
+            ${(ac.stations.find(s=>s.id===activeStation)?.cap || []).join('  ·  ')}
+          </div>
+          {/* Weapon list — only show compatible weapons + '—' */}
+          <div style={{ display:'flex', flexWrap:'wrap', gap:'4px', justifyContent:'center', maxWidth:'400px' }}>
+            ${(['—', ...(ac.stations.find(s=>s.id===activeStation)?.cap || [])]).map(w => (
+              <button key={w} onClick={() => confirmPick(w)} style={{
+                background: pickerWeapon===w ? '#1a2a0a' : '#0a1018',
+                border: `1px solid ${pickerWeapon===w ? accent : '#1a3050'}`,
+                color: pickerWeapon===w ? accent : '#506070',
+                padding:'4px 8px', cursor:'pointer', fontSize:'10px', letterSpacing:'1px',
+              }}>{w}</button>
+            ))}
+          </div>
+          <button onClick={() => setActiveStation(null)}
+            style={{ marginTop:'10px', background:'none', border:'1px solid #2a3a4a',
+                     color:'#506070', padding:'4px 12px', cursor:'pointer', fontSize:'10px' }}>
+            CANCEL
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   CONTENT RENDERERS
+══════════════════════════════════════════ */
+function BlockContent({ type, config, w, h }) {
+  const def = BLOCK_DEFS[type] || BLOCK_DEFS.custom;
+  const cfg = { ...def.dC, ...config };
+  const accent = cfg.accent || def.accent;
+  const title  = cfg.title  || def.dC.title;
+  const rows   = Math.max(1, cfg.rowCount || 5);
+  const cols   = cfg.cols?.length ? cfg.cols : (def.dC.cols || []);
+
+  const s = { width:'100%', height:'100%', overflow:'hidden', padding:'4px 5px',
+              fontSize:'16px', color:'#a0b0c0', fontFamily:"'Courier New',monospace" };
+  const cell  = (flex=1, extra={}) => ({ borderBottom:`1px solid #192a36`, minHeight:'13px', flex, ...extra });
+  const th    = (flex=1) => ({ color:accent, fontSize:'16px', flex, paddingBottom:'1px', borderBottom:`1px solid ${accent}55`, overflow:'hidden', whiteSpace:'nowrap' });
+  const label = (w='56px', color='#4a6070') => ({ color, width:w, flexShrink:0, overflow:'hidden', whiteSpace:'nowrap' });
+  const Row   = ({children,mb=2,align='flex-end'}) => <div style={{display:'flex',gap:'3px',marginBottom:mb,alignItems:align}}>{children}</div>;
+  const Hdr   = ({c=accent,t=title}) => (
+    <div style={{color:c, borderBottom:`1px solid ${c}44`, paddingBottom:'2px', marginBottom:'4px',
+                 fontSize:'18px', letterSpacing:'1px', fontWeight:'bold', whiteSpace:'nowrap',
+                 overflow:'hidden', textOverflow:'ellipsis'}}>{t}</div>
+  );
+
+  /* ── HEADER BAR ── */
+  if (type==='header') return (
+    <div style={{...s, display:'flex', alignItems:'center', gap:'10px', background:'#132030',
+                 padding:'0 10px', height:'100%'}}>
+      <span style={{color:accent, fontWeight:'bold', fontSize:'12px', letterSpacing:'2px', whiteSpace:'nowrap'}}>{title}</span>
+      <span style={{marginLeft:'auto', color:'#506070', fontSize:'18px', whiteSpace:'nowrap'}}>DATE: ________</span>
+    </div>
+  );
+
+  /* ── SECTION DIVIDER ── */
+  if (type==='divider') return (
+    <div style={{...s, display:'flex', alignItems:'center', height:'100%', background:`${accent}14`, padding:'0 8px', gap:'8px'}}>
+      <div style={{flex:1, height:'1px', background:`${accent}60`}} />
+      <span style={{color:accent, fontSize:'18px', letterSpacing:'2px', whiteSpace:'nowrap'}}>{title}</span>
+      <div style={{flex:1, height:'1px', background:`${accent}60`}} />
+    </div>
+  );
+
+  /* ── FLIGHT INFO (top-of-page block from real templates) ── */
+  if (type==='flight') {
+    const fcols = cols.length ? cols : ['#','CALLSIGN / LEAD','MISSION','DATE'];
+    const fw = ['18px','1fr','1fr','80px'];
+    return (
+      <div style={s}>
+        <div style={{color:accent, fontSize:'18px', fontWeight:'bold', letterSpacing:'1px',
+                     background:'#132030', padding:'2px 4px', marginBottom:'2px'}}>{title}</div>
+        <div style={{display:'grid', gridTemplateColumns:fw.slice(0,fcols.length).join(' '), gap:'1px', marginBottom:'2px'}}>
+          {fcols.map((c,i)=><div key={i} style={{color:accent, fontSize:'16px', borderBottom:`1px solid ${accent}44`, paddingBottom:'1px'}}>{c}</div>)}
+        </div>
+        {Array.from({length:rows},(_,r)=>(
+          <div key={r} style={{display:'grid', gridTemplateColumns:fw.slice(0,fcols.length).join(' '), gap:'1px', marginBottom:'2px'}}>
+            {fcols.map((_,i)=><div key={i} style={{borderBottom:'1px solid #192a36', minHeight:'13px'}}/>)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── FLIGHT PLAN (WP# | WP DESCRIPTION | ELEV | REMARKS) ── */
+  if (type==='flightplan') {
+    const fc = cols.length ? cols : ['#','WP DESCRIPTION','ELEV','REMARKS'];
+    const fw = '16px 2fr 0.6fr 1fr';
+    return (
+      <div style={s}>
+        <Hdr />
+        <div style={{display:'grid', gridTemplateColumns:fw, gap:'2px', marginBottom:'3px'}}>
+          {fc.map((c,i)=><div key={i} style={th()}>{c}</div>)}
+        </div>
+        {Array.from({length:rows},(_,i)=>(
+          <div key={i} style={{display:'grid', gridTemplateColumns:fw, gap:'2px', marginBottom:'2px'}}>
+            <div style={{color:'#405060', fontSize:'16px', borderBottom:'1px solid #192a36'}}>{i+1}</div>
+            {[1,2,3].map(j=><div key={j} style={{borderBottom:'1px solid #192a36', minHeight:'13px'}}/>)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── COMM PLAN (7-col: AGENCY|CH|FREQ|TCN|ALT|SPEED|ICLS) ── */
+  if (type==='commplan') {
+    const fc = cols.length ? cols : ['AGENCY','CH','FREQ','TCN','ALT','SPEED','ICLS'];
+    const fw = '1.2fr 0.4fr 0.8fr 0.7fr 0.6fr 0.6fr 0.6fr';
+    return (
+      <div style={s}>
+        <Hdr />
+        <div style={{display:'grid', gridTemplateColumns:fw, gap:'1px', marginBottom:'3px'}}>
+          {fc.map((c,i)=><div key={i} style={{color:accent, fontSize:'12px', borderBottom:`1px solid ${accent}55`, paddingBottom:'1px', overflow:'hidden', whiteSpace:'nowrap'}}>{c}</div>)}
+        </div>
+        {Array.from({length:rows},(_,i)=>(
+          <div key={i} style={{display:'grid', gridTemplateColumns:fw, gap:'1px', marginBottom:'2px'}}>
+            {fc.map((_,j)=><div key={j} style={{borderBottom:'1px solid #192a36', minHeight:'14px'}}/>)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── DUAL COMM — 135th style (COMM1 | # | COMM2) ── */
+  if (type==='dualcomm') {
+    const topCols = cols.length ? cols : ['FUNCTION','CALLSIGN','FREQ'];
+    const topRows = Math.max(1, Math.min(cfg.topRows||1, 10));
+    return (
+      <div style={s}>
+        {/* Title row */}
+        <div style={{color:accent, fontSize:'18px', fontWeight:'bold', letterSpacing:'2px',
+                     textAlign:'center', marginBottom:'3px', borderBottom:`1px solid ${accent}44`, paddingBottom:'2px'}}>{title}</div>
+        {/* Top: Function | Callsign | Freq */}
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'2px', marginBottom:'4px'}}>
+          {topCols.slice(0,3).map((c,i)=>(
+            <div key={i}>
+              <div style={{color:accent, fontSize:'12px', borderBottom:`1px solid ${accent}44`, marginBottom:'2px'}}>{c}</div>
+              {Array.from({length:topRows},(_,r)=>(
+                <div key={r} style={{borderBottom:'1px solid #192a36', minHeight:'14px', marginBottom:'1px'}}/>
+              ))}
+            </div>
+          ))}
+        </div>
+        {/* Dual comm table header */}
+        <div style={{display:'grid', gridTemplateColumns:'1fr 18px 1fr', gap:'1px', marginBottom:'2px'}}>
+          <div style={{color:accent, fontSize:'16px', textAlign:'center', borderBottom:`1px solid ${accent}44`}}>COMM 1</div>
+          <div style={{color:'#405060', fontSize:'16px', textAlign:'center', borderBottom:'1px solid #253545'}}>#</div>
+          <div style={{color:accent, fontSize:'16px', textAlign:'center', borderBottom:`1px solid ${accent}44`}}>COMM 2</div>
+        </div>
+        {/* Numbered rows */}
+        {Array.from({length:Math.min(rows,20)},(_,i)=>(
+          <div key={i} style={{display:'grid', gridTemplateColumns:'1fr 18px 1fr', gap:'1px', marginBottom:'1px'}}>
+            <div style={{borderBottom:'1px solid #192a36', minHeight:'13px'}}/>
+            <div style={{color:'#354555', fontSize:'12px', textAlign:'center', borderBottom:'1px solid #192a36'}}>{i+1}</div>
+            <div style={{borderBottom:'1px solid #192a36', minHeight:'13px'}}/>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── WEAPONS / STORES (STATION | WEAPON | NO.) ── */
+  if (type==='weapons') {
+    const fc = cols.length ? cols : ['STATION','WEAPON','NO.'];
+    const fw = '0.6fr 2fr 0.4fr';
+    return (
+      <div style={s}>
+        <Hdr />
+        <div style={{display:'grid', gridTemplateColumns:fw, gap:'2px', marginBottom:'3px'}}>
+          {fc.map((c,i)=><div key={i} style={th()}>{c}</div>)}
+        </div>
+        {Array.from({length:rows},(_,i)=>(
+          <div key={i} style={{display:'grid', gridTemplateColumns:fw, gap:'2px', marginBottom:'2px'}}>
+            {fc.map((_,j)=><div key={j} style={{borderBottom:'1px solid #192a36', minHeight:'13px'}}/>)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── FENCE CHECK (two-column checklist) ── */
+  if (type==='fence') {
+    const inItems  = ['MASTER ARM','A/A WEAPONS','A/G WEAPONS','EW/JAMMER','NAV LIGHTS','IFF/SIF','CHAFF/FLARE','COMM SEC'];
+    const outItems = ['MASTER ARM','JAMMER OFF','NAV LIGHTS','IFF NORM','GUNS SAFE','PODS OFF'];
+    const inLabel  = cols[0] || 'FENCE-IN';
+    const outLabel = cols[1] || 'FENCE-OUT';
+    return (
+      <div style={s}>
+        <Hdr />
+        <Row align='flex-start'>
+          <div style={{flex:1}}>
+            <div style={{color:accent, fontSize:'16px', marginBottom:'2px'}}>{inLabel}</div>
+            {inItems.slice(0,rows).map(it=>(
+              <div key={it} style={{display:'flex', gap:'3px', marginBottom:'2px', alignItems:'center'}}>
+                <span style={{width:'8px', height:'8px', border:`1px solid ${accent}60`, display:'inline-block', flexShrink:0}}/>
+                <span style={{color:'#607080', fontSize:'16px'}}>{it}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{width:'1px', background:'#1a2a3a', margin:'0 3px'}}/>
+          <div style={{flex:1}}>
+            <div style={{color:'#ff6040', fontSize:'16px', marginBottom:'2px'}}>{outLabel}</div>
+            {outItems.slice(0,Math.ceil(rows*0.75)).map(it=>(
+              <div key={it} style={{display:'flex', gap:'3px', marginBottom:'2px', alignItems:'center'}}>
+                <span style={{width:'8px', height:'8px', border:'1px solid #ff604060', display:'inline-block', flexShrink:0}}/>
+                <span style={{color:'#607080', fontSize:'16px'}}>{it}</span>
+              </div>
+            ))}
+          </div>
+        </Row>
+      </div>
+    );
+  }
+
+  /* ── FUEL PLANNING ── */
+  if (type==='fuel') {
+    const states = ['TAKEOFF','PUSH','BINGO','JOKER','EMERGENCY','TRAP/LAND'];
+    const fc = cols.length===2 ? cols : ['STATE','FUEL (LBS)'];
+    return (
+      <div style={s}>
+        <Hdr />
+        <Row mb={3}><div style={th()}>{fc[0]}</div><div style={th()}>{fc[1]}</div></Row>
+        {states.slice(0,rows).map(st=>(
+          <Row key={st}>
+            <div style={{color:st==='BINGO'||st==='JOKER'?'#ffd080':st==='EMERGENCY'?'#ff4444':'#4a6070', flex:1, fontSize:'16px'}}>{st}</div>
+            <div style={cell()}/>
+          </Row>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── WEATHER (single-col key:value) ── */
+  if (type==='weather') {
+    const fields = cols.length ? cols : ['WINDS','VIS','CEILING','QNH','METAR','ATIS','TEMP/DEW'];
+    return (
+      <div style={s}>
+        <Hdr />
+        {fields.slice(0,rows).map(f=>(
+          <Row key={f}>
+            <span style={label()}>{f}</span>
+            <div style={cell()}/>
+          </Row>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── MISSION (key:value rows) ── */
+  if (type==='mission') {
+    const fields = cols.length ? cols : ['CALLSIGN','MISSION','DEPARTURE','ARRIVAL','PACKAGE','TANKER','TOT','ALT'];
+    return (
+      <div style={s}>
+        <Hdr />
+        {fields.slice(0,rows).map(f=>(
+          <Row key={f}>
+            <span style={label()}>{f}</span>
+            <div style={cell()}/>
+          </Row>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── NOTES ── */
+  if (type==='notes') return (
+    <div style={s}>
+      <Hdr />
+      {Array.from({length:rows},(_,i)=>(
+        <div key={i} style={{borderBottom:'1px solid #192a36', minHeight:'16px', marginBottom:'2px'}}/>
+      ))}
+    </div>
+  );
+
+  /* ── CUSTOM BLOCK (enhanced) ── */
+  if (type==='custom') {
+    const layout       = cfg.layout       || 'rows';
+    const titleAlign   = cfg.titleAlign   || 'left';
+    const titleStyle   = cfg.titleStyle   || 'line';
+    const rowSep       = cfg.rowSep       || 'solid';
+    const bgTint       = cfg.bgTint       || '';
+    const compact      = cfg.compact      || false;
+    const colWidths    = cfg.colWidths    || '';
+    const numberedRows = cfg.numberedRows || false;
+    const fontScale    = cfg.fontScale    || 'normal';
+    const rowGap       = compact ? 1 : 2;
+    const rowMinH      = compact ? 11 : 16;
+
+    // Font scale multipliers
+    const fsMult = fontScale==='small' ? 0.82 : fontScale==='large' ? 1.22 : 1;
+    const fs = (base) => `${Math.round(parseFloat(base)*fsMult)}px`;
+
+    // Parse column widths — supports both "1,2,1" ratios and "40,60" percentages
+    const parseWidths = (nc) => {
+      if (!colWidths) return Array(nc).fill('1fr').join(' ');
+      const parts = colWidths.split(',').map(x => parseFloat(x.trim())||1).slice(0,nc);
+      while(parts.length<nc) parts.push(parts[parts.length-1]||1);
+      const sum = parts.reduce((a,b)=>a+b,0);
+      // If values sum near 100, treat as percentages; otherwise as fr ratios
+      if(sum>50 && sum<=105) return parts.map(p=>`${Math.round(p/sum*100)}%`).join(' ');
+      return parts.map(p=>p+'fr').join(' ');
+    };
+
+    // Title rendering based on style
+    const TitleEl = () => {
+      if (titleStyle==='none') return null;
+      const bg = titleStyle==='solid' ? accent+'22' : 'transparent';
+      const border = titleStyle==='line' ? `1px solid ${accent}44` : 'none';
+      return (
+        <div style={{color:accent, background:bg, borderBottom:border,
+                     paddingBottom:'2px', marginBottom:compact?2:4,
+                     fontSize:fs('11px'), letterSpacing:'1px', fontWeight:'bold',
+                     textAlign:titleAlign, whiteSpace:'nowrap', overflow:'hidden',
+                     textOverflow:'ellipsis', padding:titleStyle==='solid'?'2px 4px':'0 0 2px'}}>
+          {title}
+        </div>      );
+    };
+
+    // Row separator style
+    const sepBorder = rowSep==='none' ? 'none'
+                    : rowSep==='dotted' ? `1px dotted #253545`
+                    : rowSep==='dashed' ? `1px dashed #253545`
+                    : `1px solid #192a36`;
+
+    // Row number cell (shared)
+    const NumCell = ({n}) => (
+      <div style={{color:accent+'88', fontSize:fs('8px'), textAlign:'right',
+                   paddingRight:'3px', flexShrink:0, width:'12px',
+                   borderBottom:sepBorder, minHeight:rowMinH, lineHeight:`${rowMinH}px`}}>
+        {n}
+      </div>
+    );
+
+    const wrapStyle = {...s, background: bgTint || 'transparent'};
+
+    if (layout==='freetext') return (
+      <div style={wrapStyle}>
+        <TitleEl />
+        {Array.from({length:rows},(_,i)=>(
+          <div key={i} style={{display:'flex', gap:'2px', marginBottom:rowGap}}>
+            {numberedRows && <NumCell n={i+1}/>}
+            <div style={{borderBottom:sepBorder, minHeight:rowMinH, flex:1}}/>
+          </div>
+        ))}
+      </div>
+    );
+
+    if (layout==='checklist') {
+      const items = cols.length ? cols : Array.from({length:rows},(_,i)=>`ITEM ${i+1}`);
+      const boxSize = compact ? 7 : 9;
+      return (
+        <div style={wrapStyle}>
+          <TitleEl />
+          {items.slice(0,rows).map((it,i)=>(
+            <div key={i} style={{display:'flex', gap:'5px', marginBottom:compact?2:3, alignItems:'center',
+                                 borderBottom:rowSep!=='none'?sepBorder:'none', paddingBottom:rowGap}}>
+              {numberedRows && <span style={{color:accent+'88', fontSize:fs('8px'), width:'12px', flexShrink:0, textAlign:'right'}}>{i+1}</span>}
+              <span style={{width:boxSize, height:boxSize, border:`1px solid ${accent}70`,
+                            display:'inline-block', flexShrink:0, borderRadius:'1px'}}/>
+              <span style={{color:'#7080a0', fontSize:fs(compact?'9px':'10px')}}>{it||`ITEM ${i+1}`}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // SPLIT layout — label col (35% default) + value col (65% default)
+    if (layout==='split') {
+      const labelName = (cols[0] || 'LABEL');
+      const valueName = (cols[1] || 'VALUE');
+      const splitCols = colWidths ? parseWidths(2) : '35% 65%';
+      const splitGrid = numberedRows ? `12px ${splitCols}` : splitCols;
+      return (
+        <div style={wrapStyle}>
+          <TitleEl />
+          {/* header */}
+          <div style={{display:'grid', gridTemplateColumns:splitGrid, gap:'3px', marginBottom:compact?2:4}}>
+            {numberedRows && <div/>}
+            <div style={{color:accent, fontSize:fs('10px'), borderBottom:`1px solid ${accent}44`, paddingBottom:'1px', overflow:'hidden', whiteSpace:'nowrap'}}>{labelName}</div>
+            <div style={{color:accent, fontSize:fs('10px'), borderBottom:`1px solid ${accent}44`, paddingBottom:'1px', overflow:'hidden', whiteSpace:'nowrap'}}>{valueName}</div>
+          </div>
+          {Array.from({length:rows},(_,i)=>(
+            <div key={i} style={{display:'grid', gridTemplateColumns:splitGrid, gap:'3px', marginBottom:rowGap}}>
+              {numberedRows && <NumCell n={i+1}/>}
+              <div style={{borderBottom:sepBorder, minHeight:rowMinH}}/>
+              <div style={{borderBottom:sepBorder, minHeight:rowMinH}}/>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    const nc = layout==='columns' ? Math.max(2, cfg.colCount||2) : 1;
+    const cnames = cols.length ? cols : Array.from({length:nc},(_,i)=>`COL ${i+1}`);
+    const numPrefix = numberedRows ? '12px ' : '';
+    const gridCols = numPrefix + parseWidths(nc);
+
+    return (
+      <div style={wrapStyle}>
+        <TitleEl />
+        {/* Column headers row */}
+        {nc>1 && (
+          <div style={{display:'grid', gridTemplateColumns:gridCols, gap:'3px', marginBottom:compact?2:4}}>
+            {numberedRows && <div/>}
+            {cnames.slice(0,nc).map((c,i)=>(
+              <div key={i} style={{color:accent, fontSize:fs('10px'), borderBottom:`1px solid ${accent}44`,
+                                   paddingBottom:'1px', overflow:'hidden', whiteSpace:'nowrap'}}>{c}</div>
+            ))}
+          </div>
+        )}
+        {/* Data rows */}
+        {Array.from({length:rows},(_,i)=>(
+          <div key={i} style={{display:'grid', gridTemplateColumns:gridCols, gap:'3px', marginBottom:rowGap}}>
+            {numberedRows && <NumCell n={i+1}/>}
+            {nc===1
+              ? <div style={{borderBottom:sepBorder, minHeight:rowMinH}}/>
+              : cnames.slice(0,nc).map((_,j)=><div key={j} style={{borderBottom:sepBorder, minHeight:rowMinH}}/>)
+            }
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── LINEUP HEADER (CALLSIGN | MSN NO. | TASK + LOADOUT row + WX/METAR) ── */
+  if (type==='lineuphead') {
+    const fc = cols.length ? cols : ['CALLSIGN','MSN NO.','TASK'];
+    return (
+      <div style={s}>
+        <div style={{color:accent,fontSize:'12px',fontWeight:'bold',letterSpacing:'2px',
+                     background:'#132030',padding:'2px 5px',marginBottom:'3px'}}>{title}</div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'2px',marginBottom:'3px'}}>
+          {fc.map((c,i)=>(
+            <div key={i}>
+              <div style={{color:accent,fontSize:'10px',borderBottom:`1px solid ${accent}44`,marginBottom:'2px'}}>{c}</div>
+              <div style={{borderBottom:'1px solid #192a36',minHeight:'13px'}}/>
+            </div>
+          ))}
+        </div>
+        <div style={{display:'flex',gap:'4px',marginBottom:'2px',alignItems:'flex-end'}}>
+          <span style={{color:'#405060',fontSize:'10px',width:'55px',flexShrink:0}}>LOADOUT</span>
+          <div style={{borderBottom:'1px solid #192a36',flex:1,minHeight:'13px'}}/>
+        </div>
+        <div style={{display:'flex',gap:'4px',alignItems:'flex-end'}}>
+          <span style={{color:'#405060',fontSize:'10px',width:'55px',flexShrink:0}}>WX / METAR</span>
+          <div style={{borderBottom:'1px solid #192a36',flex:1,minHeight:'13px'}}/>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── PILOT ROSTER (# | PILOT | LASER | M3 IFF) ── */
+  if (type==='pilots') {
+    const fc = cols.length ? cols : ['#','PILOT','LASER','M3 IFF'];
+    const fw = '16px 1.5fr 0.8fr 0.8fr';
+    return (
+      <div style={s}>
+        <Hdr />
+        <div style={{display:'grid',gridTemplateColumns:fw,gap:'2px',marginBottom:'3px'}}>
+          {fc.map((c,i)=><div key={i} style={th()}>{c}</div>)}
+        </div>
+        {Array.from({length:rows},(_,i)=>(
+          <div key={i} style={{display:'grid',gridTemplateColumns:fw,gap:'2px',marginBottom:'2px'}}>
+            <div style={{color:'#405060',fontSize:'10px',borderBottom:'1px solid #192a36'}}>{i+1}</div>            {[1,2,3].map(j=><div key={j} style={{borderBottom:'1px solid #192a36',minHeight:'13px'}}/>)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── AIRFIELD DATA (DEP / ARR / ALTN + RWY, ILS, BINGO, JOKER) ── */
+  if (type==='airfield') {
+    const labels = ['DEP','ARR','ALTN'];
+    return (
+      <div style={s}>
+        <Hdr />
+        {/* Header row */}
+        <div style={{display:'grid',gridTemplateColumns:'28px 1fr 0.5fr 0.8fr',gap:'2px',marginBottom:'3px'}}>
+          {['','AIRBASE','RWY','ILS'].map((c,i)=><div key={i} style={th()}>{c}</div>)}
+        </div>
+        {labels.map(lab=>(
+          <div key={lab} style={{display:'grid',gridTemplateColumns:'28px 1fr 0.5fr 0.8fr',gap:'2px',marginBottom:'2px'}}>
+            <div style={{color:'#405060',fontSize:'10px',fontWeight:'bold'}}>{lab}</div>
+            {[0,1,2].map(j=><div key={j} style={{borderBottom:'1px solid #192a36',minHeight:'13px'}}/>)}
+          </div>
+        ))}
+        {/* Bingo / Joker / Yardstick row */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'4px',marginTop:'4px',paddingTop:'4px',borderTop:'1px solid #192a36'}}>
+          {['YARDSTICK','BINGO','JOKER'].map((lbl,i)=>(
+            <div key={i}>
+              <div style={{color:i===0?accent:i===1?'#ffd080':'#ff8040',fontSize:'10px',marginBottom:'2px'}}>{lbl}</div>
+              <div style={{borderBottom:'1px solid #192a36',minHeight:'13px'}}/>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  /* ── BINGO / JOKER mini block ── */
+  if (type==='bingostate') {
+    const labels = cols.length ? cols : ['YARDSTICK','BINGO','JOKER'];
+    const colors = [accent,'#ffd080','#ff8040'];
+    return (
+      <div style={{...s,display:'flex',alignItems:'stretch',gap:'4px',height:'100%'}}>
+        {labels.map((lbl,i)=>(
+          <div key={i} style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'center',gap:'3px',
+                               background:'#0a1520',border:`1px solid ${colors[i]}33`,padding:'4px 5px'}}>
+            <div style={{color:colors[i],fontSize:'10px',letterSpacing:'1px',fontWeight:'bold'}}>{lbl}</div>
+            <div style={{borderBottom:`1px solid ${colors[i]}66`,minHeight:'16px'}}/>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── SUPPORT ASSETS (TYPE | CALLSIGN | COM | TCN | BULLS) ── */
+  if (type==='assets') {
+    const fc = cols.length ? cols : ['TYPE','CALLSIGN','COM','TCN','BULLS'];
+    const fw = '0.5fr 0.8fr 1fr 0.7fr 1fr';
+    return (
+      <div style={s}>
+        <Hdr />
+        <div style={{display:'grid',gridTemplateColumns:fw,gap:'2px',marginBottom:'3px'}}>
+          {fc.map((c,i)=><div key={i} style={th()}>{c}</div>)}
+        </div>
+        {Array.from({length:rows},(_,i)=>(
+          <div key={i} style={{display:'grid',gridTemplateColumns:fw,gap:'2px',marginBottom:'2px'}}>
+            {fc.map((_,j)=><div key={j} style={{borderBottom:'1px solid #192a36',minHeight:'13px'}}/>)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── UHF / VHF COMMS (agency+freq per preset, side by side) ── */
+  if (type==='uhfvhf') {
+    return (
+      <div style={s}>
+        <Hdr />
+        {/* Column headers */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 0.6fr 22px 1fr 0.6fr',gap:'2px',marginBottom:'3px'}}>
+          {['UHF AGENCY','UHF FREQ','#','VHF AGENCY','VHF FREQ'].map((c,i)=>(
+            <div key={i} style={{color:i===2?'#405060':accent,fontSize:'10px',borderBottom:`1px solid ${i===2?'#253545':accent}44`,paddingBottom:'1px',overflow:'hidden',whiteSpace:'nowrap'}}>{c}</div>
+          ))}
+        </div>
+        {Array.from({length:rows},(_,i)=>(
+          <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 0.6fr 22px 1fr 0.6fr',gap:'2px',marginBottom:'2px'}}>
+            <div style={{borderBottom:'1px solid #192a36',minHeight:'13px'}}/>
+            <div style={{borderBottom:'1px solid #192a36',minHeight:'13px'}}/>
+            <div style={{color:'#354555',fontSize:'10px',textAlign:'center',borderBottom:'1px solid #192a36'}}>{i+1}</div>
+            <div style={{borderBottom:'1px solid #192a36',minHeight:'13px'}}/>
+            <div style={{borderBottom:'1px solid #192a36',minHeight:'13px'}}/>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── RWR THREAT REFERENCE ── */
+  if (type==='rwr') {
+    const fc = cols.length ? cols : ['RWR','HARM','RNG KM','THREAT NAME'];
+    const fw = '22px 26px 36px 1fr';
+    const groundSamples = [
+      ['2','126','75','SNR-75 TR'],['5','128','120','SNR-125 TR'],['6','145','145','S-200 SR'],
+      ['10','108','160','KUB STR'],['11','115','45','BUK LN+TR'],['HK','204','21','HAWK TR'],
+    ];
+    const airSamples = [
+      ['AV','AV-8B','—','—'],['11','F-111','—','—'],['13','F-130','—','—'],
+    ];
+    const half = Math.ceil(rows * 0.7);
+    const airRows = Math.max(2, rows - half);
+    return (
+      <div style={s}>
+        <Hdr />
+        {/* Two-column layout: Ground | Air */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px'}}>
+          {/* Ground threats */}
+          <div>
+            <div style={{color:'#ff4444',fontSize:'10px',borderBottom:'1px solid #ff444444',marginBottom:'3px',letterSpacing:'1px'}}>GROUND THREATS</div>
+            <div style={{display:'grid',gridTemplateColumns:fw,gap:'1px',marginBottom:'2px'}}>
+              {fc.map((c,i)=><div key={i} style={{color:'#ff4444',fontSize:'9px',overflow:'hidden',whiteSpace:'nowrap'}}>{c}</div>)}
+            </div>
+            {Array.from({length:half},(_,i)=>(
+              <div key={i} style={{display:'grid',gridTemplateColumns:fw,gap:'1px',marginBottom:'1px'}}>
+                {i<groundSamples.length
+                  ? groundSamples[i].map((v,j)=><div key={j} style={{color:j===3?'#607080':'#505060',fontSize:'10px',borderBottom:'1px solid #192a36',overflow:'hidden',whiteSpace:'nowrap'}}>{v}</div>)
+                  : fc.map((_,j)=><div key={j} style={{borderBottom:'1px solid #192a36',minHeight:'12px'}}/>)
+                }
+              </div>
+            ))}
+          </div>
+          {/* Air + Naval threats */}
+          <div>
+            <div style={{color:'#80c0ff',fontSize:'10px',borderBottom:'1px solid #80c0ff44',marginBottom:'3px',letterSpacing:'1px'}}>AIR THREATS</div>
+            <div style={{display:'grid',gridTemplateColumns:'22px 1fr',gap:'2px',marginBottom:'2px'}}>
+              <div style={{color:'#80c0ff',fontSize:'9px'}}>AV</div>
+              <div style={{color:'#80c0ff',fontSize:'9px'}}>NAME</div>
+            </div>
+            {Array.from({length:airRows},(_,i)=>(
+              <div key={i} style={{display:'grid',gridTemplateColumns:'22px 1fr',gap:'2px',marginBottom:'1px'}}>
+                {i<airSamples.length
+                  ? [<div key={0} style={{color:'#505060',fontSize:'10px',borderBottom:'1px solid #192a36'}}>{airSamples[i][0]}</div>,
+                     <div key={1} style={{color:'#607080',fontSize:'10px',borderBottom:'1px solid #192a36',overflow:'hidden',whiteSpace:'nowrap'}}>{airSamples[i][1]}</div>]
+                  : [<div key={0} style={{borderBottom:'1px solid #192a36',minHeight:'12px'}}/>,
+                     <div key={1} style={{borderBottom:'1px solid #192a36',minHeight:'12px'}}/>]
+                }
+              </div>
+            ))}
+            <div style={{color:'#00ff88',fontSize:'10px',borderBottom:'1px solid #00ff8844',margin:'4px 0 3px',letterSpacing:'1px'}}>NAVAL THREATS</div>
+            {Array.from({length:Math.max(2,Math.floor(rows*0.25))},(_,i)=>(
+              <div key={i} style={{display:'grid',gridTemplateColumns:'22px 1fr',gap:'2px',marginBottom:'1px'}}>
+                <div style={{borderBottom:'1px solid #192a36',minHeight:'12px'}}/>              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── GENERIC TABLE (comms, radio, iff, threats, roe, timeline, loadout, bullseye, waypoints, recovery) ── */
+  const flexMap = { 2:[1,1], 3:[1.1,0.9,1], 4:[0.4,1.1,0.8,1] };
+  const fx = flexMap[Math.min(cols.length,4)] || [1];
+  return (
+    <div style={s}><Hdr />
+      {cols.length>0&&<Row mb={3}>{cols.slice(0,4).map((c,i)=><div key={i} style={th(fx[i]||1)}>{c}</div>)}</Row>}
+      {Array.from({length:rows},(_,i)=>(
+        <Row key={i}>{cols.length>0?cols.slice(0,4).map((_,j)=><div key={j} style={cell(fx[j]||1)}/>):<div style={cell()}/>}</Row>
+      ))}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   HANDLES & SNAP
+══════════════════════════════════════════ */
+const HANDLES = ['nw','n','ne','e','se','s','sw','w'];
+function hPos(h,w,bh){const m={nw:[0,0],n:[w/2,0],ne:[w,0],e:[w,bh/2],se:[w,bh],s:[w/2,bh],sw:[0,bh],w:[0,bh/2]};const[x,y]=m[h]||[0,0];return{x,y};}
+function hCur(h){return{nw:'nw-resize',n:'n-resize',ne:'ne-resize',e:'e-resize',se:'se-resize',s:'s-resize',sw:'sw-resize',w:'w-resize'}[h]||'default';}
+const SNAP=10, snapV=v=>Math.round(v/SNAP)*SNAP;
+let _uid=1;
+function mkBlock(type,x,y,extraCfg){
+  const d=BLOCK_DEFS[type];
+  return{id:_uid++,type,x,y,w:d.dW,h:d.dH,locked:false,config:{...d.dC,...(extraCfg||{})}};
+}
+
+/* ══════════════════════════════════════════
+   DRAGGABLE BLOCK
+══════════════════════════════════════════ */
+function KBBlock({block,selected,zIndex,onPointerDown,onSelect,onResizeStart}){
+  const def=BLOCK_DEFS[block.type]||BLOCK_DEFS.custom;
+  const accent=block.config?.accent||def.accent;
+  return(
+    <div style={{position:'absolute',left:block.x,top:block.y,width:block.w,height:block.h,
+        background:'#0d1b2a',border:selected?`2px solid ${accent}`:'1px solid #1a3a5a',
+        cursor:block.locked?'default':'move',zIndex:selected?1000:zIndex,
+        boxShadow:selected?`0 0 14px ${accent}44`:'none'}}
+      onMouseDown={e=>{if(e.target.dataset.handle)return;e.stopPropagation();onSelect();if(!block.locked)onPointerDown(e);}}>
+      <BlockContent type={block.type} config={block.config} w={block.w} h={block.h}/>
+      {block.locked&&<div style={{position:'absolute',top:2,right:3,fontSize:'18px',opacity:0.4}}>🔒</div>}
+      {selected&&HANDLES.map(h=>{const p=hPos(h,block.w,block.h);return(
+        <div key={h} data-handle={h}
+          style={{position:'absolute',left:p.x,top:p.y,width:8,height:8,background:accent,
+            border:'1px solid #0a0e14',transform:'translate(-50%,-50%)',cursor:hCur(h),zIndex:1001}}
+          onMouseDown={e=>{e.stopPropagation();onResizeStart(e,h);}}/>
+      );})}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   CUSTOM BLOCK MODAL
+══════════════════════════════════════════ */
+const LAYOUTS=[
+  {id:'rows',     label:'ROWS',      desc:'Single column fill lines'},
+  {id:'split',    label:'SPLIT',     desc:'Label 35% + value 65% key-value pairs'},
+  {id:'columns',  label:'COLUMNS',   desc:'Multiple columns — add as many as you need'},
+  {id:'checklist',label:'CHECKLIST', desc:'Checkbox squares + item labels'},
+  {id:'freetext', label:'FREE TEXT', desc:'Completely blank lines'},
+];
+
+function CustomModal({onClose,onCreate}){
+  const[title,setTitle]=useState('CUSTOM BLOCK');
+  const[layout,setLayout]=useState('rows');
+  const[rows,setRows]=useState(6);
+  const[accent,setAccent]=useState('#a080ff');
+  const[colCount,setColCount]=useState(2);
+  const[colHeaders,setColHeaders]=useState(['','','','','','','','']);
+  const ACCENT_QUICK=['#00d4ff','#00ff88','#ffd080','#ff4444','#ff8040','#80c0ff','#a080ff'];
+  const setHeader=(i,v)=>{const h=[...colHeaders];h[i]=v.toUpperCase();setColHeaders(h);};
+  const getCols=()=>{
+    if(layout==='columns'){return Array.from({length:colCount},(_,i)=>colHeaders[i]||`COL ${i+1}`);}
+    if(layout==='split')return[colHeaders[0]||'LABEL',colHeaders[1]||'VALUE'];
+    if(layout==='checklist'){const r=colHeaders.slice(0,rows).filter(Boolean);return r.length?r:Array.from({length:rows},(_,i)=>`ITEM ${i+1}`);}
+    return[];
+  };
+  const iS={background:'#070b10',border:'1px solid #1a3a5a',color:'#c0d0e0',padding:'4px 6px',fontSize:'12px',width:'100%'};
+  return(
+    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.75)',zIndex:9000,display:'flex',alignItems:'center',justifyContent:'center'}}
+      onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div style={{background:'#0d1b2a',border:'1px solid #a080ff',width:'400px',padding:'18px',boxShadow:'0 0 50px rgba(160,128,255,0.35)'}}>
+        <div style={{display:'flex',alignItems:'center',marginBottom:'14px'}}>
+          <span style={{color:'#a080ff',fontWeight:'bold',fontSize:'18px',letterSpacing:'2px',flex:1}}>CREATE CUSTOM BLOCK</span>
+          <button onClick={onClose} style={{background:'none',border:'none',color:'#506070',cursor:'pointer',fontSize:'18px'}}>✕</button>
+        </div>
+
+        <div style={{marginBottom:'10px'}}>
+          <div style={{color:'#506070',fontSize:'18px',letterSpacing:'1px',marginBottom:'3px'}}>TITLE</div>
+          <input value={title} onChange={e=>setTitle(e.target.value.toUpperCase())} style={iS} maxLength={35}/>
+        </div>
+
+        <div style={{marginBottom:'10px'}}>
+          <div style={{color:'#506070',fontSize:'18px',letterSpacing:'1px',marginBottom:'4px'}}>LAYOUT</div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:'4px'}}>
+            {LAYOUTS.map(l=>(
+              <button key={l.id} onClick={()=>setLayout(l.id)} title={l.desc} style={{
+                background:layout===l.id?'#1a0a3a':'#070b10',
+                border:`1px solid ${layout===l.id?'#a080ff':'#1a3a5a'}`,
+                color:layout===l.id?'#a080ff':'#607080',
+                padding:'4px 9px',cursor:'pointer',fontSize:'12px',letterSpacing:'1px',
+              }}>{l.label}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Columns layout — count + headers */}
+        {layout==='columns'&&(
+          <div style={{marginBottom:'10px'}}>
+            <div style={{color:'#506070',fontSize:'18px',letterSpacing:'1px',marginBottom:'6px'}}>COLUMNS</div>
+            <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'8px'}}>
+              <button onClick={()=>setColCount(c=>Math.max(2,c-1))} disabled={colCount<=2}
+                style={{background:'#070b10',border:'1px solid #1a3a5a',color:colCount<=2?'#253545':'#c0d0e0',
+                  width:'30px',height:'30px',cursor:colCount<=2?'default':'pointer',fontSize:'18px'}}>−</button>
+              <span style={{color:'#a080ff',fontSize:'16px',fontWeight:'bold',minWidth:'60px',textAlign:'center'}}>{colCount} COLS</span>
+              <button onClick={()=>setColCount(c=>Math.min(8,c+1))} disabled={colCount>=8}
+                style={{background:'#070b10',border:'1px solid #1a3a5a',color:colCount>=8?'#253545':'#c0d0e0',
+                  width:'30px',height:'30px',cursor:colCount>=8?'default':'pointer',fontSize:'18px'}}>+</button>
+            </div>
+            <div style={{color:'#405060',fontSize:'16px',marginBottom:'4px'}}>COLUMN HEADERS (optional)</div>
+            <div style={{display:'flex',flexDirection:'column',gap:'3px'}}>
+              {Array.from({length:colCount},(_,i)=>(
+                <input key={i} placeholder={`COL ${i+1}`} value={colHeaders[i]||''}
+                  onChange={e=>setHeader(i,e.target.value)} style={iS}/>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Split / Checklist headers */}
+        {(layout==='checklist'||layout==='split')&&(
+          <div style={{marginBottom:'10px'}}>
+            <div style={{color:'#506070',fontSize:'18px',letterSpacing:'1px',marginBottom:'4px'}}>
+              {layout==='checklist'?'CHECKLIST ITEMS (optional)':'SPLIT LABELS'}
+            </div>
+            <div style={{display:'flex',gap:'4px'}}>
+              <input placeholder={layout==='split'?'LABEL':'ITEM 1'} value={colHeaders[0]||''} onChange={e=>setHeader(0,e.target.value)} style={{...iS,flex:1}}/>
+              <input placeholder={layout==='split'?'VALUE':'ITEM 2'} value={colHeaders[1]||''} onChange={e=>setHeader(1,e.target.value)} style={{...iS,flex:1}}/>
+            </div>
+          </div>
+        )}
+        <div style={{marginBottom:'10px'}}>
+          <div style={{color:'#506070',fontSize:'18px',letterSpacing:'1px',marginBottom:'4px'}}>
+            ROWS / ITEMS <span style={{color:'#a080ff'}}>{rows}</span>
+          </div>
+          <input type="range" min={2} max={22} value={rows} onChange={e=>setRows(Number(e.target.value))}
+            style={{width:'100%',accentColor:'#a080ff',cursor:'pointer'}}/>
+        </div>
+
+        <div style={{marginBottom:'14px',display:'flex',alignItems:'center',gap:'8px',flexWrap:'wrap'}}>
+          <div style={{color:'#506070',fontSize:'18px',letterSpacing:'1px'}}>ACCENT</div>
+          <input type="color" value={accent} onChange={e=>setAccent(e.target.value)}
+            style={{width:'32px',height:'22px',background:'none',border:'1px solid #1a3a5a',cursor:'pointer'}}/>
+          <span style={{color:accent,fontSize:'12px'}}>{accent.toUpperCase()}</span>
+          {ACCENT_QUICK.map(c=>(
+            <button key={c} onClick={()=>setAccent(c)}
+              style={{width:'13px',height:'13px',background:c,border:accent===c?'2px solid #fff':'1px solid #0a0e14',cursor:'pointer',padding:0}}/>
+          ))}
+        </div>
+
+        {/* Live preview */}
+        <div style={{marginBottom:'14px',background:'#070b10',border:`1px solid ${accent}33`,padding:'4px',height:'90px',overflow:'hidden'}}>
+          <div style={{width:'200px',height:'82px',position:'relative',overflow:'hidden'}}>
+            <BlockContent type="custom" config={{title,layout,rowCount:rows,cols:getCols(),accent,colCount}} w={200} h={82}/>
+          </div>
+        </div>
+
+        <div style={{display:'flex',gap:'8px'}}>
+          <button onClick={onClose} style={{flex:1,background:'#070b10',border:'1px solid #1a3a5a',color:'#607080',padding:'8px',cursor:'pointer',fontSize:'12px',letterSpacing:'1px'}}>CANCEL</button>
+          <button onClick={()=>onCreate({title,layout,rowCount:rows,cols:getCols(),accent,colCount})} style={{
+            flex:2,background:'#180f38',border:`1px solid ${accent}`,color:accent,
+            padding:'8px',cursor:'pointer',fontSize:'16px',letterSpacing:'2px',fontWeight:'bold',
+          }}>CREATE BLOCK</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   BLOCK OPTIONS (properties panel section)
+══════════════════════════════════════════ */
+function BlockOpts({block,onChange,onSaveTemplate}){
+  if(!block)return null;
+  const def=BLOCK_DEFS[block.type]||BLOCK_DEFS.custom;
+  const cfg=block.config||{};
+  const accent=cfg.accent||def.accent;
+  const set=(k,v)=>onChange({...cfg,[k]:v});
+  const setCol=(i,v)=>{const nc=[...(cfg.cols||[])];nc[i]=v.toUpperCase();onChange({...cfg,cols:nc});};
+  const iS={background:'#070b10',border:'1px solid #1a3a5a',color:'#c0d0e0',padding:'3px 5px',fontSize:'12px',width:'100%'};
+  const QUICK=['#00d4ff','#00ff88','#ffd080','#ff4444','#ff8040','#80c0ff','#a080ff'];
+
+  /* which cols to show for editing */
+  const showColEdit = block.type==='custom'
+    ? (cfg.layout==='columns'?(cfg.colCount||2):cfg.layout==='checklist'?Math.max(2,cfg.colCount||2):0)
+    : (['comms','commplan','radio','iff','threats','roe','timeline','loadout','bullseye','waypoints',
+        'recovery','weapons','flightplan','flight','commplan','dualcomm'].includes(block.type) ? Math.min((cfg.cols||[]).length,7) : 0);
+
+  const showRowLabels = (block.type==='mission'||block.type==='weather');
+  const isCustom = block.type==='custom';
+
+  const OptionRow = ({label, children}) => (
+    <div style={{paddingTop:'6px',borderTop:'1px solid #192535'}}>
+      <div style={{color:'#354555',fontSize:'11px',letterSpacing:'1px',marginBottom:'4px'}}>{label}</div>
+      {children}
+    </div>
+  );
+  const ChipRow = ({options, value, onSelect}) => (
+    <div style={{display:'flex',flexWrap:'wrap',gap:'3px'}}>
+      {options.map(o=>(
+        <button key={o.v} onClick={()=>onSelect(o.v)} title={o.tip||''} style={{
+          background:value===o.v?'#0d2030':'#070b10',
+          border:`1px solid ${value===o.v?accent:'#1a3a5a'}`,
+          color:value===o.v?accent:'#506070',
+          padding:'3px 7px',cursor:'pointer',fontSize:'11px',letterSpacing:'1px',
+        }}>{o.l}</button>
+      ))}
+    </div>
+  );
+
+  return(
+    <div style={{display:'flex',flexDirection:'column',gap:'0px'}}>
+      <div style={{color:'#405060',fontSize:'12px',letterSpacing:'2px',marginBottom:'8px'}}>BLOCK OPTIONS</div>
+
+      {/* Title */}
+      <OptionRow label="TITLE">
+        <input value={cfg.title||''} onChange={e=>set('title',e.target.value.toUpperCase())} maxLength={40} style={iS}/>
+      </OptionRow>
+
+      {/* Accent color */}
+      <OptionRow label="ACCENT COLOR">
+        <div style={{display:'flex',alignItems:'center',gap:'5px',flexWrap:'wrap'}}>
+          <input type="color" value={accent} onChange={e=>set('accent',e.target.value)}
+            style={{width:'28px',height:'20px',background:'none',border:'1px solid #1a3a5a',cursor:'pointer'}}/>
+          {QUICK.map(c=>(
+            <button key={c} onClick={()=>set('accent',c)}
+              style={{width:'13px',height:'13px',background:c,border:accent===c?'2px solid #fff':'1px solid #0a0e14',cursor:'pointer',padding:0,flexShrink:0}}/>
+          ))}
+        </div>
+      </OptionRow>
+
+      {/* Row count */}
+      {block.type!=='header'&&block.type!=='divider'&&(
+        <OptionRow label={`ROWS / ITEMS — ${cfg.rowCount||5}`}>
+          <input type="range" min={1} max={22} value={cfg.rowCount||5}
+            onChange={e=>set('rowCount',Number(e.target.value))}
+            style={{width:'100%',accentColor:accent,cursor:'pointer'}}/>
+        </OptionRow>
+      )}
+
+      {/* ── DUALCOMM-ONLY: top section row count ── */}
+      {block.type==='dualcomm'&&(
+        <OptionRow label={`ROWS ABOVE COMM 1/2 — ${cfg.topRows||1}`}>
+          <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+            <button onClick={()=>set('topRows',Math.max(1,(cfg.topRows||1)-1))}
+              style={{background:'#070b10',border:'1px solid #1a3a5a',color:'#c0d0e0',
+                      width:'24px',height:'24px',cursor:'pointer',fontSize:'14px',lineHeight:1}}>−</button>
+            <span style={{color:accent,fontSize:'14px',minWidth:'20px',textAlign:'center'}}>{cfg.topRows||1}</span>
+            <button onClick={()=>set('topRows',Math.min(10,(cfg.topRows||1)+1))}
+              style={{background:'#070b10',border:'1px solid #1a3a5a',color:'#c0d0e0',
+                      width:'24px',height:'24px',cursor:'pointer',fontSize:'14px',lineHeight:1}}>+</button>
+            <input type="range" min={1} max={10} value={cfg.topRows||1}
+              onChange={e=>set('topRows',Number(e.target.value))}
+              style={{flex:1,accentColor:accent,cursor:'pointer'}}/>
+          </div>
+        </OptionRow>
+      )}
+
+      {/* ── CUSTOM-ONLY OPTIONS ── */}
+      {isCustom && <>
+
+        {/* Layout */}
+        <OptionRow label="LAYOUT">
+          <ChipRow options={LAYOUTS.map(l=>({v:l.id,l:l.label,tip:l.desc}))}
+                   value={cfg.layout||'rows'} onSelect={v=>set('layout',v)}/>
+        </OptionRow>
+
+        {/* Title align */}
+        <OptionRow label="TITLE ALIGN">
+          <ChipRow options={[{v:'left',l:'LEFT'},{v:'center',l:'CTR'},{v:'right',l:'RIGHT'}]}
+                   value={cfg.titleAlign||'left'} onSelect={v=>set('titleAlign',v)}/>
+        </OptionRow>
+
+        {/* Title style */}
+        <OptionRow label="TITLE STYLE">
+          <ChipRow options={[{v:'line',l:'LINE',tip:'Underline'},{v:'solid',l:'SOLID',tip:'Filled bar'},{v:'none',l:'NONE',tip:'No separator'}]}
+                   value={cfg.titleStyle||'line'} onSelect={v=>set('titleStyle',v)}/>
+        </OptionRow>
+
+        {/* Row separators */}        <OptionRow label="ROW LINES">
+          <ChipRow options={[{v:'solid',l:'SOLID'},{v:'dotted',l:'DOTS'},{v:'dashed',l:'DASH'},{v:'none',l:'NONE'}]}
+                   value={cfg.rowSep||'solid'} onSelect={v=>set('rowSep',v)}/>
+        </OptionRow>
+
+        {/* Background tint */}
+        <OptionRow label="BACKGROUND TINT">
+          <div style={{display:'flex',alignItems:'center',gap:'6px',flexWrap:'wrap'}}>
+            <input type="color" value={cfg.bgTint||'#0d1b2a'} onChange={e=>set('bgTint',e.target.value)}
+              style={{width:'28px',height:'20px',background:'none',border:'1px solid #1a3a5a',cursor:'pointer'}}/>
+            {['','#0d1b2a','#1a0a0a','#0a1a0a','#0a0a1a','#1a1a0a','#1a0a1a'].map((c,i)=>(
+              <button key={i} onClick={()=>set('bgTint',c)}
+                style={{width:'13px',height:'13px',
+                        background:c||'transparent',
+                        border:(cfg.bgTint||'')===(c)?'2px solid #fff':'1px solid #1a3a5a',
+                        cursor:'pointer',padding:0,flexShrink:0,
+                        backgroundImage:c?'none':'repeating-linear-gradient(45deg,#253545 0,#253545 2px,transparent 0,transparent 6px)'}}>
+              </button>
+            ))}
+            {cfg.bgTint&&<button onClick={()=>set('bgTint','')} style={{color:'#607080',fontSize:'10px',background:'none',border:'none',cursor:'pointer',padding:'0 2px'}}>✕</button>}
+          </div>
+        </OptionRow>
+
+        {/* Font scale */}
+        <OptionRow label="FONT SIZE">
+          <ChipRow options={[{v:'small',l:'SM',tip:'Smaller text'},{v:'normal',l:'MD',tip:'Default size'},{v:'large',l:'LG',tip:'Larger text'}]}
+                   value={cfg.fontScale||'normal'} onSelect={v=>set('fontScale',v)}/>
+        </OptionRow>
+
+        {/* Compact mode */}
+        <OptionRow label="SPACING">
+          <ChipRow options={[{v:false,l:'NORMAL'},{v:true,l:'COMPACT'}]}
+                   value={cfg.compact||false} onSelect={v=>set('compact',v)}/>
+        </OptionRow>
+
+        {/* Numbered rows */}
+        <OptionRow label="ROW NUMBERS">
+          <ChipRow options={[{v:false,l:'OFF',tip:'No row numbers'},{v:true,l:'ON',tip:'Auto-number each row'}]}
+                   value={cfg.numberedRows||false} onSelect={v=>set('numberedRows',v)}/>
+        </OptionRow>
+
+        {/* Column widths — all controls (columns / split) */}
+        {(cfg.layout==='columns'||cfg.layout==='split')&&(()=>{
+          const nc = cfg.layout==='columns' ? Math.max(2,cfg.colCount||2) : 2;
+          const colNames = cfg.cols||[];
+          const labels = nc===2
+            ? [colNames[0]||'COL 1', colNames[1]||'COL 2']
+            : [colNames[0]||'COL 1', colNames[1]||'COL 2', colNames[2]||'COL 3'];
+
+          // Parse → integer %s summing to 100
+          const getRaw = () => {
+            if(!cfg.colWidths) return nc===2?[50,50]:[33,34,33];
+            const parts = cfg.colWidths.split(',').map(x=>parseFloat(x)||1).slice(0,nc);
+            while(parts.length<nc) parts.push(parts[parts.length-1]||1);
+            const sum = parts.reduce((a,b)=>a+b,0);
+            return parts.map(v=>Math.round(v/sum*100));
+          };
+          const pcts = getRaw();
+          const setW = (arr) => set('colWidths', arr.join(','));
+
+          /*
+           * Slider model for N columns:
+           * - Every column except the LAST has a slider + number input.
+           * - The last column is always the auto-remainder (read-only bar + number input).
+           * - Changing col i via slider/input: clamp, last col absorbs.
+           * - Changing the last col via number input: second-to-last absorbs.
+           */
+          const setColW = (i, v) => {
+            const maxForCol = 100 - (nc-1)*10;
+            const clamped = Math.max(10, Math.min(v, maxForCol));
+            const next = [...pcts];
+            next[i] = clamped;
+            // last col absorbs (unless we're setting the last col — then second-to-last absorbs)
+            const absorb = i === nc-1 ? nc-2 : nc-1;
+            const fixed = next.reduce((s,p,j)=> j!==absorb ? s+p : s, 0);
+            next[absorb] = Math.max(10, 100-fixed);
+            setW(next);
+          };
+
+          const segColors = ['#0d2235','#091a28','#0f1e30','#0d1f35','#091828'];
+          const numStyle = {
+            width:'44px',background:'#0a1520',border:`1px solid ${accent}55`,
+            color:accent,padding:'3px 4px',fontSize:'12px',textAlign:'center',
+            flexShrink:0,borderRadius:'2px'
+          };
+          const lblStyle = {
+            color:'#506070',fontSize:'10px',width:'34px',
+            flexShrink:0,overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'
+          };
+
+          return (
+            <OptionRow label="COLUMN WIDTHS">
+
+              {/* ── Preview bar ── */}
+              <div style={{display:'flex',height:'26px',borderRadius:'2px',overflow:'hidden',
+                           border:'1px solid #1a3a5a',marginBottom:'8px'}}>
+                {pcts.map((p,i)=>(
+                  <div key={i} style={{width:`${p}%`,background:segColors[i%segColors.length],
+                    display:'flex',alignItems:'center',justifyContent:'center',
+                    borderRight:i<nc-1?'1px solid #0a0e14':'none',overflow:'hidden'}}>
+                    <span style={{color:accent,fontSize:'9px',whiteSpace:'nowrap',
+                      padding:'0 2px',overflow:'hidden',textOverflow:'ellipsis'}}>
+                      {labels[i]} <span style={{opacity:0.5}}>{p}%</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* ── Per-column rows ── */}
+              <div style={{display:'flex',flexDirection:'column',gap:'5px'}}>
+                {pcts.map((p,i)=>{
+                  const isLast = i===nc-1;
+                  const sliderMax = Math.max(10, 100-(nc-1)*10);
+                  return (
+                    <div key={i} style={{display:'flex',alignItems:'center',gap:'5px'}}>
+                      <span style={lblStyle} title={labels[i]}>{labels[i]}</span>
+                      {isLast
+                        ? <div style={{flex:1,height:'3px',background:'#1a2a3a',borderRadius:'2px',alignSelf:'center'}}>
+                            <div style={{width:`${p}%`,height:'100%',background:'#2a3a4a',borderRadius:'2px'}}/>
+                          </div>
+                        : <input type="range" min={10} max={sliderMax} value={p}
+                            onChange={e=>setColW(i,parseInt(e.target.value))}
+                            style={{flex:1,accentColor:accent,cursor:'pointer'}}/>
+                      }
+                      <input type="number" min={10} max={sliderMax} value={p}
+                        onChange={e=>{const n=parseInt(e.target.value);if(!isNaN(n))setColW(i,n);}}
+                        style={numStyle}/>
+                    </div>
+                  );
+                })}
+              </div>
+
+            </OptionRow>
+          );
+        })()}
+
+        {/* Columns layout — column count + add/remove + headers */}
+        {cfg.layout==='columns'&&(
+          <OptionRow label="COLUMNS">
+            <div style={{display:'flex',alignItems:'center',gap:'6px',marginBottom:'6px'}}>
+              <button onClick={()=>{
+                  if((cfg.colCount||2)<=2)return;
+                  const nc=(cfg.colCount||2)-1;
+                  const nc2=[...(cfg.cols||[])].slice(0,nc);
+                  onChange({...cfg,colCount:nc,cols:nc2});
+                }} disabled={(cfg.colCount||2)<=2}
+                style={{background:'#070b10',border:'1px solid #1a3a5a',color:(cfg.colCount||2)<=2?'#253545':'#c0d0e0',
+                  width:'26px',height:'26px',cursor:(cfg.colCount||2)<=2?'default':'pointer',fontSize:'16px',
+                  display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>−</button>              <span style={{color:accent,fontSize:'14px',fontWeight:'bold',minWidth:'60px',textAlign:'center'}}>
+                {cfg.colCount||2} COLS
+              </span>
+              <button onClick={()=>{
+                  if((cfg.colCount||2)>=8)return;
+                  const nc=(cfg.colCount||2)+1;
+                  const nc2=[...(cfg.cols||[])];
+                  while(nc2.length<nc) nc2.push(`COL ${nc2.length+1}`);
+                  onChange({...cfg,colCount:nc,cols:nc2});
+                }} disabled={(cfg.colCount||2)>=8}
+                style={{background:'#070b10',border:'1px solid #1a3a5a',color:(cfg.colCount||2)>=8?'#253545':'#c0d0e0',
+                  width:'26px',height:'26px',cursor:(cfg.colCount||2)>=8?'default':'pointer',fontSize:'16px',
+                  display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>+</button>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:'3px'}}>
+              {Array.from({length:cfg.colCount||2},(_,i)=>(
+                <input key={i} value={(cfg.cols||[])[i]||''} onChange={e=>setCol(i,e.target.value)}
+                  placeholder={`COL ${i+1}`} style={iS}/>
+              ))}
+            </div>
+          </OptionRow>
+        )}
+
+        {/* Checklist items / split labels */}
+        {(cfg.layout==='checklist'||cfg.layout==='split')&&(
+          <OptionRow label={cfg.layout==='checklist'?'CHECKLIST ITEMS':'SPLIT LABELS (label, value)'}>
+            <div style={{display:'flex',flexDirection:'column',gap:'3px'}}>
+              {Array.from({length:cfg.layout==='split'?2:Math.max(2,cfg.colCount||2)},(_,i)=>(
+                <input key={i} value={(cfg.cols||[])[i]||''} onChange={e=>setCol(i,e.target.value)}
+                  placeholder={cfg.layout==='split'?['LABEL','VALUE'][i]||`COL ${i+1}`:`ITEM ${i+1}`}
+                  style={iS}/>
+              ))}
+            </div>
+          </OptionRow>
+        )}
+
+        {/* Save as template */}
+        {onSaveTemplate&&(
+          <div style={{paddingTop:'8px',borderTop:'1px solid #192535'}}>
+            <button onClick={()=>onSaveTemplate(cfg)} style={{
+              width:'100%',background:'#180f38',border:'1px solid #a080ff',
+              color:'#a080ff',padding:'6px',cursor:'pointer',
+              fontSize:'12px',letterSpacing:'1px',fontWeight:'bold'}}>
+              ✦ SAVE AS TEMPLATE
+            </button>
+            <div style={{color:'#354555',fontSize:'10px',marginTop:'3px',textAlign:'center'}}>
+              Adds to CUSTOM palette with current settings
+            </div>
+          </div>
+        )}
+      </>}
+
+      {/* Column editors for non-custom table blocks */}
+      {!isCustom&&showColEdit>0&&(
+        <OptionRow label="COLUMN HEADERS">
+          <div style={{display:'flex',flexDirection:'column',gap:'2px',maxHeight:'100px',overflowY:'auto'}}>
+            {Array.from({length:showColEdit},(_,i)=>(
+              <input key={i} value={(cfg.cols||[])[i]||''} onChange={e=>setCol(i,e.target.value)}
+                placeholder={`COL ${i+1}`} style={iS}/>
+            ))}
+          </div>
+        </OptionRow>
+      )}
+
+      {/* Row-label editors for mission/weather */}
+      {showRowLabels&&(
+        <OptionRow label="ROW LABELS">
+          <div style={{maxHeight:'90px',overflowY:'auto',display:'flex',flexDirection:'column',gap:'2px'}}>
+            {(cfg.cols||[]).map((c,i)=>(
+              <input key={i} value={c||''} onChange={e=>setCol(i,e.target.value)} style={iS}/>
+            ))}
+          </div>
+        </OptionRow>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   SMALL COMPONENTS
+══════════════════════════════════════════ */
+function TogBtn({active,onClick,label}){
+  return(
+    <button onClick={onClick} style={{background:active?'#0d2a3a':'#070b10',color:active?'#00d4ff':'#506070',
+      border:`1px solid ${active?'#00d4ff':'#1a3a5a'}`,padding:'4px 10px',cursor:'pointer',fontSize:'12px',letterSpacing:'1px'}}>
+      {label}
+    </button>
+  );
+}
+function NumInput({label,value,onChange}){
+  return(
+    <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+      <span style={{color:'#405060',fontSize:'12px',width:'14px'}}>{label}</span>
+      <input type="number" value={value} onChange={e=>onChange(Number(e.target.value))}
+        style={{flex:1,background:'#070b10',border:'1px solid #1a3a5a',color:'#c0d0e0',padding:'3px 5px',fontSize:'12px',width:'100%'}}/>
+    </div>
+  );
+}
+function PalBtn({type,onClick}){
+  const def=BLOCK_DEFS[type];
+  const[hov,setHov]=useState(false);
+  return(
+    <button onClick={onClick} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
+      style={{background:hov?'#0d2030':'#070b10',border:`1px solid ${hov?def.accent:'#192535'}`,
+        color:hov?def.accent:'#506070',padding:'4px 6px',cursor:'pointer',fontSize:'18px',
+        letterSpacing:'1px',textAlign:'left',width:'100%',transition:'all 0.1s'}}>
+      <span style={{color:def.accent,marginRight:'4px',fontSize:'18px'}}>▸</span>
+      {def.label.toUpperCase()}
+    </button>
+  );
+}
+
+/* ══════════════════════════════════════════
+   MAIN APP
+══════════════════════════════════════════ */
+function App(){
+  const[pages,setPages]=useState([[], []]);
+  const[pageIdx,setPageIdx]=useState(0);
+  const[sel,setSel]=useState(null);
+  const[showGrid,setShowGrid]=useState(true);
+  const[snapOn,setSnapOn]=useState(true);
+  const[undo,setUndo]=useState([]);
+  const[showModal,setShowModal]=useState(false);
+  const[savedTemplates,setSavedTemplates]=useState([]);
+  const[openGrp,setOpenGrp]=useState({LAYOUT:true,MISSION:true,COMMS:true,INTEL:false,NAV:true,LOADOUT:true,CHECKS:true,CUSTOM:true});
+
+  const dragR=useRef(null), resizeR=useRef(null);
+  const blocks=pages[pageIdx];
+
+  const setBlocks=fn=>setPages(p=>{const np=[...p];np[pageIdx]=typeof fn==='function'?fn(np[pageIdx]):fn;return np;});
+  const pushUndo=snap=>setUndo(s=>[...s.slice(-30),snap]);
+  const doUndo=()=>{if(!undo.length)return;setBlocks(JSON.parse(undo[undo.length-1]));setUndo(s=>s.slice(0,-1));setSel(null);};
+  const addBlock=(type,cfg)=>{pushUndo(JSON.stringify(blocks));setBlocks(b=>[...b,mkBlock(type,20+(b.length%5)*6,20+(b.length%7)*8,cfg)]);};
+  const delSel=()=>{if(!sel)return;const b=blocks.find(x=>x.id===sel);if(b?.locked)return;pushUndo(JSON.stringify(blocks));setBlocks(b=>b.filter(x=>x.id!==sel));setSel(null);};
+  const dupSel=()=>{if(!sel)return;const b=blocks.find(x=>x.id===sel);if(!b)return;pushUndo(JSON.stringify(blocks));const nb={...b,id:_uid++,x:b.x+10,y:b.y+10};setBlocks(bl=>[...bl,nb]);setSel(nb.id);};
+  const updProp=(k,v)=>{if(!sel)return;setBlocks(b=>b.map(x=>x.id===sel?{...x,[k]:v}:x));};
+  const updCfg=cfg=>{if(!sel)return;setBlocks(b=>b.map(x=>x.id===sel?{...x,config:cfg}:x));};
+
+  const saveTemplate=(cfg)=>{
+    const name=(cfg.title||'CUSTOM').trim().toUpperCase()||'CUSTOM';
+    setSavedTemplates(ts=>[...ts,{id:_uid++,name,config:{...cfg}}]);
+  };
+  const deleteTemplate=(tid)=>setSavedTemplates(ts=>ts.filter(t=>t.id!==tid));
+
+  const toFront=()=>{pushUndo(JSON.stringify(blocks));setBlocks(b=>{const r=b.filter(x=>x.id!==sel),bl=b.find(x=>x.id===sel);return bl?[...r,bl]:b;});};
+  const toBack=()=>{pushUndo(JSON.stringify(blocks));setBlocks(b=>{const r=b.filter(x=>x.id!==sel),bl=b.find(x=>x.id===sel);return bl?[bl,...r]:b;});};
+
+  useEffect(()=>{
+    const onKey=e=>{
+      if(document.activeElement?.tagName==='INPUT')return;
+      if(e.key==='Delete'||e.key==='Backspace')delSel();
+      if(e.key==='Escape')setSel(null);      if(e.key==='Escape')setSel(null);
+      if(e.ctrlKey&&e.key==='d'){e.preventDefault();dupSel();}
+      if(e.ctrlKey&&e.key==='z'){e.preventDefault();doUndo();}
+    };
+    window.addEventListener('keydown',onKey);
+    return()=>window.removeEventListener('keydown',onKey);
+  },[sel,blocks,undo]);
+
+  useEffect(()=>{
+    const onMove=e=>{
+      if(dragR.current){
+        const d=dragR.current;
+        let nx=d.ox+(e.clientX-d.sx),ny=d.oy+(e.clientY-d.sy);
+        if(snapOn){nx=snapV(nx);ny=snapV(ny);}
+        nx=Math.max(0,Math.min(460-d.w,nx));ny=Math.max(0,Math.min(660-d.h,ny));
+        setBlocks(b=>b.map(x=>x.id===d.id?{...x,x:nx,y:ny}:x));
+      }
+      if(resizeR.current){
+        const r=resizeR.current,dx=e.clientX-r.sx,dy=e.clientY-r.sy;
+        let{ox:nx,oy:ny,ow:nw,oh:nh}=r,h=r.handle;
+        if(h.includes('e'))nw=Math.max(30,r.ow+dx);
+        if(h.includes('s'))nh=Math.max(20,r.oh+dy);
+        if(h.includes('w')){nx=r.ox+dx;nw=Math.max(30,r.ow-dx);}
+        if(h.includes('n')){ny=r.oy+dy;nh=Math.max(20,r.oh-dy);}
+        if(snapOn){nw=snapV(nw);nh=snapV(nh);nx=snapV(nx);ny=snapV(ny);}
+        setBlocks(b=>b.map(x=>x.id===r.id?{...x,x:Math.max(0,nx),y:Math.max(0,ny),w:nw,h:nh}:x));
+      }
+    };
+    const onUp=()=>{dragR.current=null;resizeR.current=null;};
+    window.addEventListener('mousemove',onMove);
+    window.addEventListener('mouseup',onUp);
+    return()=>{window.removeEventListener('mousemove',onMove);window.removeEventListener('mouseup',onUp);};
+  },[snapOn,pageIdx]);
+
+  const selBlock=blocks.find(x=>x.id===sel);
+
+  return(
+    <div style={{display:'flex',height:'100vh',background:'#0a0e14',userSelect:'none'}}>
+
+      {/* ── LEFT PALETTE ── */}
+      <div style={{width:'162px',borderRight:'1px solid #192535',display:'flex',flexDirection:'column',overflowY:'auto',flexShrink:0}}>
+        <div style={{padding:'9px 8px 6px',color:'#00d4ff',fontSize:'16px',fontWeight:'bold',letterSpacing:'3px',borderBottom:'1px solid #192535',flexShrink:0}}>BLOCKS</div>
+        {GROUPS.map(grp=>{
+          const types=Object.entries(BLOCK_DEFS).filter(([,d])=>d.group===grp).map(([t])=>t);
+          const grpTemplates = grp==='CUSTOM' ? savedTemplates : [];
+          if(!types.length && !grpTemplates.length)return null;
+          const open=openGrp[grp]!==false;
+          const count = grp==='CUSTOM' ? types.length + grpTemplates.length : types.length;
+          return(
+            <div key={grp}>
+              <button onClick={()=>setOpenGrp(g=>({...g,[grp]:!g[grp]}))} style={{
+                width:'100%',background:'#0a0e14',border:'none',borderBottom:'1px solid #192535',
+                padding:'4px 8px',display:'flex',alignItems:'center',gap:'5px',cursor:'pointer',
+                color:'#3a5060',fontSize:'18px',letterSpacing:'2px'}}>
+                <span style={{color:'#253545'}}>{open?'▾':'▸'}</span>{grp}
+                <span style={{marginLeft:'auto',color:'#253545',fontSize:'16px'}}>{count}</span>
+              </button>
+              {open&&(
+                <div style={{padding:'3px 5px',display:'flex',flexDirection:'column',gap:'2px'}}>
+                  {types.map(type=>
+                    type==='custom'?(
+                      <button key={type} onClick={()=>setShowModal(true)} style={{
+                        background:'#130a28',border:'1px solid #a080ff',color:'#a080ff',
+                        padding:'5px 6px',cursor:'pointer',fontSize:'18px',letterSpacing:'1px',textAlign:'left',width:'100%'}}>
+                        ✦ CUSTOM BLOCK
+                      </button>
+                    ):(
+                      <PalBtn key={type} type={type} onClick={()=>addBlock(type)}/>
+                    )
+                  )}
+                  {grpTemplates.map(tmpl=>(
+                    <div key={tmpl.id} style={{display:'flex',gap:'2px',alignItems:'stretch'}}>
+                      <button onClick={()=>addBlock('custom',tmpl.config)} style={{
+                        flex:1,background:'#0d0820',border:'1px solid #6050aa',color:'#c0a0ff',
+                        padding:'4px 6px',cursor:'pointer',fontSize:'11px',letterSpacing:'0.5px',
+                        textAlign:'left',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>
+                        ◈ {tmpl.name}
+                      </button>
+                      <button onClick={()=>deleteTemplate(tmpl.id)} title="Remove template" style={{
+                        background:'#0d0820',border:'1px solid #6050aa',color:'#503060',
+                        padding:'2px 5px',cursor:'pointer',fontSize:'11px',flexShrink:0}}>✕</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+        <div style={{flex:1}}/>
+        <div style={{padding:'8px',fontSize:'16px',color:'#1e2e3e',lineHeight:'1.7',borderTop:'1px solid #192535'}}>
+          CLICK TO ADD<br/>DRAG TO MOVE<br/>HANDLES: RESIZE
+        </div>
+      </div>
+
+      {/* ── CENTER ── */}
+      <div style={{flex:1,display:'flex',flexDirection:'column',minWidth:0}}>
+
+        {/* Toolbar */}
+        <div style={{background:'#070b10',borderBottom:'1px solid #192535',padding:'6px 12px',display:'flex',gap:'8px',alignItems:'center',flexShrink:0}}>
+          <span style={{color:'#00d4ff',fontSize:'16px',fontWeight:'bold',letterSpacing:'2px'}}>135TH KNEEBOARD BUILDER</span>
+          <div style={{flex:1}}/>
+          {[0,1].map(i=>(
+            <button key={i} onClick={()=>{setPageIdx(i);setSel(null);}} style={{
+              background:pageIdx===i?'#00d4ff':'#070b10',color:pageIdx===i?'#000d1a':'#506070',
+              border:'1px solid #1a3a5a',padding:'4px 12px',cursor:'pointer',fontSize:'12px',letterSpacing:'1px'}}>
+              PAGE {i+1}
+            </button>
+          ))}
+          <div style={{width:'1px',background:'#192535',height:'16px',margin:'0 2px'}}/>
+          <TogBtn active={showGrid} onClick={()=>setShowGrid(v=>!v)} label="GRID"/>
+          <TogBtn active={snapOn}   onClick={()=>setSnapOn(v=>!v)}   label="SNAP"/>
+          <button onClick={doUndo} disabled={!undo.length} style={{
+            background:'#070b10',color:undo.length?'#506070':'#202e3e',
+            border:'1px solid #192535',padding:'4px 10px',cursor:undo.length?'pointer':'default',
+            fontSize:'12px',letterSpacing:'1px'}}>UNDO</button>
+          <div style={{width:'1px',background:'#192535',height:'16px',margin:'0 2px'}}/>
+          <button onClick={()=>{
+            const blob=new Blob([JSON.stringify({v:1,pages,savedTemplates},null,0)],{type:'application/json'});
+            const a=document.createElement('a');
+            a.href=URL.createObjectURL(blob);
+            a.download='kneeboard-layout.json';
+            a.click();
+            URL.revokeObjectURL(a.href);
+          }} style={{background:'#070b10',color:'#00d4ff',border:'1px solid #1a3a5a',padding:'4px 10px',
+            cursor:'pointer',fontSize:'12px',letterSpacing:'1px'}}>SAVE</button>
+          <label style={{background:'#070b10',color:'#506070',border:'1px solid #192535',padding:'4px 10px',
+            cursor:'pointer',fontSize:'12px',letterSpacing:'1px'}}>
+            LOAD
+            <input type="file" accept=".json" style={{display:'none'}} onChange={e=>{
+              const f=e.target.files[0];if(!f)return;
+              const r=new FileReader();
+              r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.pages)setPages(d.pages);if(d.savedTemplates)setSavedTemplates(d.savedTemplates);}catch(_){}};
+              r.readAsText(f);
+              e.target.value='';
+            }}/>
+          </label>
+        </div>
+
+        {/* Canvas */}
+        <div style={{flex:1,overflow:'auto',display:'flex',alignItems:'flex-start',justifyContent:'center',padding:'22px',background:'#060910'}}>
+          <div style={{
+              position:'relative',width:'460px',height:'660px',flexShrink:0,
+              background:'#0d1b2a',border:'2px solid #1a3a5a',
+              boxShadow:'0 0 60px rgba(0,0,0,0.9)',
+              backgroundImage:showGrid?'linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px)':'none',
+              backgroundSize:showGrid?`${SNAP}px ${SNAP}px`:'auto',
+            }}
+            onMouseDown={e=>{if(e.currentTarget===e.target)setSel(null);}}>
+            {blocks.map((block,idx)=>(
+              <KBBlock key={block.id} block={block} zIndex={idx+1} selected={sel===block.id}
+                onSelect={()=>setSel(block.id)}                onPointerDown={e=>{pushUndo(JSON.stringify(blocks));dragR.current={id:block.id,sx:e.clientX,sy:e.clientY,ox:block.x,oy:block.y,w:block.w,h:block.h};}}
+                onResizeStart={(e,handle)=>{pushUndo(JSON.stringify(blocks));resizeR.current={id:block.id,handle,sx:e.clientX,sy:e.clientY,ox:block.x,oy:block.y,ow:block.w,oh:block.h};}}
+              />
+            ))}
+            {!blocks.length&&(
+              <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:'8px',pointerEvents:'none'}}>
+                <div style={{color:'#1a3a5a',fontSize:'18px',letterSpacing:'3px'}}>EMPTY PAGE</div>
+                <div style={{color:'#1a3a5a',fontSize:'12px',letterSpacing:'2px'}}>← ADD BLOCKS FROM LEFT PANEL</div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Status */}
+        <div style={{background:'#070b10',borderTop:'1px solid #192535',padding:'4px 12px',display:'flex',gap:'16px',fontSize:'18px',color:'#1e2e3e',letterSpacing:'1px',flexShrink:0}}>
+          <span>PG {pageIdx+1} · {blocks.length} BLOCK{blocks.length!==1?'S':''}</span>
+          <span>460 × 660 PX</span>
+          {selBlock&&<span style={{color:'#3a5060'}}>{(BLOCK_DEFS[selBlock.type]?.label||'BLOCK').toUpperCase()} · {selBlock.w}×{selBlock.h} @ ({selBlock.x},{selBlock.y})</span>}
+          <div style={{flex:1}}/>
+          <span>DEL: delete · ESC: deselect · CTRL+D: duplicate · CTRL+Z: undo</span>
+        </div>
+      </div>
+
+      {/* ── RIGHT PROPERTIES ── */}
+      <div style={{width:'260px',borderLeft:'1px solid #192535',display:'flex',flexDirection:'column',flexShrink:0,overflowY:'auto'}}>
+        <div style={{padding:'9px 10px 6px',color:'#00d4ff',fontSize:'16px',fontWeight:'bold',letterSpacing:'3px',borderBottom:'1px solid #192535',flexShrink:0}}>PROPERTIES</div>
+        <div style={{padding:'10px',display:'flex',flexDirection:'column',gap:'8px',flex:1}}>
+          {selBlock?(
+            <>
+              <div style={{color:selBlock.config?.accent||BLOCK_DEFS[selBlock.type]?.accent||'#00d4ff',fontSize:'12px',letterSpacing:'1px'}}>
+                {(BLOCK_DEFS[selBlock.type]?.label||'CUSTOM').toUpperCase()}
+              </div>
+
+              <div style={{display:'flex',flexDirection:'column',gap:'4px',paddingTop:'6px',borderTop:'1px solid #192535'}}>
+                <div style={{color:'#354555',fontSize:'18px',letterSpacing:'1px'}}>POSITION</div>
+                <NumInput label="X" value={selBlock.x} onChange={v=>updProp('x',Math.max(0,v))}/>
+                <NumInput label="Y" value={selBlock.y} onChange={v=>updProp('y',Math.max(0,v))}/>
+              </div>
+
+              <div style={{display:'flex',flexDirection:'column',gap:'4px',paddingTop:'6px',borderTop:'1px solid #192535'}}>
+                <div style={{color:'#354555',fontSize:'18px',letterSpacing:'1px'}}>SIZE</div>
+                <NumInput label="W" value={selBlock.w} onChange={v=>updProp('w',Math.max(20,v))}/>
+                <NumInput label="H" value={selBlock.h} onChange={v=>updProp('h',Math.max(20,v))}/>
+              </div>
+
+              <div style={{paddingTop:'6px',borderTop:'1px solid #192535'}}>
+                <BlockOpts block={selBlock} onChange={updCfg} onSaveTemplate={saveTemplate}/>
+              </div>
+
+              <label style={{display:'flex',alignItems:'center',gap:'7px',cursor:'pointer',fontSize:'12px',color:'#607080',paddingTop:'6px',borderTop:'1px solid #192535',letterSpacing:'1px'}}>
+                <input type="checkbox" checked={!!selBlock.locked} onChange={e=>updProp('locked',e.target.checked)} style={{accentColor:'#00d4ff',cursor:'pointer'}}/>
+                LOCKED
+              </label>
+
+              <div style={{display:'flex',flexDirection:'column',gap:'4px',paddingTop:'6px',borderTop:'1px solid #192535'}}>
+                <button onClick={dupSel} style={{background:'#070b10',border:'1px solid #1a3a5a',color:'#506070',padding:'5px',cursor:'pointer',fontSize:'18px',letterSpacing:'1px'}}>DUPLICATE</button>
+                <button onClick={delSel} disabled={selBlock.locked} style={{background:selBlock.locked?'#070b10':'#180808',border:'1px solid #2a1818',color:selBlock.locked?'#202830':'#cc4444',padding:'5px',cursor:selBlock.locked?'not-allowed':'pointer',fontSize:'18px',letterSpacing:'1px'}}>DELETE</button>
+              </div>
+
+              <div style={{display:'flex',flexDirection:'column',gap:'4px',paddingTop:'6px',borderTop:'1px solid #192535'}}>
+                <div style={{color:'#354555',fontSize:'18px',letterSpacing:'1px'}}>Z-ORDER</div>
+                <button onClick={toFront} style={{background:'#070b10',border:'1px solid #192535',color:'#405060',padding:'4px',cursor:'pointer',fontSize:'18px',letterSpacing:'1px'}}>TO FRONT</button>
+                <button onClick={toBack}  style={{background:'#070b10',border:'1px solid #192535',color:'#405060',padding:'4px',cursor:'pointer',fontSize:'18px',letterSpacing:'1px'}}>TO BACK</button>
+              </div>
+            </>
+          ):(
+            <div style={{color:'#1e2e3e',fontSize:'12px',lineHeight:'2',letterSpacing:'1px'}}>
+              CLICK A BLOCK<br/>TO SELECT IT.<br/><br/>OPTIONS APPEAR<br/>WHEN SELECTED.
+            </div>
+          )}
+        </div>
+        <div style={{padding:'8px 10px',fontSize:'16px',color:'#1e2e3e',borderTop:'1px solid #192535',lineHeight:'1.8',flexShrink:0}}>
+          PG 1: {pages[0].length} · PG 2: {pages[1].length}<br/>
+          UNDO STEPS: {undo.length}
+        </div>
+      </div>
+
+      {showModal&&<CustomModal onClose={()=>setShowModal(false)} onCreate={cfg=>{addBlock('custom',cfg);setShowModal(false);}}/>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
