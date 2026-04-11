@@ -1535,7 +1535,11 @@ function App(){
     window.addEventListener('mousemove',onMove);
     window.addEventListener('mouseup',onUp);
     return()=>{window.removeEventListener('mousemove',onMove);window.removeEventListener('mouseup',onUp);};
-  },[snapOn,pageIdx]);
+  },[snapOn,pageIdx])
+  useEffect(()=>{
+    const _sp={v:1,pages,savedTemplates};
+    try{window.parent.postMessage({type:'builder-autosave',data:_sp},'*');}catch(_){}
+  },[pages,savedTemplates]);;
 
   const selBlock=blocks.find(x=>x.id===sel);
 
