@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>135th SQN — Kneeboard Generator</title>
+<title>135th SQN â Kneeboard Generator</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -183,10 +183,10 @@ h3.sub-header{font-family:var(--font-mono);font-size:12px;letter-spacing:2px;tex
 <canvas id="renderCanvas" width="768" height="1024" style="display:none"></canvas>
 
 <script>
-// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
-//  FULLY STANDALONE Ã¢ÂÂ NO BACKEND NEEDED
+// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+//  FULLY STANDALONE ÃÂ¢ÃÂÃÂ NO BACKEND NEEDED
 //  All rendering happens client-side via Canvas
-// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 
 const W = 768, H = 1024;
 
@@ -211,9 +211,9 @@ const AIRCRAFT=['F/A-18C Hornet','F-16C Viper','F-15C Eagle','F-15E Strike Eagle
 const THREAT_TYPES=['SAM','AAA','MANPADS','Fighter','Bomber','AEW&C','EW','Naval','Other'];
 const MISSION_TABS=[{id:'info',label:'Mission'},{id:'waypoints',label:'Waypoints'},{id:'frequencies',label:'Comms'},{id:'flight',label:'Flight'},{id:'threats',label:'Threats'},{id:'preview',label:'Preview'}];
 
-// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 //  CANVAS KNEEBOARD RENDERER
-// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 var _sqLogo=new Image();_sqLogo.crossOrigin="anonymous";_sqLogo.src="135TH%20VFS%20patch.png";
 function getCanvas(){const c=document.getElementById('renderCanvas');c.width=W;c.height=H;return c.getContext('2d');}
 const T={bg:'#0a0e14',headerBg:'#06080c',headerLine:'#00d4ff',text:'#b8ccd8',textDim:'#5a7a90',textBright:'#e0ecf4',accent:'#00d4ff',accentDim:'#0088aa',warn:'#ffaa00',danger:'#ff2233',line:'#1e3d55',lineDim:'#152535',rowAlt:'#0d1520'};
@@ -248,24 +248,7 @@ function handlePreview(pageType){addLog('KBD','Rendering '+pageType.toUpperCase(
 
 function renderCommsLog(){const el=document.getElementById('comms-log');if(!el)return;el.innerHTML='';state.logs.slice(-7).forEach(l=>{const d=document.createElement('div');d.className='entry';d.innerHTML='<span class="source">['+l.source+']</span><span class="time">'+l.time+'</span><br><span style="padding-left:4px">'+l.msg+'</span>';el.appendChild(d);});el.scrollTop=el.scrollHeight;}
 function row(label,value,cls){cls=cls||'';return '<div class="panel-row"><span>'+label+'</span><span class="val '+cls+'">'+(value||'\u2014')+'</span></div>';}
-function renderRightPanel(){const m=state.mission;
-const pm=document.getElementById('panel-mission');
-if(pm)pm.innerHTML=[row('OPERATION',m.mission_name,'cyan'),row('THEATER',m.theater),row('TYPE',m.mission_type),row('AIRCRAFT',m.aircraft_type),row('CALLSIGN',m.callsign,'cyan'),row('DEP',m.departure_airfield),row('RCV',m.recovery_airfield)].join('');
-const pf=document.getElementById('panel-flights');
-if(pf){
-  if(m.flights&&m.flights.length>0&&m.selectedFlight>=0&&m.flights[m.selectedFlight]){
-    const fl=m.flights[m.selectedFlight];
-    pf.innerHTML=row('FLIGHT',fl.name,'cyan')+row('TYPE',fl.type)+row('WPS',fl.waypoints.length)+row('SIDE',fl.coalition.toUpperCase());
-  }else if(m.flights&&m.flights.length>0){
-    pf.innerHTML='<div style="font-size:9px;color:var(--text-muted);letter-spacing:1px">'+m.flights.length+' FLIGHTS — SELECT IN FLIGHT TAB</div>';
-  }else if(m.flight_members&&m.flight_members.length>0){
-    pf.innerHTML=m.flight_members.slice(0,4).map(function(mem){return row(mem.callsign||'Flt '+mem.number,mem.aircraft);}).join('');
-  }else{
-    pf.innerHTML='<div style="font-size:9px;color:var(--text-muted);letter-spacing:1px">NO FLIGHT DATA</div>';
-  }
-}
-const ps=document.getElementById('panel-squadron');
-if(ps)ps.innerHTML=[row('UNIT',m.squadron_name||'135TH','cyan'),row('STATUS','ACTIVE','green'),row('CALLSIGN',m.callsign||'—','cyan')].join('');}
+function renderRightPanel(){const m=state.mission;var cf=document.getElementById('comms-freqs');if(cf){var fg=m.frequencies||[];var af=[],aw=[],tc=[];var depFreqs=AIRFIELD_FREQS[m.departure_airfield]||[];var recFreqs=AIRFIELD_FREQS[m.recovery_airfield]||[];depFreqs.forEach(function(fr){af.push({name:m.departure_airfield+' '+fr.n,freq:fr.f});});if(m.recovery_airfield&&m.recovery_airfield!==m.departure_airfield)recFreqs.forEach(function(fr){af.push({name:m.recovery_airfield+' '+fr.n,freq:fr.f});});fg.forEach(function(f){var n=f.name||'';var nl=n.toLowerCase();if(nl.indexOf('awacs')>-1||nl.indexOf('magic')>-1||nl.indexOf('darkstar')>-1||nl.indexOf('overlord')>-1||nl.indexOf('tanker')>-1)aw.push(f);});if(m.awacs_freq)aw.push({name:m.awacs_callsign||'AWACS',freq:m.awacs_freq});if(m.tac_freq)tc.push({name:'TAC',freq:m.tac_freq});function freqRows(arr){if(!arr.length)return'<div style="font-size:9px;color:var(--text-muted);padding:2px 0">\u2014</div>';return arr.map(function(f){var cls=parseFloat(f.freq)>=225?'fval uhf':'fval';if(f.freq==='243.000'||f.freq==='121.500')cls='fval guard';return'<div class="freq-row"><span class="fname">'+f.name+'</span><span class="'+cls+'">'+f.freq+' AM</span></div>'}).join('')}cf.innerHTML='<div class="freq-group"><div class="freq-group-title">Airfield Comms</div>'+freqRows(af)+'</div><div class="freq-group"><div class="freq-group-title">AWACS Comms</div>'+freqRows(aw)+'</div><div class="freq-group"><div class="freq-group-title">TAC Comms</div>'+freqRows(tc)+'</div>'}var pm=document.getElementById('panel-mission');if(pm){var row=function(l,v,c){return'<div class="panel-row"><span class="lbl">'+l+'</span><span class="val'+(c?' '+c:'')+'">'+( v||'\u2014')+'</span></div>'};pm.innerHTML=row('OPERATION',m.mission_name,'cyan')+row('THEATER',m.theater)+row('TYPE',m.mission_type)+row('AIRCRAFT',m.aircraft_type)+row('CALLSIGN',m.callsign)+row('DEP',m.departure_airfield)+row('RCV',m.recovery_airfield)+row('LASER',m.laser_code)}var pf=document.getElementById('panel-flights');var pfR=function(l,v,c){return'<div class="panel-row"><span class="lbl">'+l+'</span><span class="val'+(c?' '+c:'')+'">'+(v||'—')+'</span></div>';};if(pf){if(m.selectedFlights&&m.selectedFlights.length>0){var pfHtml='';m.selectedFlights.forEach(function(sidx){var fl=m.flights[sidx];if(!fl)return;if(m.selectedFlights.length>1)pfHtml+='<div style="border-bottom:1px solid #ffffff11;padding:2px 0 4px;margin-bottom:4px;">';pfHtml+=pfR('FLIGHT',fl.name,'cyan')+pfR('TYPE',fl.type)+pfR('WPS',(fl.waypoints||[]).length)+pfR('SIDE',(fl.coalition||'').toUpperCase());if(m.selectedFlights.length>1)pfHtml+='</div>';});pf.innerHTML=pfHtml;}else if(m.flights&&m.flights.length>0&&m.selectedFlight>=0&&m.flights[m.selectedFlight]){var sfl=m.flights[m.selectedFlight];pf.innerHTML=pfR('FLIGHT',sfl.name,'cyan')+pfR('TYPE',sfl.type)+pfR('WPS',(sfl.waypoints||[]).length)+pfR('SIDE',(sfl.coalition||'').toUpperCase());}else if(m.flights&&m.flights.length>0){pf.innerHTML='<div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;padding:4px 0">'+m.flights.length+' FLIGHTS — SELECT IN FLIGHT TAB</div>';}else if(m.flight_members&&m.flight_members.length){pf.innerHTML=m.flight_members.slice(0,4).map(function(mem,i){return'<div class="panel-row"><span class="lbl">Flt '+(i+1)+'</span><span class="val">'+mem.callsign+' ('+mem.aircraft+')</span></div>';}).join('');}else{pf.innerHTML='<div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;padding:4px 0">NO FLIGHT DATA</div>';}}var ps=document.getElementById('panel-squadron');if(ps){var row2=function(l,v,c){return'<div class="panel-row"><span class="lbl">'+l+'</span><span class="val'+(c?' '+c:'')+'">'+( v||'\u2014')+'</span></div>'};ps.innerHTML=row2('UNIT',m.squadron_name||'135TH')+row2('STATUS','ACTIVE','green')+row2('CALLSIGN','WILD WEASEL')+row2('WAYPOINTS',m.waypoints?m.waypoints.length:'\u2014')+row2('FREQS',m.frequencies?m.frequencies.length:'\u2014')+row2('THREATS',m.threats?m.threats.length:'0')}}
 const AWACS_DB={
 'Overlord':{freq:'251.000',mod:'AM',platform:'E-3A'},
 'Magic':{freq:'264.000',mod:'AM',platform:'E-2D'},
@@ -611,50 +594,88 @@ function renderFrequenciesTab(){return makeTableTab('Frequencies','frequencies',
 function renderFlightTab(){
   const wrap=document.createElement('div');
   if(state.mission.flights&&state.mission.flights.length>0){
-    const card=document.createElement('div');card.className='card';
-    const hdr=document.createElement('div');hdr.className='card-header';
-    hdr.innerHTML='<h2>FLIGHT SELECTOR <span class="badge badge-green">MIZ</span></h2>';
+    const card=document.createElement('div');
+    card.style.cssText='background:#1a1a2e;border:1px solid #00d4ff33;border-radius:6px;padding:12px;margin-bottom:12px;';
+    const hdr=document.createElement('div');
+    hdr.style.cssText='color:#00d4ff;font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:10px;text-transform:uppercase;';
+    hdr.textContent='FLIGHT SELECTOR';
     card.appendChild(hdr);
-    const body=document.createElement('div');body.style.cssText='padding:16px;';
-    const lb=document.createElement('label');lb.className='section-label';lb.textContent='SELECT FLIGHT FROM MIZ';
-    const sel=document.createElement('select');
-    sel.style.cssText='width:100%;margin-top:8px;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);padding:8px 10px;font-family:var(--font-mono);font-size:12px;border-radius:3px;display:block;';
-    const o0=document.createElement('option');o0.value='-1';o0.textContent='Select flight...';sel.appendChild(o0);
-    state.mission.flights.forEach(function(fl,i){
-      const o=document.createElement('option');o.value=i;
-      const pre=fl.coalition==='blue'?'▶ ':'▷ ';
-      o.textContent=pre+fl.name+' ('+fl.type+')';
-      if(state.mission.selectedFlight===i)o.selected=true;
-      sel.appendChild(o);
+    const toggleRow=document.createElement('div');
+    toggleRow.style.cssText='display:flex;gap:8px;margin-bottom:10px;';
+    const selAllBtn=document.createElement('button');
+    selAllBtn.textContent='SELECT ALL';
+    selAllBtn.style.cssText='background:#00d4ff22;border:1px solid #00d4ff55;color:#00d4ff;font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:4px;cursor:pointer;';
+    const clrAllBtn=document.createElement('button');
+    clrAllBtn.textContent='CLEAR ALL';
+    clrAllBtn.style.cssText='background:#ff4d4d22;border:1px solid #ff4d4d55;color:#ff4d4d;font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:4px;cursor:pointer;';
+    toggleRow.appendChild(selAllBtn);toggleRow.appendChild(clrAllBtn);
+    card.appendChild(toggleRow);
+    const listDiv=document.createElement('div');
+    listDiv.style.cssText='display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;';
+    const checkboxes=[];
+    state.mission.flights.forEach(function(fl,idx){
+      const rowEl=document.createElement('label');
+      rowEl.style.cssText='display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 8px;border-radius:4px;border:1px solid #ffffff11;background:#0d0d1a;';
+      const cb=document.createElement('input');
+      cb.type='checkbox';cb.value=idx;
+      cb.style.cssText='accent-color:#00d4ff;width:14px;height:14px;cursor:pointer;';
+      if(state.mission.selectedFlights&&state.mission.selectedFlights.includes(idx))cb.checked=true;
+      checkboxes.push(cb);
+      const lbl=document.createElement('span');
+      lbl.style.cssText='flex:1;display:flex;justify-content:space-between;align-items:center;';
+      const nameSpan=document.createElement('span');
+      nameSpan.style.cssText='color:#e0e0e0;font-size:11px;font-weight:700;';
+      nameSpan.textContent=fl.name||(fl.type+'#'+idx);
+      const typeSpan=document.createElement('span');
+      typeSpan.style.cssText='color:#888;font-size:10px;';
+      typeSpan.textContent=fl.type||'';
+      lbl.appendChild(nameSpan);lbl.appendChild(typeSpan);
+      rowEl.appendChild(cb);rowEl.appendChild(lbl);
+      cb.addEventListener('change',function(){
+        var sel=[];
+        checkboxes.forEach(function(c,i){if(c.checked)sel.push(i);});
+        state.mission.selectedFlights=sel;
+        if(sel.length>0){
+          var primary=state.mission.flights[sel[0]];
+          state.mission.selectedFlight=sel[0];
+          state.mission.waypoints=(primary.waypoints||[]).map(function(wp,wi){return{name:wp.name||('WP'+wi),lat:wp.lat,lon:wp.lon,alt:wp.alt||0,speed:wp.speed||0};});
+          state.mission.aircraft_type=primary.type||state.mission.aircraft_type;
+          state.mission.callsign=primary.name||state.mission.callsign;
+        }else{state.mission.selectedFlight=-1;}
+        render();
+      });
+      listDiv.appendChild(rowEl);
     });
-    sel.addEventListener('change',function(e){
-      const idx=parseInt(e.target.value);
-      if(idx>=0&&state.mission.flights[idx]){
-        const fl=state.mission.flights[idx];
-        state.mission.selectedFlight=idx;
-        state.mission.waypoints=fl.waypoints.map(function(w,wi){return{number:wi+1,name:w.name,lat:w.lat,lon:w.lon,elevation:w.alt||'',notes:''};});
-        state.mission.aircraft_type=fl.type;
-        state.mission.callsign=fl.name;
-      }else{state.mission.selectedFlight=-1;}
+    card.appendChild(listDiv);
+    selAllBtn.addEventListener('click',function(){
+      checkboxes.forEach(function(c){c.checked=true;});
+      var sel=state.mission.flights.map(function(_,i){return i;});
+      state.mission.selectedFlights=sel;
+      if(sel.length>0){
+        var primary=state.mission.flights[0];
+        state.mission.selectedFlight=0;
+        state.mission.waypoints=(primary.waypoints||[]).map(function(wp,wi){return{name:wp.name||('WP'+wi),lat:wp.lat,lon:wp.lon,alt:wp.alt||0,speed:wp.speed||0};});
+        state.mission.aircraft_type=primary.type||state.mission.aircraft_type;
+        state.mission.callsign=primary.name||state.mission.callsign;
+      }
       render();
     });
-    body.appendChild(lb);body.appendChild(sel);
-    if(state.mission.selectedFlight>=0&&state.mission.flights[state.mission.selectedFlight]){
-      const fl=state.mission.flights[state.mission.selectedFlight];
-      const det=document.createElement('div');
-      det.style.cssText='margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:11px;';
-      det.innerHTML='<div class="section-label" style="margin-bottom:8px">SELECTED FLIGHT</div>'
-        +'<div style="color:var(--text-secondary);margin-bottom:4px">TYPE: <span style="color:var(--text-primary)">'+fl.type+'</span></div>'
-        +'<div style="color:var(--text-secondary);margin-bottom:4px">CALLSIGN: <span style="color:var(--accent-cyan,#0ff)">'+fl.name+'</span></div>'
-        +'<div style="color:var(--text-secondary);margin-bottom:4px">WAYPOINTS: <span style="color:var(--text-primary)">'+fl.waypoints.length+'</span></div>'
-        +'<div style="color:var(--text-secondary)">COALITION: <span style="color:var(--text-primary)">'+fl.coalition.toUpperCase()+'</span></div>';
-      body.appendChild(det);
-    }
-    card.appendChild(body);wrap.appendChild(card);return wrap;
+    clrAllBtn.addEventListener('click',function(){
+      checkboxes.forEach(function(c){c.checked=false;});
+      state.mission.selectedFlights=[];state.mission.selectedFlight=-1;
+      render();
+    });
+    wrap.appendChild(card);
   }
-  return makeTableTab('Flight Members','flight_members',[{label:'#',key:'number',width:'30px'},{label:'Callsign',key:'callsign',placeholder:'Callsign'},{label:'Aircraft',key:'aircraft',placeholder:'Aircraft'},{label:'Role',key:'role',placeholder:'Wingman / Lead'},{label:'Notes',key:'notes',placeholder:'Notes'}]);
+  const t=makeTableTab('Flight Members','flight_members',[
+    {label:'CALLSIGN',key:'callsign',placeholder:'VIPER 1-1'},
+    {label:'ROLE',key:'role',placeholder:'Lead'},
+    {label:'AIRCRAFT',key:'aircraft',placeholder:'F-16C'},
+    {label:'FREQ',key:'freq',placeholder:'305.000'}
+  ]);
+  Array.from(t.childNodes).forEach(function(n){wrap.appendChild(n);});
+  return wrap;
 }
-
 function renderThreatsTab(){const wrap=document.createElement('div');const card=document.createElement('div');card.className='card';const hdr=document.createElement('div');hdr.className='card-header';hdr.innerHTML='<h2>Threat Order of Battle</h2>';const addBtn=document.createElement('button');addBtn.className='btn btn-sm btn-primary';addBtn.textContent='+ Add';addBtn.addEventListener('click',()=>{state.mission.threats.push({name:'',type:'SAM',radar_type:'',rwr:'',harm_tr:'',harm_sr:'',range_nm:'',max_alt_ft:'',location:'',notes:''});render();});hdr.appendChild(addBtn);card.appendChild(hdr);const tbl=document.createElement('table');tbl.className='data-table';tbl.innerHTML='<thead><tr><th>System</th><th>Type</th><th>Radar</th><th>RWR</th><th>HARM TR</th><th>HARM SR</th><th>Range</th><th>Alt (ft)</th><th>Location</th><th>Notes</th><th></th></tr></thead>';const tbody=document.createElement('tbody');state.mission.threats.forEach((item,i)=>{const tr=document.createElement('tr');const tdSys=document.createElement('td');const sel=document.createElement('select');sel.style.minWidth='140px';sel.innerHTML='<option value="">-- Select --</option>'+THREAT_DB.map(t=>'<option value="'+t.name+'"'+(item.name===t.name?' selected':'')+'>'+t.name+'</option>').join('');sel.addEventListener('change',e=>{const db=THREAT_DB.find(t=>t.name===e.target.value);if(db){state.mission.threats[i].name=db.name;state.mission.threats[i].type=db.type;state.mission.threats[i].radar_type=db.radar_type;state.mission.threats[i].rwr=db.rwr;state.mission.threats[i].harm_tr=db.harm_tr;state.mission.threats[i].harm_sr=db.harm_sr;state.mission.threats[i].range_nm=db.range_nm;state.mission.threats[i].max_alt_ft=db.max_alt_ft;}else{state.mission.threats[i].name='';}render();});tdSys.appendChild(sel);tr.appendChild(tdSys);const tdType=document.createElement('td');tdType.textContent=item.type||'';tdType.style.color='var(--accent-amber)';tr.appendChild(tdType);const tdRdr=document.createElement('td');tdRdr.textContent=item.radar_type||'';tdRdr.style.color='var(--accent-cyan)';tr.appendChild(tdRdr);const tdRwr=document.createElement('td');tdRwr.textContent=item.rwr||'\u2014';tdRwr.style.color=item.rwr?'var(--accent-amber)':'var(--text-muted)';tdRwr.style.fontWeight=item.rwr?'bold':'normal';tr.appendChild(tdRwr);const tdHTR=document.createElement('td');tdHTR.textContent=item.harm_tr||'\u2014';tdHTR.style.color=item.harm_tr?'var(--accent-green)':'var(--text-muted)';tr.appendChild(tdHTR);const tdHSR=document.createElement('td');tdHSR.textContent=item.harm_sr||'\u2014';tdHSR.style.color=item.harm_sr?'var(--accent-green)':'var(--text-muted)';tr.appendChild(tdHSR);const tdRng=document.createElement('td');tdRng.textContent=item.range_nm?item.range_nm+' nm':'';tr.appendChild(tdRng);const tdAlt=document.createElement('td');tdAlt.textContent=item.max_alt_ft?Number(item.max_alt_ft).toLocaleString():'';tr.appendChild(tdAlt);const tdLoc=document.createElement('td');const inpLoc=document.createElement('input');inpLoc.value=item.location||'';inpLoc.placeholder='Grid / MGRS';inpLoc.addEventListener('change',e=>{state.mission.threats[i].location=e.target.value;renderRightPanel();});tdLoc.appendChild(inpLoc);tr.appendChild(tdLoc);const tdNotes=document.createElement('td');const inpNotes=document.createElement('input');inpNotes.value=item.notes||'';inpNotes.placeholder='Notes';inpNotes.addEventListener('change',e=>{state.mission.threats[i].notes=e.target.value;});tdNotes.appendChild(inpNotes);tr.appendChild(tdNotes);const tdX=document.createElement('td');const btnX=document.createElement('button');btnX.className='btn btn-sm btn-danger';btnX.textContent='\u2715';btnX.addEventListener('click',()=>{state.mission.threats.splice(i,1);render();});tdX.appendChild(btnX);tr.appendChild(tdX);tbody.appendChild(tr);});tbl.appendChild(tbody);card.appendChild(tbl);wrap.appendChild(card);return wrap;}
 
 function renderPreviewTab(){const wrap=document.createElement('div');const card=document.createElement('div');card.className='card';card.innerHTML='<div class="card-header"><h2>Preview</h2><span class="badge badge-green">CLIENT-SIDE RENDERING</span></div>';const btnGroup=document.createElement('div');btnGroup.className='btn-group';btnGroup.style.marginBottom='16px';[['mission','Mission Card','btn-primary'],['comms','Comms Card','btn-ghost'],['threats','Threat Card','btn-ghost']].forEach(([type,label,cls])=>{const btn=document.createElement('button');btn.className='btn '+cls;btn.textContent=label;btn.addEventListener('click',()=>handlePreview(type));btnGroup.appendChild(btn);});card.appendChild(btnGroup);if(state.previewUrl){const meta=document.createElement('div');meta.style.marginBottom='8px';meta.innerHTML='<span class="badge badge-green">'+(state.previewType||'').toUpperCase()+'</span><span style="margin-left:8px;font-size:11px;color:var(--text-muted)">768 \u00d7 1024</span>';card.appendChild(meta);const img=document.createElement('img');img.src=state.previewUrl;img.alt='Kneeboard preview';img.style.maxWidth='100%';card.appendChild(img);const dlBtn=document.createElement('button');dlBtn.className='btn btn-success';dlBtn.textContent='Download PNG';dlBtn.style.marginTop='12px';dlBtn.addEventListener('click',()=>downloadPng(state.previewUrl,'kneeboard_'+state.previewType+'.png'));card.appendChild(dlBtn);}else{card.innerHTML+='<div class="preview-empty"><div class="icon">\uD83D\uDDBC</div><p>Click a button above to generate a preview</p><p style="margin-top:8px;font-size:11px">Fill in mission data first, then preview each page type</p></div>';}wrap.appendChild(card);return wrap;}
