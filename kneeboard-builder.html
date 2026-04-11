@@ -223,9 +223,9 @@ function _LoadoutVisBlock_REMOVED({ config, w, h, accent }) {
       {/* Aircraft type label */}
       <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'3px' }}>
         <span style={{ color:accent, fontSize:'12px', fontWeight:'bold', letterSpacing:'1px' }}>
-          ${cfg.title || 'LOADOUT'}
+          {cfg.title || 'LOADOUT'}
         </span>
-        <span style={{ color:'#405060', fontSize:'10px' }}>— ${ac.name}</span>
+        <span style={{ color:'#405060', fontSize:'10px' }}>— {ac.name}</span>
       </div>
 
       {/* SVG aircraft diagram */}
@@ -255,14 +255,14 @@ function _LoadoutVisBlock_REMOVED({ config, w, h, accent }) {
                 {/* Station label */}
                 <text x={x} y={y + 17} textAnchor="middle"
                       fill={loaded ? accent : '#405060'} fontSize="9">
-                  ${st.label}
+                  {st.label}
                 </text>
                 {/* Weapon abbreviated */}
-                {${loaded && (
+                {{loaded && (
                   <text x={x} y={ac.stationY - 4} textAnchor="middle"
                         fill={accent} fontSize="8"
                         style={{ fontFamily:"'Courier New',monospace" }}>
-                    ${(loadout[st.id] || '').replace(' (LGB)','').replace(' (JDAM)','').replace(' (LJDAM)','').slice(0,8)}
+                    {(loadout[st.id] || '').replace(' (LGB)','').replace(' (JDAM)','').replace(' (LJDAM)','').slice(0,8)}
                   </text>
                 )}}
               </g>
@@ -272,20 +272,20 @@ function _LoadoutVisBlock_REMOVED({ config, w, h, accent }) {
       </div>
 
       {/* Station picker overlay */}
-      {${activeStation && (
+      {{activeStation && (
         <div style={{ position:'absolute', inset:0, background:'rgba(7,11,16,0.92)',
                       display:'flex', flexDirection:'column', alignItems:'center',
                       justifyContent:'center', zIndex:100, padding:'8px' }}>
           <div style={{ color:accent, fontSize:'12px', marginBottom:'6px', letterSpacing:'1px' }}>
-            STATION ${activeStation}
+            STATION {activeStation}
           </div>
           {/* Capability hint */}
           <div style={{ color:'#405060', fontSize:'9px', marginBottom:'8px', textAlign:'center' }}>
-            ${(ac.stations.find(s=>s.id===activeStation)?.cap || []).join('  ·  ')}
+            {(ac.stations.find(s=>s.id===activeStation)?.cap || []).join('  ·  ')}
           </div>
           {/* Weapon list — only show compatible weapons + '—' */}
           <div style={{ display:'flex', flexWrap:'wrap', gap:'4px', justifyContent:'center', maxWidth:'400px' }}>
-            ${(['—', ...(ac.stations.find(s=>s.id===activeStation)?.cap || [])]).map(w => (
+            {(['—', ...(ac.stations.find(s=>s.id===activeStation)?.cap || [])]).map(w => (
               <button key={w} onClick={() => confirmPick(w)} style={{
                 background: pickerWeapon===w ? '#1a2a0a' : '#0a1018',
                 border: `1px solid ${pickerWeapon===w ? accent : '#1a3050'}`,
