@@ -670,6 +670,8 @@ function renderFlightTab(){
     rows+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
     rows+='<span style="color:#4fc3f7;font-size:10px;font-weight:bold;white-space:nowrap">FLIGHT '+(fi+1)+'</span>';
     rows+='<input type="text" value="'+esc(f.name)+'" placeholder="Flight name (e.g. Weasel 1)" style="background:#12122a;color:#e0e0e0;border:1px solid #4fc3f7;border-radius:3px;padding:4px 8px;flex:1;font-size:12px" onchange="state.mission.flights['+fi+'].name=this.value;render();">';
+    rows+='<button onclick="var i='+fi+';if(i>0){var _t=state.mission.flights[i-1];state.mission.flights[i-1]=state.mission.flights[i];state.mission.flights[i]=_t;render();}" '+(fi===0?'disabled':'')+' style="background:'+(fi===0?'#1a1a1a':'#1a2a3a')+';color:'+(fi===0?'#444':'#4fc3f7')+';border:1px solid '+(fi===0?'#333':'#4fc3f7')+';border-radius:3px;padding:2px 6px;cursor:'+(fi===0?'not-allowed':'pointer')+';font-size:10px">▲</button>';
+    rows+='<button onclick="var i='+fi+';if(i<state.mission.flights.length-1){var _t=state.mission.flights[i+1];state.mission.flights[i+1]=state.mission.flights[i];state.mission.flights[i]=_t;render();}" '+(fi===m.flights.length-1?'disabled':'')+' style="background:'+(fi===m.flights.length-1?'#1a1a1a':'#1a2a3a')+';color:'+(fi===m.flights.length-1?'#444':'#4fc3f7')+';border:1px solid '+(fi===m.flights.length-1?'#333':'#4fc3f7')+';border-radius:3px;padding:2px 6px;cursor:'+(fi===m.flights.length-1?'not-allowed':'pointer')+';font-size:10px">▼</button>';
     rows+='<button onclick="state.mission.flights.splice('+fi+',1);render();" style="background:#c0392b;color:#fff;border:none;border-radius:3px;padding:3px 9px;cursor:pointer;font-size:11px">DEL</button>';
     rows+='</div>';
     rows+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
@@ -881,8 +883,8 @@ function renderThreatsTab(){
       '<span style="font-size:9px;padding:1px 5px;border-radius:3px;color:'+tc+';border:1px solid '+tc+';background:rgba(0,0,0,0.3);margin-left:auto">'+e.type+'</span>'+
       '</div>'+
       '<div style="display:flex;flex-wrap:wrap;gap:10px;font-size:10px;color:#aaa;margin-bottom:4px">'+
-      '<span>RNG: <b style="color:#ccc">'+e.rng+'</b></span>'+
-      '<span>MAX ALT: <b style="color:#ccc">'+e.alt+'</b></span>'+
+      '<span>RNG: <b style="color:#ccc">'+(e.rng.replace(/^([\d.]+) km$/,function(_,k){return (Math.round(parseFloat(k)*0.54*10)/10)+' nm';}))+'</b></span>'+
+      '<span>MAX ALT: <b style="color:#ccc">'+(e.alt.replace(/^([\d.]+) km$/,function(_,k){return Math.round(parseFloat(k)*3280.84/500)*500+' ft';}))+'</b></span>'+
       '<span>GUID: <b style="color:#ccc">'+e.guid+'</b></span>'+
       '<span>BAND: <b style="color:#ccc">'+e.band+'</b></span>'+
       '</div>'+
