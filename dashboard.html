@@ -11,7 +11,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 :root{
-  --bg-primary:#06080c;--bg-secondary:#0a0e14;--bg-tertiary:#0e1520;
+  --bg-primary:#06080c;--bg-secondary:#0a0e14;--bg-tertiary:#0e1520; 
   --bg-card:#0a1018;--bg-active:#0d2030;
   --border:#152535;--border-bright:#1e3d55;
   --text-primary:#b8ccd8;--text-secondary:#7a9ab0;--text-muted:#3d5a70;
@@ -251,55 +251,25 @@ function renderCommsLog(){const el=document.getElementById('comms-log');if(!el)r
 function row(label,value,cls){cls=cls||'';return '<div class="panel-row"><span>'+label+'</span><span class="val '+cls+'">'+(value||'\u2014')+'</span></div>';}
 function renderRightPanel(){const m=state.mission;var cf=document.getElementById('comms-freqs');if(cf){var fg=m.frequencies||[];var af=[],aw=[],tc=[];var depFreqs=AIRFIELD_FREQS[m.departure_airfield]||[];var recFreqs=AIRFIELD_FREQS[m.recovery_airfield]||[];depFreqs.forEach(function(fr){af.push({name:m.departure_airfield+' '+fr.n,freq:fr.f});});if(m.recovery_airfield&&m.recovery_airfield!==m.departure_airfield)recFreqs.forEach(function(fr){af.push({name:m.recovery_airfield+' '+fr.n,freq:fr.f});});fg.forEach(function(f){var n=f.name||'';var nl=n.toLowerCase();if(nl.indexOf('awacs')>-1||nl.indexOf('magic')>-1||nl.indexOf('darkstar')>-1||nl.indexOf('overlord')>-1||nl.indexOf('tanker')>-1)aw.push(f);});if(m.awacs_freq)aw.push({name:m.awacs_callsign||'AWACS',freq:m.awacs_freq});if(m.tac_freq)tc.push({name:'TAC',freq:m.tac_freq});function freqRows(arr){if(!arr.length)return'<div style="font-size:9px;color:var(--text-muted);padding:2px 0">\u2014</div>';return arr.map(function(f){var cls=parseFloat(f.freq)>=225?'fval uhf':'fval';if(f.freq==='243.000'||f.freq==='121.500')cls='fval guard';return'<div class="freq-row"><span class="fname">'+f.name+'</span><span class="'+cls+'">'+f.freq+' AM</span></div>'}).join('')}cf.innerHTML='<div class="freq-group"><div class="freq-group-title">Airfield Comms</div>'+freqRows(af)+'</div><div class="freq-group"><div class="freq-group-title">AWACS Comms</div>'+freqRows(aw)+'</div><div class="freq-group"><div class="freq-group-title">TAC Comms</div>'+freqRows(tc)+'</div>'}var pm=document.getElementById('panel-mission');if(pm){var row=function(l,v,c){return'<div class="panel-row"><span class="lbl">'+l+'</span><span class="val'+(c?' '+c:'')+'">'+( v||'\u2014')+'</span></div>'};pm.innerHTML=row('OPERATION',m.mission_name,'cyan')+row('THEATER',m.theater)+row('TYPE',m.mission_type)+row('AIRCRAFT',m.aircraft_type)+row('CALLSIGN',m.callsign)+row('DEP',m.departure_airfield)+row('RCV',m.recovery_airfield)}var pf=document.getElementById('panel-flights');
 if(pf){
-  var fm=m.flight_members&&m.flight_members.length>0?m.flight_members:[];
-  if(fm.length===0){
-    pf.innerHTML='<div style="color:#333;font-size:9px;letter-spacing:1px;padding:8px 0;">NO FLIGHT DATA</div>';
-  }else{
-    // Group members by package
-    var groups={};var ungrouped=[];
-    fm.forEach(function(mem){
-      if(mem.group){if(!groups[mem.group])groups[mem.group]=[];groups[mem.group].push(mem);}
-      else ungrouped.push(mem);
+  var fl=m.flights&&m.flights.length>0?m.flights:[];
+  if(fl.length===0){
+    pf.innerHTML='<div style="color:#888;font-style:italic;font-size:11px;padding:4px 0">No flights defined</div>';
+  } else {
+    function esc2(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    var pfh='';
+    fl.forEach(function(f){
+      pfh+='<div style="margin-bottom:6px">';
+      pfh+='<div style="font-weight:bold;color:#4fc3f7;font-size:11px">'+esc2(f.name)+'</div>';
+      pfh+='<div style="font-size:10px;color:#aaa">'+esc2(f.type||'')+( f.freq?' | '+esc2(f.freq)+' MHz':'')+'</div>';
+      if(f.aircraft&&f.aircraft.length>0){
+        f.aircraft.forEach(function(ac,ai){
+          var isl=ai===f.aircraft.length-1;
+          pfh+='<div style="font-size:10px;color:#ccc;padding-left:8px">'+(isl?'\u2514':'\u251c')+' '+esc2(ac.callsign)+(ac.acType?' ('+esc2(ac.acType)+')':'')+'</div>';
+        });
+      }
+      pfh+='</div>';
     });
-    var pfHtml='';
-    // Render grouped packages first
-    Object.keys(groups).sort().forEach(function(grp){
-      pfHtml+='<div style="margin-bottom:6px;">';
-      pfHtml+='<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">';
-      pfHtml+='<div style="flex:1;height:1px;background:#00d4ff33;"></div>';
-      pfHtml+='<span style="color:#00d4ff;font-size:8px;letter-spacing:2px;white-space:nowrap;">PKG '+grp+'</span>';
-      pfHtml+='<div style="flex:1;height:1px;background:#00d4ff33;"></div>';
-      pfHtml+='</div>';
-      groups[grp].forEach(function(mem){
-        var cs=mem.callsign||'—';var role=mem.role||'';var ac=mem.aircraft||'—';var freq=mem.freq||'—';
-        pfHtml+='<div style="background:#0d0d1a;border:1px solid #00d4ff33;border-radius:3px;padding:5px 7px;margin-bottom:3px;">';
-        pfHtml+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">';
-        pfHtml+='<div style="width:6px;height:6px;border-radius:50%;background:#00d4ff;flex-shrink:0;"></div>';
-        pfHtml+='<span style="color:#fff;font-size:11px;font-weight:700;">'+cs+'</span>';
-        if(role)pfHtml+='<span style="color:#555;font-size:8px;margin-left:auto;">'+role+'</span>';
-        pfHtml+='</div>';
-        pfHtml+='<div style="padding-left:12px;display:flex;flex-direction:column;gap:2px;">';
-        pfHtml+='<div style="display:flex;justify-content:space-between;"><span style="color:#555;font-size:8px;letter-spacing:1px;">AIRCRAFT</span><span style="color:#aaa;font-size:8px;font-weight:700;">'+ac+'</span></div>';
-        pfHtml+='<div style="display:flex;justify-content:space-between;"><span style="color:#555;font-size:8px;letter-spacing:1px;">FREQ</span><span style="color:#00d4ff;font-size:8px;font-weight:700;">'+(freq==='—'?freq:freq+' AM')+'</span></div>';
-        pfHtml+='</div></div>';
-      });
-      pfHtml+='</div>';
-    });
-    // Render ungrouped
-    ungrouped.forEach(function(mem){
-      var cs=mem.callsign||'—';var role=mem.role||'';var ac=mem.aircraft||'—';var freq=mem.freq||'—';
-      pfHtml+='<div style="background:#0d0d1a;border:1px solid #00d4ff22;border-radius:3px;padding:5px 7px;margin-bottom:4px;">';
-      pfHtml+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">';
-      pfHtml+='<div style="width:6px;height:6px;border-radius:50%;background:#00d4ff66;flex-shrink:0;"></div>';
-      pfHtml+='<span style="color:#fff;font-size:11px;font-weight:700;">'+cs+'</span>';
-      if(role)pfHtml+='<span style="color:#555;font-size:8px;margin-left:auto;">'+role+'</span>';
-      pfHtml+='</div>';
-      pfHtml+='<div style="padding-left:12px;display:flex;flex-direction:column;gap:2px;">';
-      pfHtml+='<div style="display:flex;justify-content:space-between;"><span style="color:#555;font-size:8px;letter-spacing:1px;">AIRCRAFT</span><span style="color:#aaa;font-size:8px;font-weight:700;">'+ac+'</span></div>';
-      pfHtml+='<div style="display:flex;justify-content:space-between;"><span style="color:#555;font-size:8px;letter-spacing:1px;">FREQ</span><span style="color:#00d4ff;font-size:8px;font-weight:700;">'+(freq==='—'?freq:freq+' AM')+'</span></div>';
-      pfHtml+='</div></div>';
-    });
-    pf.innerHTML=pfHtml;
+    pf.innerHTML=pfh;
   }
 }
     var ps=document.getElementById('panel-squadron');if(ps){var row2=function(l,v,c){return'<div class="panel-row"><span class="lbl">'+l+'</span><span class="val'+(c?' '+c:'')+'">'+( v||'\u2014')+'</span></div>'};ps.innerHTML=row2('UNIT',m.squadron_name||'135TH')+row2('STATUS','ACTIVE','green')+row2('CALLSIGN','WILD WEASEL')}}
@@ -646,206 +616,147 @@ function makeTableTab(title,arrayKey,colDefs,newRowFn){const wrap=document.creat
 function renderWaypointsTab(){return makeTableTab('Waypoints','waypoints',[{label:'#',key:'number',width:'30px'},{label:'Name',key:'name',placeholder:'WP Name'},{label:'Lat',key:'lat',placeholder:"N 00\u00b000.0'"},{label:'Lon',key:'lon',placeholder:"E 000\u00b000.0'"},{label:'Elev (ft)',key:'elevation',placeholder:'0',width:'60px'},{label:'Notes',key:'notes',placeholder:'Notes'}],()=>({number:state.mission.waypoints.length+1,name:'',lat:'',lon:'',elevation:'',notes:''}));}
 function renderFrequenciesTab(){return makeTableTab('Frequencies','frequencies',[{label:'Name / Station',key:'name',placeholder:'Station name'},{label:'Frequency',key:'frequency',placeholder:'000.000'},{label:'Mod',key:'modulation',type:'select',options:['AM','FM']},{label:'Notes',key:'notes',placeholder:'Notes'}],()=>({name:'',frequency:'',modulation:'AM',notes:''}));}
 function renderFlightTab(){
-  const container=document.createElement('div');
-  const m=state.mission;
-  if(!m.flight_members)m.flight_members=[];
-
-  function render(){
-    container.innerHTML='';
-    const card=document.createElement('div');
-    card.className='card';
-    card.style.cssText='background:var(--bg-card);border-radius:4px;overflow:hidden;';
-
-    // Header
-    const hdr=document.createElement('div');
-    hdr.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);';
-    const title=document.createElement('h2');
-    title.style.cssText='font-size:11px;letter-spacing:2px;color:var(--accent-cyan);margin:0;';
-    title.textContent='FLIGHT ROSTER';
-    const btnGroup=document.createElement('div');
-    btnGroup.style.cssText='display:flex;gap:6px;';
-    const addBtn=document.createElement('button');
-    addBtn.textContent='+ ADD';
-    addBtn.style.cssText='background:var(--accent-cyan);color:#000;border:none;padding:4px 10px;font-size:9px;letter-spacing:1px;cursor:pointer;border-radius:2px;font-weight:700;';
-    addBtn.onclick=()=>showAddRow();
-    const mizBtn=document.createElement('button');
-    mizBtn.textContent='IMPORT .MIZ';
-    mizBtn.style.cssText='background:none;color:var(--accent-cyan);border:1px solid var(--accent-cyan);padding:4px 10px;font-size:9px;letter-spacing:1px;cursor:pointer;border-radius:2px;';
-    mizBtn.onclick=()=>showPicker();
-    btnGroup.appendChild(addBtn);
-    btnGroup.appendChild(mizBtn);
-    hdr.appendChild(title);
-    hdr.appendChild(btnGroup);
-    card.appendChild(hdr);
-
-    if(m.flight_members.length===0){
-      const empty=document.createElement('div');
-      empty.style.cssText='padding:24px;text-align:center;color:#333;font-size:9px;letter-spacing:1px;';
-      empty.textContent='NO FLIGHT MEMBERS — USE + ADD OR IMPORT .MIZ';
-      card.appendChild(empty);
-    } else {
-      // Col headers
-      const ch=document.createElement('div');
-      ch.style.cssText='display:grid;grid-template-columns:32px 1fr 90px 1fr 70px 60px 24px;gap:4px;padding:4px 10px;background:#060d14;';
-      ['','CALLSIGN','ROLE','AIRCRAFT','FREQ','GROUP',''].forEach(t=>{
-        const s=document.createElement('span');
-        s.style.cssText='color:#333;font-size:8px;letter-spacing:1px;';
-        s.textContent=t;
-        ch.appendChild(s);
-      });
-      card.appendChild(ch);
-
-      m.flight_members.forEach(function(mem,i){
-        // Group color coding - find unique groups
-        const groupColor=mem.group?'#00d4ff':'transparent';
-        const row=document.createElement('div');
-        row.style.cssText='display:grid;grid-template-columns:32px 1fr 90px 1fr 70px 60px 24px;gap:4px;padding:4px 10px;align-items:center;border-bottom:1px solid #0a1520;border-left:2px solid '+groupColor+';transition:border-color .2s;';
-
-        // Up/Down
-        const od=document.createElement('div');
-        od.style.cssText='display:flex;flex-direction:column;align-items:center;gap:1px;';
-        const bU=document.createElement('button');
-        bU.textContent='▲';
-        bU.disabled=i===0;
-        bU.style.cssText='background:none;border:none;color:'+(i===0?'#222':'#00d4ff')+';cursor:'+(i===0?'default':'pointer')+';font-size:7px;padding:0;line-height:1;';
-        bU.onclick=function(){if(i===0)return;var tmp=m.flight_members[i];m.flight_members[i]=m.flight_members[i-1];m.flight_members[i-1]=tmp;render();if(typeof renderRightPanel==='function')renderRightPanel();};
-        const bD=document.createElement('button');
-        bD.textContent='▼';
-        bD.disabled=i===m.flight_members.length-1;
-        bD.style.cssText='background:none;border:none;color:'+(i===m.flight_members.length-1?'#222':'#00d4ff')+';cursor:'+(i===m.flight_members.length-1?'default':'pointer')+';font-size:7px;padding:0;line-height:1;';
-        bD.onclick=function(){if(i>=m.flight_members.length-1)return;var tmp=m.flight_members[i];m.flight_members[i]=m.flight_members[i+1];m.flight_members[i+1]=tmp;render();if(typeof renderRightPanel==='function')renderRightPanel();};
-        od.appendChild(bU);od.appendChild(bD);
-
-        // Callsign input
-        const csI=document.createElement('input');
-        csI.value=mem.callsign||'';csI.placeholder='Callsign';
-        csI.style.cssText='background:#0a1520;border:1px solid #152535;color:#fff;padding:3px 6px;font-size:10px;width:100%;box-sizing:border-box;border-radius:2px;';
-        csI.oninput=function(e){mem.callsign=e.target.value;if(typeof renderRightPanel==='function')renderRightPanel();};
-
-        // Role select
-        const rS=document.createElement('select');
-        rS.style.cssText='background:#0a1520;border:1px solid #152535;color:#aaa;padding:3px 4px;font-size:9px;width:100%;box-sizing:border-box;border-radius:2px;';
-        ['','Lead','Wing','Element','Package','JTAC','SEAD','DEAD','CAP','CAS','ESCORT','TANKER'].forEach(function(r){
-          var o=document.createElement('option');o.value=r;o.textContent=r||'—';
-          if(mem.role===r)o.selected=true;rS.appendChild(o);
+  var m=state.mission;
+  if(!m.flights)m.flights=[];
+  var container=document.getElementById('tab-content');
+  if(!container)return;
+  var mTypes=['SEAD','DEAD','CAP','CAS','STRIKE','OCA','DCA','ESCORT','REFUEL','AWACS','CSAR','RECCE','EW','BARCAP','TARCAP','PKG'];
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function updatePanelFlights(){
+    var pf=document.getElementById('panel-flights');
+    if(!pf)return;
+    var fl=m.flights;
+    if(!fl||fl.length===0){pf.innerHTML='<div style="color:#888;font-style:italic;font-size:11px;padding:4px 0">No flights defined</div>';return;}
+    var h='';
+    fl.forEach(function(f){
+      h+='<div style="margin-bottom:6px">';
+      h+='<div style="font-weight:bold;color:#4fc3f7;font-size:11px">'+esc(f.name)+'</div>';
+      h+='<div style="font-size:10px;color:#aaa">'+esc(f.type||'')+( f.freq?' | '+esc(f.freq)+' MHz':'')+'</div>';
+      if(f.aircraft&&f.aircraft.length>0){
+        f.aircraft.forEach(function(ac,ai){
+          var isl=ai===f.aircraft.length-1;
+          h+='<div style="font-size:10px;color:#ccc;padding-left:8px">'+(isl?'\u2514':'\u251c')+' '+esc(ac.callsign)+(ac.acType?' ('+esc(ac.acType)+')':'')+'</div>';
         });
-        rS.onchange=function(e){mem.role=e.target.value;if(typeof renderRightPanel==='function')renderRightPanel();};
-
-        // Aircraft input
-        const acI=document.createElement('input');
-        acI.value=mem.aircraft||'';acI.placeholder='Type';
-        acI.style.cssText='background:#0a1520;border:1px solid #152535;color:#fff;padding:3px 6px;font-size:10px;width:100%;box-sizing:border-box;border-radius:2px;';
-        acI.oninput=function(e){mem.aircraft=e.target.value;if(typeof renderRightPanel==='function')renderRightPanel();};
-
-        // Freq input
-        const fI=document.createElement('input');
-        fI.value=mem.freq||'';fI.placeholder='MHz';
-        fI.style.cssText='background:#0a1520;border:1px solid #152535;color:#00d4ff;padding:3px 6px;font-size:10px;width:100%;box-sizing:border-box;border-radius:2px;';
-        fI.oninput=function(e){mem.freq=e.target.value;if(typeof renderRightPanel==='function')renderRightPanel();};
-
-        // Group input (connect flights)
-        const gI=document.createElement('input');
-        gI.value=mem.group||'';gI.placeholder='PKG';
-        gI.title='Enter a package name to connect flights together (e.g. ALPHA, PKG1)';
-        gI.style.cssText='background:#0a1520;border:1px solid '+(mem.group?'#00d4ff':'#152535')+';color:#00d4ff;padding:3px 6px;font-size:9px;width:100%;box-sizing:border-box;border-radius:2px;letter-spacing:1px;';
-        gI.oninput=function(e){mem.group=e.target.value.toUpperCase();row.style.borderLeftColor=mem.group?'#00d4ff':'transparent';gI.style.borderColor=mem.group?'#00d4ff':'#152535';if(typeof renderRightPanel==='function')renderRightPanel();};
-
-        // Delete
-        const dB=document.createElement('button');
-        dB.textContent='✕';
-        dB.style.cssText='background:none;border:none;color:#ff4444;cursor:pointer;font-size:10px;padding:0;';
-        dB.onclick=function(){m.flight_members.splice(i,1);render();if(typeof renderRightPanel==='function')renderRightPanel();};
-
-        row.appendChild(od);row.appendChild(csI);row.appendChild(rS);row.appendChild(acI);row.appendChild(fI);row.appendChild(gI);row.appendChild(dB);
-        card.appendChild(row);
+      }
+      h+='</div>';
+    });
+    pf.innerHTML=h;
+  }
+  var typeOpts=mTypes.map(function(t){return '<option value="'+t+'">'+t+'</option>';}).join('');
+  var rows='';
+  m.flights.forEach(function(f,fi){
+    var selOpts=mTypes.map(function(t){return '<option value="'+t+'"'+(f.type===t?' selected':'')+'>'+t+'</option>';}).join('');
+    rows+='<div style="background:#1a2332;border:1px solid #2a3a52;border-radius:6px;padding:8px;margin-bottom:6px">';
+    rows+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">';
+    rows+='<span style="color:#4fc3f7;font-size:13px;cursor:pointer" title="Drag to reorder">&#9776;</span>';
+    rows+='<input type="text" placeholder="Flight Name" value="'+esc(f.name)+'" style="flex:2;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:4px 6px;font-size:12px" onchange="state.mission.flights['+fi+'].name=this.value;renderFlightTab()">';
+    rows+='<select style="flex:1;min-width:80px;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:4px;font-size:11px" onchange="state.mission.flights['+fi+'].type=this.value;renderFlightTab()">'+selOpts+'</select>';
+    rows+='<input type="text" placeholder="Freq MHz" value="'+esc(f.freq||'')+'" style="width:80px;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:4px 6px;font-size:12px" onchange="state.mission.flights['+fi+'].freq=this.value;renderFlightTab()">';
+    rows+='<button onclick="(function(){if(!state.mission.flights['+fi+'].aircraft)state.mission.flights['+fi+'].aircraft=[];state.mission.flights['+fi+'].aircraft.push({id:\'ac\'+Date.now(),callsign:\'\',acType:\'\'});renderFlightTab();})()" style="background:#1a3a2a;border:1px solid #2a6a4a;border-radius:4px;color:#4fc;padding:3px 8px;font-size:11px;cursor:pointer">+ AC</button>';
+    rows+='<button onclick="state.mission.flights.splice('+fi+',1);renderFlightTab()" style="background:#3a1a1a;border:1px solid #6a2a2a;border-radius:4px;color:#f88;padding:3px 6px;font-size:11px;cursor:pointer">&#10005;</button>';
+    rows+='</div>';
+    if(f.aircraft&&f.aircraft.length>0){
+      f.aircraft.forEach(function(ac,ai){
+        var isl=ai===f.aircraft.length-1;
+        rows+='<div style="display:flex;align-items:center;gap:5px;padding:2px 0 2px 18px">';
+        rows+='<span style="color:#666;font-size:12px">'+(isl?'&#9492;':'&#9500;')+'</span>';
+        rows+='<span style="color:#555;font-size:10px;min-width:14px;text-align:right">'+(ai+1)+'</span>';
+        rows+='<input type="text" placeholder="Callsign" value="'+esc(ac.callsign)+'" style="flex:1;background:#0a1520;border:1px solid #1a3a52;border-radius:4px;color:#c0d8e8;padding:3px 5px;font-size:11px" onchange="state.mission.flights['+fi+'].aircraft['+ai+'].callsign=this.value;renderFlightTab()">';
+        rows+='<input type="text" placeholder="Aircraft Type" value="'+esc(ac.acType||'')+'" style="flex:1;background:#0a1520;border:1px solid #1a3a52;border-radius:4px;color:#c0d8e8;padding:3px 5px;font-size:11px" onchange="state.mission.flights['+fi+'].aircraft['+ai+'].acType=this.value;renderFlightTab()">';
+        rows+='<button onclick="state.mission.flights['+fi+'].aircraft.splice('+ai+',1);renderFlightTab()" style="background:#2a1515;border:1px solid #5a2a2a;border-radius:4px;color:#f66;padding:2px 5px;font-size:10px;cursor:pointer">&#10005;</button>';
+        rows+='</div>';
       });
     }
-    container.appendChild(card);
-  }
-
-  function showPicker(){
-    var existing=container.querySelector('.miz-picker');
-    if(existing){existing.remove();return;}
-    var row=document.createElement('div');
-    row.className='miz-picker';
-    row.style.cssText='padding:10px 12px;background:#0d0d1a;border-top:1px solid #152535;display:flex;align-items:center;gap:8px;';
-    var lbl=document.createElement('span');
-    lbl.style.cssText='color:#555;font-size:9px;letter-spacing:1px;white-space:nowrap;';
-    lbl.textContent='SELECT .MIZ:';
-    var fi=document.createElement('input');
-    fi.type='file';fi.accept='.miz,.json';
-    fi.style.cssText='flex:1;font-size:10px;color:#aaa;background:#0a1520;border:1px solid #152535;padding:4px;border-radius:2px;';
-    fi.onchange=function(e){
-      var file=e.target.files[0];if(!file)return;
-      var reader=new FileReader();
-      reader.onload=function(ev){
-        try{
-          var loaded=JSON.parse(ev.target.result);
-          if(loaded.flight_members){m.flight_members=[].concat(m.flight_members||[],loaded.flight_members);row.remove();render();if(typeof renderRightPanel==='function')renderRightPanel();}
-        }catch(err){
-          if(typeof parseMiz==='function'){parseMiz(file).then(function(data){if(data&&data.flight_members){m.flight_members=[].concat(m.flight_members||[],data.flight_members);row.remove();render();if(typeof renderRightPanel==='function')renderRightPanel();}}).catch(function(){});}
-        }
-      };
-      reader.readAsText(file);
-    };
-    var cancelB=document.createElement('button');
-    cancelB.textContent='✕';
-    cancelB.style.cssText='background:none;border:none;color:#555;cursor:pointer;font-size:14px;padding:0 4px;';
-    cancelB.onclick=function(){row.remove();};
-    row.appendChild(lbl);row.appendChild(fi);row.appendChild(cancelB);
-    container.querySelector('.card').appendChild(row);
-  }
-
-  function showAddRow(){
-    var existing=container.querySelector('.add-row-form');
-    if(existing){existing.remove();return;}
-    var form=document.createElement('div');
-    form.className='add-row-form';
-    form.style.cssText='padding:10px 12px;background:#0d0d1a;border-top:1px solid var(--accent-cyan);';
-    var grid=document.createElement('div');
-    grid.style.cssText='display:grid;grid-template-columns:1fr 100px 1fr 80px 70px;gap:6px;margin-bottom:8px;';
-    var csIn=document.createElement('input');
-    csIn.placeholder='CALLSIGN';
-    csIn.style.cssText='background:#0a1520;border:1px solid var(--accent-cyan);color:#fff;padding:5px 8px;font-size:11px;border-radius:2px;';
-    var rIn=document.createElement('select');
-    rIn.style.cssText='background:#0a1520;border:1px solid var(--accent-cyan);color:#aaa;padding:5px;font-size:10px;border-radius:2px;';
-    ['','Lead','Wing','Element','Package','JTAC','SEAD','DEAD','CAP','CAS','ESCORT','TANKER'].forEach(function(r){var o=document.createElement('option');o.value=r;o.textContent=r||'-- Role';rIn.appendChild(o);});
-    var acIn=document.createElement('input');
-    acIn.placeholder='AIRCRAFT TYPE';
-    acIn.style.cssText='background:#0a1520;border:1px solid var(--accent-cyan);color:#fff;padding:5px 8px;font-size:11px;border-radius:2px;';
-    var fIn=document.createElement('input');
-    fIn.placeholder='FREQ MHz';
-    fIn.style.cssText='background:#0a1520;border:1px solid var(--accent-cyan);color:#00d4ff;padding:5px 8px;font-size:11px;border-radius:2px;';
-    var gIn=document.createElement('input');
-    gIn.placeholder='PKG (opt)';
-    gIn.style.cssText='background:#0a1520;border:1px solid var(--accent-cyan);color:#00d4ff;padding:5px 8px;font-size:11px;border-radius:2px;letter-spacing:1px;';
-    gIn.oninput=function(){gIn.value=gIn.value.toUpperCase();};
-    grid.appendChild(csIn);grid.appendChild(rIn);grid.appendChild(acIn);grid.appendChild(fIn);grid.appendChild(gIn);
-    var btns=document.createElement('div');
-    btns.style.cssText='display:flex;gap:8px;justify-content:flex-end;';
-    var saveB=document.createElement('button');
-    saveB.textContent='✓ ADD TO ROSTER';
-    saveB.style.cssText='background:var(--accent-cyan);color:#000;border:none;padding:5px 14px;font-size:9px;letter-spacing:1px;cursor:pointer;border-radius:2px;font-weight:700;';
-    saveB.onclick=function(){
-      var cs=csIn.value.trim();
-      if(!cs){csIn.style.borderColor='#ff4444';csIn.focus();return;}
-      m.flight_members.push({callsign:cs,role:rIn.value,aircraft:acIn.value.trim(),freq:fIn.value.trim(),group:gIn.value.trim()||null});
-      form.remove();render();if(typeof renderRightPanel==='function')renderRightPanel();
-    };
-    var cancelB=document.createElement('button');
-    cancelB.textContent='Cancel';
-    cancelB.style.cssText='background:none;border:1px solid #333;color:#555;padding:5px 12px;font-size:9px;cursor:pointer;border-radius:2px;';
-    cancelB.onclick=function(){form.remove();};
-    btns.appendChild(saveB);btns.appendChild(cancelB);
-    form.appendChild(grid);form.appendChild(btns);
-    container.querySelector('.card').appendChild(form);
-    csIn.focus();
-  }
-
-  render();
-  return container;
+    rows+='</div>';
+  });
+  container.innerHTML='<div style="padding:12px;max-height:calc(100vh - 120px);overflow-y:auto">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
+    +'<h3 style="margin:0;color:#4fc3f7;font-size:14px;letter-spacing:1px">FLIGHT ROSTER</h3>'
+    +'<div style="display:flex;gap:6px">'
+    +'<button onclick="(function(){var el=document.getElementById(\'add-flight-form\');el.style.display=el.style.display===\'none\'?\'block\':\'none\';})()" style="background:#1a2e4a;border:1px solid #2a5a8a;border-radius:4px;color:#4fc3f7;padding:4px 10px;font-size:11px;cursor:pointer">+ ADD FLIGHT</button>'
+    +'<button onclick="alert(\'MIZ import coming soon\')" style="background:#1a2a1a;border:1px solid #2a4a2a;border-radius:4px;color:#4fc;padding:4px 10px;font-size:11px;cursor:pointer">IMPORT .MIZ</button>'
+    +'</div></div>'
+    +rows
+    +'<div id="add-flight-form" style="display:none;background:#0f1e2f;border:1px solid #2a4a6a;border-radius:6px;padding:10px;margin-top:8px">'
+    +'<div style="color:#4fc3f7;font-size:11px;font-weight:bold;margin-bottom:8px;letter-spacing:1px">NEW FLIGHT</div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'
+    +'<input id="new-flight-name" type="text" placeholder="Flight Name (e.g. Weasel 1)" style="flex:2;min-width:120px;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:5px 8px;font-size:12px">'
+    +'<select id="new-flight-type" style="flex:1;min-width:90px;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:5px;font-size:11px">'+typeOpts+'</select>'
+    +'<input id="new-flight-freq" type="text" placeholder="Freq MHz" style="width:90px;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:5px 8px;font-size:12px">'
+    +'<button onclick="(function(){var nm=document.getElementById(\'new-flight-name\').value.trim();if(!nm)return;if(!state.mission.flights)state.mission.flights=[];state.mission.flights.push({id:\'f\'+Date.now(),name:nm,type:document.getElementById(\'new-flight-type\').value,freq:document.getElementById(\'new-flight-freq\').value.trim(),aircraft:[]});renderFlightTab();})()" style="background:#1a3a5a;border:1px solid #2a6a9a;border-radius:4px;color:#7cf;padding:5px 14px;font-size:11px;cursor:pointer;font-weight:bold">ADD</button>'
+    +'</div></div></div>';
+  updatePanelFlights();
 }
-function renderThreatsTab(){const wrap=document.createElement('div');const card=document.createElement('div');card.className='card';const hdr=document.createElement('div');hdr.className='card-header';hdr.innerHTML='<h2>Threat Order of Battle</h2>';const addBtn=document.createElement('button');addBtn.className='btn btn-sm btn-primary';addBtn.textContent='+ Add';addBtn.addEventListener('click',()=>{state.mission.threats.push({name:'',type:'SAM',radar_type:'',rwr:'',harm_tr:'',harm_sr:'',range_nm:'',max_alt_ft:'',location:'',notes:''});render();});hdr.appendChild(addBtn);card.appendChild(hdr);const tbl=document.createElement('table');tbl.className='data-table';tbl.innerHTML='<thead><tr><th>System</th><th>Type</th><th>Radar</th><th>RWR</th><th>HARM TR</th><th>HARM SR</th><th>Range</th><th>Alt (ft)</th><th>Location</th><th>Notes</th><th></th></tr></thead>';const tbody=document.createElement('tbody');state.mission.threats.forEach((item,i)=>{const tr=document.createElement('tr');const tdSys=document.createElement('td');const sel=document.createElement('select');sel.style.minWidth='140px';sel.innerHTML='<option value="">-- Select --</option>'+THREAT_DB.map(t=>'<option value="'+t.name+'"'+(item.name===t.name?' selected':'')+'>'+t.name+'</option>').join('');sel.addEventListener('change',e=>{const db=THREAT_DB.find(t=>t.name===e.target.value);if(db){state.mission.threats[i].name=db.name;state.mission.threats[i].type=db.type;state.mission.threats[i].radar_type=db.radar_type;state.mission.threats[i].rwr=db.rwr;state.mission.threats[i].harm_tr=db.harm_tr;state.mission.threats[i].harm_sr=db.harm_sr;state.mission.threats[i].range_nm=db.range_nm;state.mission.threats[i].max_alt_ft=db.max_alt_ft;}else{state.mission.threats[i].name='';}render();});tdSys.appendChild(sel);tr.appendChild(tdSys);const tdType=document.createElement('td');tdType.textContent=item.type||'';tdType.style.color='var(--accent-amber)';tr.appendChild(tdType);const tdRdr=document.createElement('td');tdRdr.textContent=item.radar_type||'';tdRdr.style.color='var(--accent-cyan)';tr.appendChild(tdRdr);const tdRwr=document.createElement('td');tdRwr.textContent=item.rwr||'\u2014';tdRwr.style.color=item.rwr?'var(--accent-amber)':'var(--text-muted)';tdRwr.style.fontWeight=item.rwr?'bold':'normal';tr.appendChild(tdRwr);const tdHTR=document.createElement('td');tdHTR.textContent=item.harm_tr||'\u2014';tdHTR.style.color=item.harm_tr?'var(--accent-green)':'var(--text-muted)';tr.appendChild(tdHTR);const tdHSR=document.createElement('td');tdHSR.textContent=item.harm_sr||'\u2014';tdHSR.style.color=item.harm_sr?'var(--accent-green)':'var(--text-muted)';tr.appendChild(tdHSR);const tdRng=document.createElement('td');tdRng.textContent=item.range_nm?item.range_nm+' nm':'';tr.appendChild(tdRng);const tdAlt=document.createElement('td');tdAlt.textContent=item.max_alt_ft?Number(item.max_alt_ft).toLocaleString():'';tr.appendChild(tdAlt);const tdLoc=document.createElement('td');const inpLoc=document.createElement('input');inpLoc.value=item.location||'';inpLoc.placeholder='Grid / MGRS';inpLoc.addEventListener('change',e=>{state.mission.threats[i].location=e.target.value;renderRightPanel();});tdLoc.appendChild(inpLoc);tr.appendChild(tdLoc);const tdNotes=document.createElement('td');const inpNotes=document.createElement('input');inpNotes.value=item.notes||'';inpNotes.placeholder='Notes';inpNotes.addEventListener('change',e=>{state.mission.threats[i].notes=e.target.value;});tdNotes.appendChild(inpNotes);tr.appendChild(tdNotes);const tdX=document.createElement('td');const btnX=document.createElement('button');btnX.className='btn btn-sm btn-danger';btnX.textContent='\u2715';btnX.addEventListener('click',()=>{state.mission.threats.splice(i,1);render();});tdX.appendChild(btnX);tr.appendChild(tdX);tbody.appendChild(tr);});tbl.appendChild(tbody);card.appendChild(tbl);wrap.appendChild(card);return wrap;}
+function renderThreatsTab(){
+  var wrap=document.getElementById('tab-content');
+  if(!wrap)return;
+  var filter=window._threatFilter||'ALL';
+  var search=window._threatSearch||'';
+  var DB=[
+    {s:'SA-2 GUIDELINE',n:'RU',t:'SAM',rng:'45',alt:'60,000',lv:'HIGH',i:'Fixed. SARH. ARM vuln. Notch & dive tactics.'},
+    {s:'SA-3 GOA',n:'RU',t:'SAM',rng:'22',alt:'45,000',lv:'MED',i:'Fixed/semi-mobile. Better vs low-alt than SA-2. SARH.'},
+    {s:'SA-5 GAMMON',n:'RU',t:'SAM',rng:'300',alt:'100,000',lv:'HIGH',i:'Very long range. Fixed. High-alt area denial.'},
+    {s:'SA-6 GAINFUL',n:'RU',t:'SAM',rng:'24',alt:'39,000',lv:'HIGH',i:'Mobile. All-weather. SARH. Notch reduces Pk.'},
+    {s:'SA-8 GECKO',n:'RU',t:'SAM',rng:'10',alt:'15,000',lv:'MED',i:'Self-contained. SARH + IR. Short range.'},
+    {s:'SA-9 GASKIN',n:'RU',t:'SAM',rng:'8',alt:'10,000',lv:'LOW',i:'IR only. Tail-chase geometry. Flares effective.'},
+    {s:'SA-10 GRUMBLE',n:'RU',t:'SAM',rng:'90',alt:'100,000',lv:'CRIT',i:'S-300PS. Highest DCS threat. Multi-target LOAL.'},
+    {s:'SA-11 GADFLY',n:'RU',t:'SAM',rng:'32',alt:'72,000',lv:'HIGH',i:'BUK-M1. Mobile. Multi-target capable. SARH.'},
+    {s:'SA-13 GOPHER',n:'RU',t:'SAM',rng:'5',alt:'10,000',lv:'LOW',i:'IR only. Passive SHORAD. Flares effective.'},
+    {s:'SA-15 GAUNTLET',n:'RU',t:'SAM',rng:'12',alt:'20,000',lv:'MED',i:'TOR-M1. Self-contained. Fast reaction time.'},
+    {s:'SA-19 GRISON',n:'RU',t:'SAM/AAA',rng:'8',alt:'11,000',lv:'HIGH',i:'Tunguska. 30mm guns + SAM combo. Radar & IR. Kill fast.'},
+    {s:'HAWK MIM-23',n:'NATO',t:'SAM',rng:'40',alt:'45,000',lv:'HIGH',i:'3-radar system. All-weather. Mobile. Med-altitude specialist.'},
+    {s:'PATRIOT PAC-2',n:'NATO',t:'SAM',rng:'70',alt:'80,000',lv:'CRIT',i:'Long range. Multi-target. TBM capable. LPI radar.'},
+    {s:'ROLAND',n:'NATO',t:'SAM',rng:'8',alt:'18,000',lv:'MED',i:'Short range mobile. All-weather. Fast reaction.'},
+    {s:'AVENGER M1097',n:'US',t:'SAM',rng:'5',alt:'10,000',lv:'LOW',i:'Stinger on HMMWV. IR guided. Organic SHORAD.'},
+    {s:'LINEBACKER M6',n:'US',t:'SAM',rng:'5',alt:'10,000',lv:'LOW',i:'Stinger on Bradley IFV. Organic SHORAD.'},
+    {s:'ZSU-23-4 SHILKA',n:'RU',t:'AAA',rng:'2.5',alt:'8,000',lv:'MED',i:'Radar 23mm quad. Lethal vs low/slow. Gun Dish radar.'},
+    {s:'ZU-23 (Towed)',n:'RU',t:'AAA',rng:'2',alt:'5,000',lv:'LOW',i:'Towed twin 23mm. Optically aimed. Threat below 5,000ft.'},
+    {s:'ZU-23 (BTR-D)',n:'RU',t:'AAA',rng:'2',alt:'5,000',lv:'LOW',i:'Vehicle-mounted 23mm. Ubiquitous. Low-alt only.'},
+    {s:'57mm S-60',n:'RU',t:'AAA',rng:'6',alt:'20,000',lv:'MED',i:'Radar directed medium flak. Fire Can radar director.'},
+    {s:'85mm KS-19',n:'RU',t:'AAA',rng:'8',alt:'35,000',lv:'MED',i:'Heavy radar-directed flak. Medium altitude threat.'},
+    {s:'GEPARD',n:'NATO',t:'AAA',rng:'3.5',alt:'10,000',lv:'MED',i:'Twin 35mm radar-directed. Very effective at low altitude.'},
+    {s:'M163 VULCAN',n:'US',t:'AAA',rng:'1.5',alt:'5,000',lv:'LOW',i:'M168 20mm on M113. Close-in SHORAD. Point defense.'},
+    {s:'BOFORS L/60',n:'NATO',t:'AAA',rng:'3',alt:'10,000',lv:'LOW',i:'40mm optical. Low-and-slow aircraft threat.'},
+    {s:'SA-7 GRAIL',n:'RU',t:'MANPADS',rng:'4.5',alt:'9,000',lv:'LOW',i:'1st gen IR. Tail-chase only. Flares highly effective.'},
+    {s:'SA-14 GREMLIN',n:'RU',t:'MANPADS',rng:'5',alt:'10,500',lv:'LOW',i:'Improved SA-7. Limited all-aspect capability.'},
+    {s:'SA-16 GIMLET',n:'RU',t:'MANPADS',rng:'5.2',alt:'11,000',lv:'MED',i:'Igla-1. All-aspect. IFF interrogator. Flare resistant.'},
+    {s:'SA-18 IGLA',n:'RU',t:'MANPADS',rng:'5.2',alt:'11,500',lv:'MED',i:'Best MANPADS in DCS. All-aspect IR seeker.'},
+    {s:'FIM-92 STINGER',n:'US',t:'MANPADS',rng:'4.8',alt:'10,000',lv:'MED',i:'IR/UV dual-band. All-aspect. CM resistant.'},
+  ];
+  var filtered=DB.filter(function(d){
+    var tok=(filter==='ALL'||d.t===filter);
+    var sok=!search||(d.s.toUpperCase().indexOf(search.toUpperCase())>=0||d.i.toUpperCase().indexOf(search.toUpperCase())>=0);
+    return tok&&sok;
+  });
+  function lvCol(l){return {HIGH:'#f97316',CRIT:'#ef4444',MED:'#eab308',LOW:'#4ade80'}[l]||'#888';}
+  var fbtns=['ALL','SAM','AAA','MANPADS','SAM/AAA'].map(function(ft){
+    var act=(window._threatFilter||'ALL')===ft;
+    return '<button onclick="window._threatFilter=\''+ft+'\';renderThreatsTab()" style="background:'+(act?'#1a3a5a':'#0d1b2a')+';border:1px solid '+(act?'#4fc3f7':'#2a4a6a')+';border-radius:4px;color:'+(act?'#4fc3f7':'#888')+';padding:3px 10px;font-size:11px;cursor:pointer">'+ ft +'</button>';
+  }).join('');
+  var rows=filtered.map(function(d){
+    return '<tr style="border-bottom:1px solid #0f1e2f">'
+      +'<td style="padding:5px 6px;color:#e0e8f0;font-weight:bold;white-space:nowrap;font-size:11px">'+d.s+'</td>'
+      +'<td style="padding:5px 6px;color:#aaa;font-size:10px;white-space:nowrap">'+d.t+'</td>'
+      +'<td style="padding:5px 6px;color:#ccc;font-size:11px;text-align:right">'+d.rng+'</td>'
+      +'<td style="padding:5px 6px;color:#ccc;font-size:11px;text-align:right">'+d.alt+'</td>'
+      +'<td style="padding:5px 6px"><span style="color:'+lvCol(d.lv)+';font-weight:bold;font-size:10px;letter-spacing:0.5px">'+d.lv+'</span></td>'
+      +'<td style="padding:5px 6px;color:#aaa;font-size:10px">'+d.i+'</td>'
+      +'</tr>';
+  }).join('');
+  wrap.innerHTML='<div style="padding:12px;max-height:calc(100vh - 120px);overflow-y:auto">'
+    +'<h3 style="margin:0 0 10px;color:#f97316;font-size:14px;letter-spacing:1px">THREAT DATABASE — DCS SAM / AAA / MANPADS</h3>'
+    +'<div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">'+fbtns+'</div>'
+    +'<input type="text" placeholder="Search system or notes..." value="'+search+'" oninput="window._threatSearch=this.value;renderThreatsTab()" style="width:100%;box-sizing:border-box;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:4px;color:#e0e8f0;padding:5px 8px;font-size:12px;margin-bottom:10px">'
+    +'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">'
+    +'<tr style="color:#4fc3f7;border-bottom:2px solid #1a3a5a;font-size:11px">'
+    +'<th style="text-align:left;padding:4px 6px">SYSTEM</th>'
+    +'<th style="text-align:left;padding:4px 6px">TYPE</th>'
+    +'<th style="text-align:right;padding:4px 6px">RNG nm</th>'
+    +'<th style="text-align:right;padding:4px 6px">ALT ft</th>'
+    +'<th style="text-align:left;padding:4px 6px">THREAT</th>'
+    +'<th style="text-align:left;padding:4px 6px">NOTES</th>'
+    +'</tr>'+rows+'</table></div></div>';
+}
 
 function renderPreviewTab(){const wrap=document.createElement('div');const card=document.createElement('div');card.className='card';card.innerHTML='<div class="card-header"><h2>Preview</h2><span class="badge badge-green">CLIENT-SIDE RENDERING</span></div>';const btnGroup=document.createElement('div');btnGroup.className='btn-group';btnGroup.style.marginBottom='16px';[['mission','Mission Card','btn-primary'],['comms','Comms Card','btn-ghost'],['threats','Threat Card','btn-ghost']].forEach(([type,label,cls])=>{const btn=document.createElement('button');btn.className='btn '+cls;btn.textContent=label;btn.addEventListener('click',()=>handlePreview(type));btnGroup.appendChild(btn);});card.appendChild(btnGroup);if(state.previewUrl){const meta=document.createElement('div');meta.style.marginBottom='8px';meta.innerHTML='<span class="badge badge-green">'+(state.previewType||'').toUpperCase()+'</span><span style="margin-left:8px;font-size:11px;color:var(--text-muted)">768 \u00d7 1024</span>';card.appendChild(meta);const img=document.createElement('img');img.src=state.previewUrl;img.alt='Kneeboard preview';img.style.maxWidth='100%';card.appendChild(img);const dlBtn=document.createElement('button');dlBtn.className='btn btn-success';dlBtn.textContent='Download PNG';dlBtn.style.marginTop='12px';dlBtn.addEventListener('click',()=>downloadPng(state.previewUrl,'kneeboard_'+state.previewType+'.png'));card.appendChild(dlBtn);}else{card.innerHTML+='<div class="preview-empty"><div class="icon">\uD83D\uDDBC</div><p>Click a button above to generate a preview</p><p style="margin-top:8px;font-size:11px">Fill in mission data first, then preview each page type</p></div>';}wrap.appendChild(card);return wrap;}
 
