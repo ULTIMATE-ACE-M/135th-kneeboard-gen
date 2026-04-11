@@ -160,16 +160,8 @@ h3.sub-header{font-family:var(--font-mono);font-size:12px;letter-spacing:2px;tex
       <button class="sidebar-item" data-page="map"><span class="item-icon">&#8853;</span><span>Map View</span></button>
       <button class="sidebar-item active" data-page="mission"><span class="item-icon">&#9992;</span><span>Kneeboard</span></button>
       <button class="sidebar-item" data-page="import"><span class="item-icon">&#8862;</span><span>Import .miz</span></button>
-      <button class="sidebar-item" data-page="reference"><span class="item-icon">&#8801;</span><span>Ref Cards</span></button>
-      <button class="sidebar-item" data-page="style"><span class="item-icon">&#9672;</span><span>Style Match</span></button>
+      <button class="sidebar-item" data-page="style"><span class="item-icon">&#9672;</span><span>Kneeboard Builder</span></button>
       <button class="sidebar-item" data-page="threatdb"><span class="section-icon">&#9671;</span><span>Threat DB</span></button>
-      <hr class="sidebar-divider"/>
-      <div class="sidebar-section-label">Quick Gen</div>
-      <button class="sidebar-item" id="qg-mission"><span class="item-icon">&#9655;</span><span>Prev. Msn</span></button>
-      <button class="sidebar-item" id="qg-comms"><span class="item-icon">&#9655;</span><span>Prev. Comms</span></button>
-      <button class="sidebar-item" id="qg-threats"><span class="item-icon">&#9655;</span><span>Prev. Threats</span></button>
-      <button class="sidebar-item" id="qg-presets"><span class="item-icon">&#9655;</span><span>Prev. Presets</span></button>
-      <button class="sidebar-item" id="qg-download"><span class="item-icon">&#8863;</span><span>Download All</span></button>
       <hr class="sidebar-divider"/>
       <div class="sidebar-section-label">Squadron</div>
       <div style="padding:4px 10px 8px"><input id="sqn-input" class="sqn-input" placeholder="Squadron name..."/></div>
@@ -200,7 +192,7 @@ const state = {
   ],
   mission:{
     mission_name:'',theater:'',mission_type:'',aircraft_type:'',callsign:'',flight_lead:'',
-    date:'',time_on_target:'',departure_airfield:'',recovery_airfield:'',airfield_comms:'',awacs_callsign:'',awacs_freq:'',tac_freq:'',
+    date:'',time_on_target:'',departure_airfield:'',recovery_airfield:'',airfield_comms:'',coordFormat:'DDM',previewKbIdx:0,savedBuilderState:null,awacs_callsign:'',awacs_freq:'',tac_freq:'',
     laser_code:'',squawk:'',bingo_fuel:'',joker_fuel:'',
     mission_description:'',roe:'',weather:'',notes:'',squadron_name:'135TH',
     waypoints:[],frequencies:[],flight_members:[],threats:[],flights:[],groundUnits:[],sams:[],selectedFlight:0,showCoalition:{blue:true,red:true,neutral:true},mapLayers:{route:true,threats:true,airfields:true,samRings:true,groundUnits:true,aircraft:true,threatDB:true},
@@ -296,7 +288,7 @@ const AWACS_DB={
 'Arco':{freq:'276.000',mod:'AM',platform:'KC-130'},
 };
 
-function render(){const mc=document.getElementById('main-content');if(!mc)return;mc.innerHTML='';if(state.page==='map')mc.appendChild(renderMapPage());if(state.page==='mission')mc.appendChild(renderMissionPage());if(state.page==='import')mc.appendChild(renderImportPage());if(state.page==='reference')mc.appendChild(renderReferencePage());if(state.page==='style')mc.appendChild(renderStylePage());if(state.page==='map'){document.querySelector('.dash-body').classList.add('map-mode');document.querySelector('.dash-main').classList.add('map-mode');document.getElementById('main-content').classList.add('map-mode');}else if(state.page==='threatdb'){var _tdb=document.getElementById('main-content');if(_tdb){_tdb.innerHTML='';var _tw=document.createElement('div');_tw.style.cssText='padding:0;height:100%;overflow-y:auto;';_tw.appendChild(renderThreatsTab());_tdb.appendChild(_tw);}}else{document.querySelector('.dash-body').classList.remove('map-mode');document.querySelector('.dash-main').classList.remove('map-mode');document.getElementById('main-content').classList.remove('map-mode');}renderRightPanel();renderCommsLog();document.querySelectorAll('.sidebar-item[data-page]').forEach(b=>{b.classList.toggle('active',b.dataset.page===state.page);});const sqn=document.getElementById('sqn-input');if(sqn&&document.activeElement!==sqn)sqn.value=state.mission.squadron_name;}
+function render(){const mc=document.getElementById('main-content');if(!mc)return;mc.innerHTML='';if(state.page==='map')mc.appendChild(renderMapPage());if(state.page==='mission')mc.appendChild(renderMissionPage());if(state.page==='import')mc.appendChild(renderImportPage());if(state.page==='style')mc.appendChild(renderStylePage());if(state.page==='map'){document.querySelector('.dash-body').classList.add('map-mode');document.querySelector('.dash-main').classList.add('map-mode');document.getElementById('main-content').classList.add('map-mode');}else if(state.page==='threatdb'){var _tdb=document.getElementById('main-content');if(_tdb){_tdb.innerHTML='';var _tw=document.createElement('div');_tw.style.cssText='padding:0;height:100%;overflow-y:auto;';_tw.appendChild(renderThreatsTab());_tdb.appendChild(_tw);}}else{document.querySelector('.dash-body').classList.remove('map-mode');document.querySelector('.dash-main').classList.remove('map-mode');document.getElementById('main-content').classList.remove('map-mode');}renderRightPanel();renderCommsLog();document.querySelectorAll('.sidebar-item[data-page]').forEach(b=>{b.classList.toggle('active',b.dataset.page===state.page);});const sqn=document.getElementById('sqn-input');if(sqn&&document.activeElement!==sqn)sqn.value=state.mission.squadron_name;}
 
 const DCS_SAM_TYPES={'S-300PS 40B6M tr':{name:'SA-10 Grumble',range_nm:40,color:'#ff2233'},'S-300PS 40B6MD sr':{name:'SA-10 Search Radar',range_nm:0,color:'#ff2233'},'S-300PS 5P85C ln':{name:'SA-10 Launcher',range_nm:0,color:'#ff2233'},'S-300PS 5P85D ln':{name:'SA-10 Launcher',range_nm:0,color:'#ff2233'},'S-300PS 54K6 cp':{name:'SA-10 Command Post',range_nm:0,color:'#ff2233'},'Kub 1S91 str':{name:'SA-6 Gainful',range_nm:15,color:'#ff4444'},'Kub 2P25 ln':{name:'SA-6 Launcher',range_nm:0,color:'#ff4444'},'SA-11 Buk SR 9S18M1':{name:'SA-11 Gadfly SR',range_nm:0,color:'#ff4444'},'SA-11 Buk LN 9A310M1':{name:'SA-11 Gadfly',range_nm:19,color:'#ff4444'},'SA-11 Buk CC 9S470M1':{name:'SA-11 Command Post',range_nm:0,color:'#ff4444'},'5p73 s-125 ln':{name:'SA-3 Goa',range_nm:13,color:'#ff6600'},'snr s-125 tr':{name:'SA-3 Track Radar',range_nm:0,color:'#ff6600'},'S_75M_Volhov':{name:'SA-2 Guideline',range_nm:28,color:'#ff2233'},'p-19 s-125 sr':{name:'SA-3 Search Radar',range_nm:0,color:'#ff6600'},'Osa 9A33 ln':{name:'SA-8 Gecko',range_nm:7,color:'#ffaa00'},'Tor 9A331':{name:'SA-15 Gauntlet',range_nm:6,color:'#ffaa00'},'Strela-10M3':{name:'SA-13 Gopher',range_nm:3,color:'#ffaa00'},'Strela-1 9P31':{name:'SA-9 Gaskin',range_nm:2.5,color:'#ffaa00'},'2S6 Tunguska':{name:'SA-19 Grison',range_nm:4,color:'#ffaa00'},'ZSU-23-4 Shilka':{name:'ZSU-23 Shilka',range_nm:1.3,color:'#ffaa00'},'Roland ADS':{name:'Roland',range_nm:3.5,color:'#ffaa00'},'Hawk sr':{name:'MIM-23 Hawk SR',range_nm:0,color:'#4488ff'},'Hawk tr':{name:'MIM-23 Hawk',range_nm:25,color:'#4488ff'},'Hawk ln':{name:'MIM-23 Hawk LN',range_nm:0,color:'#4488ff'},'Hawk pcp':{name:'MIM-23 Hawk PCP',range_nm:0,color:'#4488ff'},'Patriot str':{name:'Patriot',range_nm:80,color:'#4488ff'},'Patriot ln':{name:'Patriot LN',range_nm:0,color:'#4488ff'},'Patriot cp':{name:'Patriot CP',range_nm:0,color:'#4488ff'},'Patriot EPP':{name:'Patriot EPP',range_nm:0,color:'#4488ff'},'Patriot AMG':{name:'Patriot AMG',range_nm:0,color:'#4488ff'},'Patriot ECS':{name:'Patriot ECS',range_nm:0,color:'#4488ff'},'NASAMS_LN_C':{name:'NASAMS',range_nm:15,color:'#4488ff'},'NASAMS_LN_B':{name:'NASAMS',range_nm:15,color:'#4488ff'},'NASAMS_Radar_MPQ64F1':{name:'NASAMS Radar',range_nm:0,color:'#4488ff'},'rapier_fsa_launcher':{name:'Rapier',range_nm:4,color:'#4488ff'},'rapier_fsa_blindfire_radar':{name:'Rapier Radar',range_nm:0,color:'#4488ff'},'M48 Chaparral':{name:'Chaparral',range_nm:4,color:'#4488ff'},'M1097 Avenger':{name:'Avenger',range_nm:2.5,color:'#4488ff'},'Gepard':{name:'Gepard',range_nm:2,color:'#4488ff'},'Vulcan':{name:'M163 Vulcan',range_nm:1.2,color:'#4488ff'},};
 const THREAT_DB=[
@@ -602,30 +594,36 @@ function renderMissionPage(){const wrap=document.createElement('div');wrap.inner
 function renderInfoTab(){const m=state.mission;const wrap=document.createElement('div');function field(label,key,type,opts){type=type||'text';const fg=document.createElement('div');fg.className='form-group';fg.innerHTML='<label>'+label+'</label>';let inp;if(opts){inp=document.createElement('select');inp.className='form-select';inp.innerHTML='<option value="">Select...</option>'+opts.map(o=>'<option value="'+o+'"'+(m[key]===o?' selected':'')+'>'+o+'</option>').join('');}else{inp=document.createElement('input');inp.type=type;inp.className='form-input';inp.value=m[key]||'';if(type==='text')inp.placeholder=label;}inp.addEventListener('change',e=>{state.mission[key]=e.target.value;renderRightPanel();});fg.appendChild(inp);return fg;}function textareaField(label,key,placeholder){const fg=document.createElement('div');fg.className='form-group';fg.innerHTML='<label>'+label+'</label>';const ta=document.createElement('textarea');ta.className='form-textarea';ta.value=m[key]||'';ta.placeholder=placeholder||'';ta.addEventListener('change',e=>{state.mission[key]=e.target.value;});fg.appendChild(ta);return fg;}const c1=document.createElement('div');c1.className='card';c1.innerHTML='<div class="card-header"><h2>Mission Info</h2></div>';let r=document.createElement('div');r.className='form-row';r.appendChild(field('Mission Name','mission_name'));r.appendChild(field('Theater','theater','text',THEATERS));c1.appendChild(r);r=document.createElement('div');r.className='form-row';r.appendChild(field('Mission Type','mission_type','text',MISSION_TYPES));r.appendChild(field('Aircraft Type','aircraft_type','text',AIRCRAFT));c1.appendChild(r);r=document.createElement('div');r.className='form-row';r.appendChild(field('Date','date','date'));r.appendChild(field('Time on Target','time_on_target'));c1.appendChild(r);wrap.appendChild(c1);const c2=document.createElement('div');c2.className='card';c2.innerHTML='<div class="card-header"><h2>Flight Info</h2></div>';r=document.createElement('div');r.className='form-row';r.appendChild(field('Callsign','callsign'));r.appendChild(field('Flight Lead','flight_lead'));c2.appendChild(r);r=document.createElement('div');r.className='form-row';var afNames=(THEATER_AIRFIELDS[m.theater]||[]).map(a=>a.name);r.appendChild(field('Departure Airfield','departure_airfield','text',afNames.length?afNames:null));r.appendChild(field('Recovery Airfield','recovery_airfield','text',afNames.length?afNames:null));c2.appendChild(r);r=document.createElement('div');r.className='form-row';(function(){
 var fg=document.createElement('div');fg.className='form-group';
 var lb=document.createElement('label');lb.className='section-label';lb.textContent='AWACS';
-var sel=document.createElement('select');sel.className='section-rule';
-sel.style.cssText='width:100%;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);padding:6px 8px;font-family:var(--font-mono);font-size:12px;';
-var o0=document.createElement('option');o0.value='';o0.textContent='Select AWACS...';sel.appendChild(o0);
-var awacsKeys=Object.keys(AWACS_DB);
-if(state.mission.flights&&state.mission.flights.length>0){var mizTypes={};var mizNames={};state.mission.flights.forEach(function(fl){mizTypes[fl.type]=true;mizNames[fl.name.toLowerCase()]=fl.name;});var PMAP={'E-3A':'E-3A','E-2C':'E-2D','E-2D':'E-2D','KC-135':'KC-135','KC135MPRS':'KC-135','KC130':'KC-130','KC-130':'KC-130','S-3B Tanker':'KC-135','A-50':'E-3A'};var matched=[];awacsKeys.forEach(function(k){var db=AWACS_DB[k];var byName=false;Object.keys(mizNames).forEach(function(n){if(n.indexOf(k.toLowerCase())!==-1)byName=true;});var byType=false;Object.keys(mizTypes).forEach(function(t){if(PMAP[t]===db.platform)byType=true;});if(byName||byType)matched.push(k);});if(matched.length>0)awacsKeys=matched;}
-awacsKeys.forEach(function(k){
-var o=document.createElement('option');o.value=k;
-o.textContent=k+' ('+AWACS_DB[k].platform+') - '+AWACS_DB[k].freq+' '+AWACS_DB[k].mod;
-if(state.mission.awacs_callsign===k)o.selected=true;
-sel.appendChild(o);
-});
-sel.addEventListener('change',function(e){
-var v=e.target.value;
-if(v&&AWACS_DB[v]){state.mission.awacs_callsign=v;state.mission.awacs_freq=AWACS_DB[v].freq;}
-else{state.mission.awacs_callsign='';state.mission.awacs_freq='';}
-renderRightPanel();
-});
-fg.appendChild(lb);fg.appendChild(sel);r.appendChild(fg);
+if(!state.mission||!state.mission.name){
+  var ph=document.createElement('div');ph.style.cssText='padding:6px 8px;color:var(--text-muted);font-size:12px;font-style:italic;border:1px solid var(--border);border-radius:2px;background:var(--bg-card);';ph.textContent='Import a .miz file first';fg.appendChild(lb);fg.appendChild(ph);
+}else{
+  var sel=document.createElement('select');sel.className='section-rule';sel.style.cssText='width:100%;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);padding:6px 8px;font-family:var(--font-mono);font-size:12px;';
+  var o0=document.createElement('option');o0.value='';o0.textContent='Select AWACS...';sel.appendChild(o0);
+  var awacsFreqs=(state.mission.frequencies||[]).filter(function(f){return f.notes==='AWACS'||(f.station&&f.station.toLowerCase().indexOf('awacs')>=0);});
+  if(awacsFreqs.length>0){awacsFreqs.forEach(function(f){var o=document.createElement('option');o.value=f.station||'AWACS';o.textContent=(f.station||'AWACS')+' – '+f.freq+' '+f.mod;if(state.mission.awacs_callsign===o.value)o.selected=true;sel.appendChild(o);});}
+  else{Object.keys(AWACS_DB).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=k+' ('+AWACS_DB[k].platform+') - '+AWACS_DB[k].freq+' '+AWACS_DB[k].mod;if(state.mission.awacs_callsign===k)o.selected=true;sel.appendChild(o);});}
+  sel.addEventListener('change',function(e){var v=e.target.value;if(v&&AWACS_DB[v]){state.mission.awacs_callsign=v;state.mission.awacs_freq=AWACS_DB[v].freq;}else if(v){var af=(awacsFreqs||[]).find(function(fx){return(fx.station||'AWACS')===v;});state.mission.awacs_callsign=v;state.mission.awacs_freq=af?af.freq:'';}else{state.mission.awacs_callsign='';state.mission.awacs_freq='';}renderRightPanel();});
+  fg.appendChild(lb);fg.appendChild(sel);
+}
+r.appendChild(fg);
 })();r.appendChild(field('TAC Freq','tac_freq'));c2.appendChild(r);wrap.appendChild(c2);const c3=document.createElement('div');c3.className='card';c3.innerHTML='<div class="card-header"><h2>Codes &amp; Navigation</h2></div>';r=document.createElement('div');r.className='form-row-3';r.appendChild(field('Laser Code','laser_code'));r.appendChild(field('Squawk','squawk'));r.appendChild(field('Bingo Fuel','bingo_fuel'));c3.appendChild(r);r=document.createElement('div');r.className='form-row';r.appendChild(field('Joker Fuel','joker_fuel'));r.appendChild(field('Weather','weather'));c3.appendChild(r);wrap.appendChild(c3);const c4=document.createElement('div');c4.className='card';c4.innerHTML='<div class="card-header"><h2>ROE &amp; Notes</h2></div>';r=document.createElement('div');r.className='form-row';r.appendChild(textareaField('Mission Description','mission_description','Describe mission objectives...'));r.appendChild(textareaField('ROE','roe','Rules of engagement...'));c4.appendChild(r);c4.appendChild(textareaField('Notes','notes','Additional notes...'));wrap.appendChild(c4);return wrap;}
 
 function makeTableTab(title,arrayKey,colDefs,newRowFn){const wrap=document.createElement('div');const card=document.createElement('div');card.className='card';const hdr=document.createElement('div');hdr.className='card-header';hdr.innerHTML='<h2>'+title+'</h2>';const addBtn=document.createElement('button');addBtn.className='btn btn-sm btn-primary';addBtn.textContent='+ Add';addBtn.addEventListener('click',()=>{state.mission[arrayKey].push(newRowFn());render();});hdr.appendChild(addBtn);card.appendChild(hdr);const tbl=document.createElement('table');tbl.className='data-table';tbl.innerHTML='<thead><tr>'+colDefs.map(c=>'<th>'+c.label+'</th>').join('')+'<th></th></tr></thead>';const tbody=document.createElement('tbody');state.mission[arrayKey].forEach((item,i)=>{const tr=document.createElement('tr');colDefs.forEach(c=>{const td=document.createElement('td');if(c.type==='select'){const sel=document.createElement('select');c.options.forEach(o=>{sel.innerHTML+='<option value="'+o+'"'+(item[c.key]===o?' selected':'')+'>'+o+'</option>';});sel.addEventListener('change',e=>{state.mission[arrayKey][i][c.key]=e.target.value;});td.appendChild(sel);}else{const inp=document.createElement('input');inp.value=item[c.key]||'';inp.placeholder=c.placeholder||'';if(c.width)inp.style.width=c.width;inp.addEventListener('change',e=>{state.mission[arrayKey][i][c.key]=e.target.value;renderRightPanel();});td.appendChild(inp);}tr.appendChild(td);});const tdX=document.createElement('td');const btnX=document.createElement('button');btnX.className='btn btn-sm btn-danger';btnX.textContent='\u2715';btnX.addEventListener('click',()=>{state.mission[arrayKey].splice(i,1);render();});tdX.appendChild(btnX);tr.appendChild(tdX);tbody.appendChild(tr);});tbl.appendChild(tbody);card.appendChild(tbl);wrap.appendChild(card);return wrap;}
 
-function renderWaypointsTab(){return makeTableTab('Waypoints','waypoints',[{label:'#',key:'number',width:'30px'},{label:'Name',key:'name',placeholder:'WP Name'},{label:'Lat',key:'lat',placeholder:"N 00\u00b000.0'"},{label:'Lon',key:'lon',placeholder:"E 000\u00b000.0'"},{label:'Elev (ft)',key:'elevation',placeholder:'0',width:'60px'},{label:'Notes',key:'notes',placeholder:'Notes'}],()=>({number:state.mission.waypoints.length+1,name:'',lat:'',lon:'',elevation:'',notes:''}));}
-function renderFrequenciesTab(){return makeTableTab('Frequencies','frequencies',[{label:'Name / Station',key:'name',placeholder:'Station name'},{label:'Frequency',key:'frequency',placeholder:'000.000'},{label:'Mod',key:'modulation',type:'select',options:['AM','FM']},{label:'Notes',key:'notes',placeholder:'Notes'}],()=>({name:'',frequency:'',modulation:'AM',notes:''}));}
+function renderWaypointsTab(){
+  var fmt=state.coordFormat||'DDM';
+  var hints={DDM:"N 38°53.385'",DMS:"N 38°53'23.1\"",DD:'38.889708°',MGRS:'37TCK12345...'};
+  var wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;height:100%;';
+  var fb=document.createElement('div');fb.style.cssText='display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-shrink:0;';
+  var lbl=document.createElement('span');lbl.textContent='COORD FORMAT';lbl.style.cssText='font-size:10px;letter-spacing:1.5px;color:var(--text-muted);font-family:var(--font-mono);';fb.appendChild(lbl);
+  var fs=document.createElement('select');fs.style.cssText='background:var(--bg-card);color:var(--accent-cyan);border:1px solid var(--accent-cyan);padding:2px 8px;font-family:var(--font-mono);font-size:11px;cursor:pointer;';
+  [{v:'DDM',l:'DDM (DCS default)'},{v:'DMS',l:'DMS'},{v:'DD',l:'DD'},{v:'MGRS',l:'MGRS'}].forEach(function(f){var o=document.createElement('option');o.value=f.v;o.textContent=f.l;if(fmt===f.v)o.selected=true;fs.appendChild(o);});
+  fs.onchange=function(){state.coordFormat=fs.value;render();};fb.appendChild(fs);
+  var ht=document.createElement('span');ht.style.cssText='font-size:10px;color:var(--accent-dim);font-family:var(--font-mono);';ht.textContent='e.g. '+hints[fmt];fb.appendChild(ht);wrap.appendChild(fb);
+  var tw=document.createElement('div');tw.style.cssText='flex:1;overflow:auto;';
+  tw.appendChild(makeTableTab('Waypoints','waypoints',[{label:'#',key:'number',width:'30px'},{label:'Name',key:'name',placeholder:'WP Name'},{label:'Lat',key:'lat',placeholder:hints[fmt]},{label:'Lon',key:'lon',placeholder:hints[fmt].replace('N','E').replace('38','000')},{label:'Elev (ft)',key:'elev',placeholder:'0'},{label:'Notes',key:'notes',placeholder:'Notes'}]));
+  wrap.appendChild(tw);return wrap;
+}
 function renderFlightTab(){
   var m=state.mission;
   if(!m.flights)m.flights=[];
@@ -834,6 +832,7 @@ function renderFlightTab(){
     state.mission.mizThreats=threats;
   };
   setTimeout(function(){updatePanelFlights();},0);
+  if(state.mission&&state.mission.flights&&state.mission.flights.length>0){var _mBar=document.createElement('div');_mBar.style.cssText='display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--bg-secondary);border-bottom:1px solid var(--border);margin-bottom:4px;';_mBar.innerHTML='<span style="font-size:10px;letter-spacing:1.5px;color:var(--text-muted);font-family:var(--font-mono);white-space:nowrap;">LOAD FROM .MIZ</span>';var _fSel=document.createElement('select');_fSel.style.cssText='background:var(--bg-card);color:var(--accent-cyan);border:1px solid var(--accent-cyan);padding:2px 8px;font-family:var(--font-mono);font-size:11px;flex:1;max-width:300px;cursor:pointer;';var _fo=document.createElement('option');_fo.value='';_fo.textContent='Select .miz flight...';_fSel.appendChild(_fo);state.mission.flights.forEach(function(f,i){var _o=document.createElement('option');_o.value=i;_o.textContent=f.name+(f.type?' ['+f.type+']':'')+(f.coalition&&f.coalition!=='blue'?' ⚠':'');_fSel.appendChild(_o);});var _lBtn=document.createElement('button');_lBtn.textContent='AUTO-FILL';_lBtn.style.cssText='background:var(--bg-card);color:var(--accent-green);border:1px solid var(--accent-green);padding:2px 10px;font-family:inherit;font-size:11px;cursor:pointer;letter-spacing:1px;';_lBtn.onclick=function(){var _idx=parseInt(_fSel.value);if(isNaN(_idx))return;var _f=state.mission.flights[_idx];if(!_f)return;state.mission.callsign=_f.name;if(_f.type)state.mission.aircraft_type=_f.type;if(_f.task)state.mission.mission_type=_f.task;var _fr=(state.mission.frequencies||[]).find(function(fx){return fx.station&&fx.station.toLowerCase().indexOf((_f.name||'').toLowerCase())>=0;});if(_fr)state.mission.tac_freq=_fr.freq;render();};_mBar.appendChild(_fSel);_mBar.appendChild(_lBtn);container.insertBefore(_mBar,container.firstChild);}
   return container;
 }
 
@@ -871,6 +870,27 @@ function renderThreatsTab(){
     {n:'FIM-92 Stinger',nato:'Stinger',type:'MANPADS',rng:'4.8 km',alt:'3.8 km',guid:'IR',band:'—',notes:'US MANPADS. IFF + rosette scan seeker. All-aspect.',faction:'WEST'},
     {n:'Bofors 40mm L70',nato:'Bofors',type:'AAA',rng:'4 km',alt:'3 km',guid:'Optical/Radar',band:'—',notes:'40mm auto cannon. High ROF. Used by NATO and many export customers.',faction:'WEST'}
   ];
+  if(state.mission&&state.mission.sams&&state.mission.sams.filter(function(s){return s.coalition==='red';}).length>0){
+    var _es=state.mission.sams.filter(function(s){return s.coalition==='red';});
+    var _wrap=document.createElement('div');_wrap.style.cssText='display:flex;flex-direction:column;height:100%;';
+    var _hdr=document.createElement('div');
+    _hdr.style.cssText='padding:6px 12px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-muted);background:var(--bg-card);flex-shrink:0;';
+    _hdr.textContent=_es.length+' enemy threat'+(_es.length!==1?'s':'')+' from .miz';
+    var _rows='';
+    _es.forEach(function(s){
+      var _db=DB.find(function(d){return d.nato===s.type;});
+      var _rng=s.range_nm?s.range_nm.toFixed(0)+' nm':'?';
+      var _alt=_db?_db.alt:'?';
+      var _band=_db?(_db.band||'?'):'?';
+      var _htr=_db?(_db.harm_tr||'-'):'-';
+      var _hsr=_db?(_db.harm_sr||'-'):'-';
+      _rows+='<tr style="border-bottom:1px solid var(--border);"><td style="padding:4px 8px;">'+s.displayName+'</td><td style="padding:4px 8px;text-align:right;">'+_rng+'</td><td style="padding:4px 8px;text-align:right;">'+_alt+'</td><td style="padding:4px 8px;text-align:center;">'+_band+'</td><td style="padding:4px 8px;text-align:center;color:#f5a623;">'+_htr+'</td><td style="padding:4px 8px;text-align:center;color:#f5a623;">'+_hsr+'</td></tr>';
+    });
+    var _bod=document.createElement('div');
+    _bod.style.cssText='flex:1;overflow-y:auto;padding:4px;';
+    _bod.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:11px;font-family:var(--font-mono);"><thead><tr style="border-bottom:2px solid var(--border);background:var(--bg-card);"><th style="padding:4px 8px;text-align:left;color:var(--text-muted);">System</th><th style="padding:4px 8px;text-align:right;color:var(--text-muted);">Range</th><th style="padding:4px 8px;text-align:right;color:var(--text-muted);">Max Alt</th><th style="padding:4px 8px;text-align:center;color:var(--text-muted);">Band</th><th style="padding:4px 8px;text-align:center;color:var(--text-muted);">HARM TR</th><th style="padding:4px 8px;text-align:center;color:var(--text-muted);">HARM SR</th></tr></thead><tbody>'+_rows+'</tbody></table>';
+    _wrap.appendChild(_hdr);_wrap.appendChild(_bod);return _wrap;
+  }
   var cats=['ALL','SAM','AAA','MANPADS'];
   var filtered=DB.filter(function(e){
     var matchCat=filter==='ALL'||e.type===filter;
@@ -1927,7 +1947,55 @@ function renderMissionThreatsTab(){
 }
 
 
-function renderPreviewTab(){const wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;height:100%;';if(!state.savedKneeboards||state.savedKneeboards.length===0){const empty=document.createElement('div');empty.className='card';empty.style.cssText='text-align:center;padding:40px 24px;';empty.innerHTML='<p style="color:#506070;font-size:13px;margin-bottom:8px;">No layout saved yet.</p><p style="color:#304050;font-size:11px;">In <strong style="color:#00d4ff">Style Match</strong>, build your kneeboard then click <strong style="color:#00ff88">→ PREVIEW</strong></p>';wrap.appendChild(empty);return wrap;}const kb=state.savedKneeboards[state.savedKneeboards.length-1];const hdr=document.createElement('div');hdr.style.cssText='display:flex;align-items:center;gap:10px;padding:6px 0;margin-bottom:8px;border-bottom:1px solid #1a3a5a;flex-shrink:0;';const title=document.createElement('span');title.style.cssText='color:#00d4ff;font-size:11px;letter-spacing:1.5px;font-weight:bold;flex:1;';title.textContent='LAYOUT PREVIEW — '+(kb.name||'KNEEBOARD');const editBtn=document.createElement('button');editBtn.className='btn-secondary';editBtn.style.cssText='font-size:11px;';editBtn.textContent='✏ EDIT IN BUILDER';editBtn.onclick=()=>{state.page='style';render();};const clearBtn=document.createElement('button');clearBtn.className='btn-secondary';clearBtn.style.cssText='font-size:11px;color:#ff4444;border-color:#ff4444;';clearBtn.textContent='✕ CLEAR';clearBtn.onclick=()=>{state.savedKneeboards=[];render();};hdr.appendChild(title);hdr.appendChild(editBtn);hdr.appendChild(clearBtn);wrap.appendChild(hdr);const ifr=document.createElement('iframe');ifr.style.cssText='width:100%;flex:1;border:none;display:block;background:#0a0e14;min-height:550px;';ifr.addEventListener('load',function(){setTimeout(function(){try{ifr.contentWindow.postMessage({type:'load-layout',data:kb.data},'*');}catch(_){}},400);});ifr.src='kneeboard-builder.html';wrap.appendChild(ifr);return wrap;}
+function renderPreviewTab(){
+  var wrap=document.createElement('div');
+  wrap.style.cssText='display:flex;flex-direction:column;height:100%;';
+  if(!state.savedKneeboards||state.savedKneeboards.length===0){
+    var empty=document.createElement('div');
+    empty.style.cssText='padding:24px;color:var(--text-muted);font-size:12px;text-align:center;';
+    empty.innerHTML='<p style="margin-bottom:8px;">No layout saved yet.</p><p style="font-size:11px;">In <strong style="color:#00d4ff;">Kneeboard Builder</strong>, build your kneeboard then click <strong style="color:#00d4ff;">Save</strong>.</p>';
+    wrap.appendChild(empty);return wrap;
+  }
+  var idx=Math.min(state.previewKbIdx||0,state.savedKneeboards.length-1);
+  var hdr=document.createElement('div');
+  hdr.style.cssText='display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid var(--border);background:var(--bg-card);flex-shrink:0;';
+  if(state.savedKneeboards.length>1){
+    var sel=document.createElement('select');
+    sel.style.cssText='flex:1;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);padding:3px 6px;font-size:11px;font-family:var(--font-mono);';
+    state.savedKneeboards.forEach(function(kb,i){
+      var o=document.createElement('option');
+      o.value=i;
+      var d=new Date(kb.ts);
+      o.textContent=(kb.callsign||kb.name||'Kneeboard')+' — '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      if(i===idx)o.selected=true;
+      sel.appendChild(o);
+    });
+    sel.onchange=function(){state.previewKbIdx=+sel.value;render();};
+    hdr.appendChild(sel);
+  }else{
+    var lbl=document.createElement('span');
+    lbl.style.cssText='flex:1;font-size:11px;font-family:var(--font-mono);color:var(--text-primary);';
+    var _kb=state.savedKneeboards[0];
+    lbl.textContent=(_kb.callsign||_kb.name||'Kneeboard');
+    hdr.appendChild(lbl);
+  }
+  var clrBtn=document.createElement('button');
+  clrBtn.className='btn-secondary';
+  clrBtn.style.cssText='padding:3px 10px;font-size:11px;';
+  clrBtn.textContent='Clear';
+  clrBtn.onclick=function(){if(confirm('Clear all saved kneeboards?')){state.savedKneeboards=[];state.previewKbIdx=0;state.savedBuilderState=null;render();}};
+  hdr.appendChild(clrBtn);
+  wrap.appendChild(hdr);
+  var fr=document.createElement('iframe');
+  fr.src='kneeboard-builder.html';
+  fr.style.cssText='flex:1;border:none;width:100%;';
+  fr.addEventListener('load',function(){
+    setTimeout(function(){
+      try{var kb=state.savedKneeboards[idx];if(kb&&kb.data){fr.contentWindow.postMessage({type:'load-layout',data:kb.data},'*');}}catch(_){}
+    },400);
+  });
+  wrap.appendChild(fr);return wrap;
+}
 function renderImportPage(){const wrap=document.createElement('div');wrap.innerHTML='<div class="section-header-bar"><h2>Import Mission File</h2><span class="breadcrumb">135TH SQN / MIZ PARSER / CLIENT-SIDE</span></div>';const card=document.createElement('div');card.className='card';card.innerHTML='<div class="card-header"><h2>Upload .miz File</h2><span class="badge badge-cyan">JSZIP POWERED</span></div><p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Upload a DCS mission file (.miz) to automatically extract waypoints, frequencies, units, and mission details. Parsing happens entirely in your browser.</p>';const area=document.createElement('div');area.className='upload-area';area.innerHTML='<div class="icon">\uD83D\uDCC1</div><p>Click to upload a .miz file</p><p class="sub">DCS World mission archive (.miz) \u2014 parsed client-side</p>';const fi=document.createElement('input');fi.type='file';fi.accept='.miz';fi.style.display='none';area.appendChild(fi);area.addEventListener('click',()=>fi.click());const status=document.createElement('div');fi.addEventListener('change',async(e)=>{const file=e.target.files[0];if(!file)return;status.innerHTML='<p class="loading-msg">Parsing mission file...</p>';try{const data=await parseMizFile(file);if(data.theater)data.theater=THEATER_MAP[data.theater]||data.theater;var _kbFlights=state.mission.flights||[];Object.assign(state.mission,data);state.mission.flights=_kbFlights;
         state.mission.mizFlights=data.flights||[];window._mizGroups=(data.flights||[]).map(function(f){return f.name||'Unknown';});if(data.sams&&data.sams.length>0){var _mts={};state.mission.mizThreats=data.sams.filter(function(s){var k=s.displayName||s.type||'';if(!k||_mts[k])return false;_mts[k]=true;return true;}).map(function(s){return{type:s.type||'',display:s.displayName||s.type||''};});}
         // Auto-populate threats from parsed SAMs â one entry per unique type
@@ -1957,7 +2025,6 @@ function renderStylePage() {
   mc.style.maxWidth = 'none';
   mc.style.width = '100%';
   mc.style.flex = '1 1 auto';
-  if (panel) panel.style.display = 'none';
   var obs = new MutationObserver(function() {
     if (!mc.querySelector('iframe')) {
       mc.style.maxWidth = '';
@@ -1973,7 +2040,7 @@ function renderStylePage() {
   var iframe = document.createElement('iframe');
   iframe.src = 'kneeboard-builder.html';
   iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;background:#0a0e14;';
-  iframe.addEventListener('load',function(){setTimeout(function(){try{iframe.contentWindow.postMessage({type:'mission-data',mission:state.mission},'*');}catch(_){}},500);});
+  iframe.addEventListener('load',function(){setTimeout(function(){try{iframe.contentWindow.postMessage({type:'mission-data',mission:state.mission},'*');if(state.savedBuilderState){iframe.contentWindow.postMessage({type:'load-layout',data:state.savedBuilderState},'*');}}catch(_){}},500);});
   wrap.appendChild(iframe);
   return wrap;
 }
@@ -1995,7 +2062,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.downloadKneeboard=function(i){var kb=state.savedKneeboards&&state.savedKneeboards[i];if(!kb)return;var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(kb.data,null,0)],{type:'application/json'}));a.download=(kb.name||'kneeboard').replace(/[^a-z0-9]/gi,'_')+'.json';a.click();URL.revokeObjectURL(a.href);};
-window.addEventListener('message',function(e){if(!e||!e.data||e.data.type!=='kneeboard-saved')return;state.savedKneeboards=state.savedKneeboards||[];state.savedKneeboards.push({name:e.data.name||'Kneeboard',callsign:e.data.callsign||'',ts:Date.now(),data:e.data.data});state.page='kneeboard';state.tab='preview';render();});
+window.addEventListener('message',function(e){if(!e||!e.data||e.data.type!=='kneeboard-saved')return;state.savedKneeboards=state.savedKneeboards||[];state.savedKneeboards.push({name:e.data.name||'Kneeboard',callsign:e.data.callsign||'',ts:Date.now(),data:e.data.data});state.savedBuilderState=e.data.data;state.page='kneeboard';state.tab='preview';render();});
 </script>
 </body>
 </html>
