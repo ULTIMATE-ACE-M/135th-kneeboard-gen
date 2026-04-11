@@ -258,7 +258,7 @@ function _LoadoutVisBlock_REMOVED({ config, w, h, accent }) {
                   {st.label}
                 </text>
                 {/* Weapon abbreviated */}
-                {{loaded && (
+                {loaded && (
                   <text x={x} y={ac.stationY - 4} textAnchor="middle"
                         fill={accent} fontSize="8"
                         style={{ fontFamily:"'Courier New',monospace" }}>
@@ -272,7 +272,7 @@ function _LoadoutVisBlock_REMOVED({ config, w, h, accent }) {
       </div>
 
       {/* Station picker overlay */}
-      {{activeStation && (
+      {activeStation && (
         <div style={{ position:'absolute', inset:0, background:'rgba(7,11,16,0.92)',
                       display:'flex', flexDirection:'column', alignItems:'center',
                       justifyContent:'center', zIndex:100, padding:'8px' }}>
