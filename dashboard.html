@@ -252,7 +252,7 @@ function renderRightPanel(){const m=state.mission;var cf=document.getElementById
     if(pf){
       var selFlights=m.selectedFlights&&m.selectedFlights.length>0
         ?m.selectedFlights.map(function(i){return m.flights[i];}).filter(Boolean)
-        :m.flights||[];
+        :[];
       if(selFlights.length===0){
         pf.innerHTML='<div style="color:#333;font-size:9px;letter-spacing:1px;">NO FLIGHT DATA</div>';
       } else {
