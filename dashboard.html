@@ -2062,7 +2062,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.downloadKneeboard=function(i){var kb=state.savedKneeboards&&state.savedKneeboards[i];if(!kb)return;var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(kb.data,null,0)],{type:'application/json'}));a.download=(kb.name||'kneeboard').replace(/[^a-z0-9]/gi,'_')+'.json';a.click();URL.revokeObjectURL(a.href);};
-window.addEventListener('message',function(e){if(!e||!e.data||e.data.type!=='kneeboard-saved')return;state.savedKneeboards=state.savedKneeboards||[];state.savedKneeboards.push({name:e.data.name||'Kneeboard',callsign:e.data.callsign||'',ts:Date.now(),data:e.data.data});state.savedBuilderState=e.data.data;state.page='kneeboard';state.tab='preview';render();});
+window.addEventListener('message',function(e){if(!e||!e.data)return;if(e.data.type==='builder-autosave'){if(e.data.data)state.savedBuilderState=e.data.data;return;}if(e.data.type!=='kneeboard-saved')return;state.savedKneeboards=state.savedKneeboards||[];state.savedKneeboards.push({name:e.data.name||'Kneeboard',callsign:e.data.callsign||'',ts:Date.now(),data:e.data.data});state.savedBuilderState=e.data.data;state.page='kneeboard';state.tab='preview';render();});
 </script>
 </body>
 </html>
