@@ -1011,7 +1011,110 @@ function renderReferencePage(){const wrap=document.createElement('div');wrap.inn
 
 let styleState={loading:false,style:null,refPreview:null,styledPreview:null,error:''};
 function _addTplCard(g,name,du){var isA=window._kbTemplateName===name;var c=document.createElement('div');c.style.cssText='cursor:pointer;border:2px solid '+(isA?'#4fc3f7':'#1e2e3e')+';border-radius:4px;overflow:hidden;background:#0a141e;transition:border-color 0.15s;';var img=document.createElement('img');img.src=du;img.alt=name;img.style.cssText='width:100%;height:80px;object-fit:cover;object-position:top;display:block;';var lbl=document.createElement('div');lbl.style.cssText='font-size:8px;color:'+(isA?'#4fc3f7':'#557')+';padding:3px 4px;font-family:"Courier New",monospace;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;text-align:center;background:#090f17;';lbl.textContent=name.replace(/\.(png|jpg|jpeg)$/i,'');c.appendChild(img);c.appendChild(lbl);c.onclick=function(){window._kbTemplateName=name;window._kbStyleId=null;var bi=new Image();bi.onload=function(){window._kbBgImage=bi;render();};bi.src=du;};c.onmouseenter=function(){if(window._kbTemplateName!==name)this.style.borderColor='#2a4a5a';};c.onmouseleave=function(){this.style.borderColor=(window._kbTemplateName===name)?'#4fc3f7':'#1e2e3e';};g.appendChild(c);}
-function renderStylePage(){var wrap=document.createElement('div');wrap.innerHTML='<div class="section-header-bar"><h2>Style Matcher</h2><span class="breadcrumb">135TH SQN / KNEEBOARD STYLE / TEMPLATE SELECT</span></div>';var _KBPR=[{id:'default',label:'Default',bg:'#0d1b2a',hdr:'#1a2a3a',ink:'#e0e0e0',accent:'#4fc3f7'},{id:'white',label:'White Paper',bg:'#f5f5f0',hdr:'#dde0d8',ink:'#1a1a1a',accent:'#1a3a6a'},{id:'yellow',label:'Yellow Paper',bg:'#f5e878',hdr:'#ddd050',ink:'#1a1500',accent:'#7a5500'},{id:'blue',label:'Blue Paper',bg:'#b8cfe8',hdr:'#8aabcc',ink:'#0a1428',accent:'#003380'},{id:'teal',label:'Teal Paper',bg:'#b8d4c4',hdr:'#88b898',ink:'#051a0c',accent:'#005530'},{id:'dark',label:'Dark Paper',bg:'#5a5a5a',hdr:'#3a3a3a',ink:'#f0f0f0',accent:'#88ccff'},{id:'black',label:'Night Ops',bg:'#000000',hdr:'#0a0a0a',ink:'#00ff41',accent:'#00ff41'},{id:'nvis',label:'NVG',bg:'#000800',hdr:'#001200',ink:'#00cc32',accent:'#00ff41'}];var card=document.createElement('div');card.className='card';card.style.cssText='margin:12px;';var activeId=window._kbStyleId||'default';var activeTpl=window._kbTemplateName||'';card.innerHTML='<div class="card-header"><h2>Kneeboard Style</h2><span class="badge badge-cyan" id="kb-active-badge">ACTIVE: '+(activeTpl?activeTpl.replace(/\.(png|jpg|jpeg)$/i,'').toUpperCase():activeId.toUpperCase())+'</span></div>'+'<div style="padding:16px;">'+'<div class="section-label" style="font-size:10px;letter-spacing:2px;color:var(--accent-cyan);margin-bottom:8px;">BUILT-IN PRESETS</div>'+'<div id="kb-presets-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>'+'<div class="section-label" style="font-size:10px;letter-spacing:2px;color:var(--accent-cyan);margin-bottom:8px;">TEMPLATE GALLERY</div>'+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">'+'<button id="load-tpl-folder-btn" style="background:#1a2a3a;color:#4fc3f7;border:1px solid #4fc3f7;border-radius:3px;padding:6px 14px;cursor:pointer;font-family:\"Courier New\",monospace;font-size:11px;letter-spacing:1px;">&#128193; LOAD FOLDER</button>'+'<span id="tpl-folder-label" style="font-size:10px;color:#666;font-family:\"Courier New\",monospace;">'+(window._kbFolderName||'No folder loaded — click to browse')+'</span>'+'</div>'+'<div id="tpl-gallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;min-height:60px;"></div>'+'</div>';wrap.appendChild(card);setTimeout(function(){var row=document.getElementById('kb-presets-row');if(row){_KBPR.forEach(function(p){var isA=(window._kbStyleId===p.id)&&!window._kbTemplateName;var btn=document.createElement('div');btn.style.cssText='cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px;border:2px solid '+(isA?'#4fc3f7':'#2a3a4a')+';border-radius:5px;background:'+(isA?'#0d2030':'#0d1520')+';min-width:58px;';var sw=document.createElement('div');sw.style.cssText='width:50px;height:34px;background:'+p.bg+';border:1px solid '+(p.bg==="#000000"?'#444':'transparent')+';border-radius:2px;position:relative;overflow:hidden;';sw.innerHTML='<div style="position:absolute;bottom:0;left:0;right:0;height:11px;background:'+p.hdr+'"></div>';var lb=document.createElement('div');lb.style.cssText='font-size:8px;color:'+(isA?'#4fc3f7':'#778')+';font-family:"Courier New",monospace;text-align:center;white-space:nowrap;';lb.textContent=p.label;btn.appendChild(sw);btn.appendChild(lb);btn.onclick=function(){window._kbStyleId=p.id;window._kbTemplateName=null;window._kbBgImage=null;window._activeKbPreset=p;render();};btn.onmouseenter=function(){if(!((window._kbStyleId===p.id)&&!window._kbTemplateName))this.style.borderColor='#3a5a7a';};btn.onmouseleave=function(){this.style.borderColor=((window._kbStyleId===p.id&&!window._kbTemplateName)?'#4fc3f7':'#2a3a4a');};row.appendChild(btn);});}var gal=document.getElementById('tpl-gallery');if(gal&&window._kbTemplates&&window._kbTemplates.length){window._kbTemplates.forEach(function(t){_addTplCard(gal,t.name,t.dataUrl);});}var lb2=document.getElementById('load-tpl-folder-btn');if(lb2){lb2.addEventListener('click',async function(){if(!window.showDirectoryPicker){alert('File System Access API requires Chrome 86+.');return;}try{var dh=await window.showDirectoryPicker({id:'kbTpl',mode:'read'});window._kbFolderName=dh.name;var fl=document.getElementById('tpl-folder-label');if(fl)fl.textContent=dh.name;window._kbTemplates=[];var gal=document.getElementById('tpl-gallery');if(gal)gal.innerHTML='';var entries=[];for await(var [nm,fh] of dh.entries()){entries.push([nm,fh]);}entries.sort(function(a,b){return a[0].localeCompare(b[0]);});for(var ei=0;ei<entries.length;ei++){var nm=entries[ei][0],fh=entries[ei][1];if(fh.kind==='file'&&/\.(png|jpg|jpeg)$/i.test(nm)){var file=await fh.getFile();await new Promise(function(res){var rd=new FileReader();rd.onload=function(e){var du=e.target.result;window._kbTemplates.push({name:nm,dataUrl:du});var g=document.getElementById('tpl-gallery');if(g){_addTplCard(g,nm,du);}res();};rd.readAsDataURL(file);});}}}catch(err){if(err.name!=='AbortError')console.error(err);}});}},0);return wrap;}
+function renderStylePage(){
+var wrap=document.createElement('div');
+wrap.innerHTML='<div class="section-header-bar"><h2>Layout &amp; Colors</h2><span class="breadcrumb">135TH SQN / KNEEBOARD LAYOUT &amp; COLORS / TEMPLATE SELECT</span></div>';
+var _KBPR=[{id:'default',label:'Default',bg:'#0d1b2a',hdr:'#1a2a3a',ink:'#e0e0e0',accent:'#4fc3f7'},{id:'white',label:'White Paper',bg:'#f5f5f0',hdr:'#dde0d8',ink:'#1a1a1a',accent:'#1a3a6a'},{id:'yellow',label:'Yellow Paper',bg:'#f5e878',hdr:'#ddd050',ink:'#1a1500',accent:'#7a5500'},{id:'blue',label:'Blue Paper',bg:'#b8cfe8',hdr:'#8aabcc',ink:'#0a1428',accent:'#003380'},{id:'teal',label:'Teal Paper',bg:'#b8d4c4',hdr:'#88b898',ink:'#051a0c',accent:'#005530'},{id:'dark',label:'Dark Paper',bg:'#5a5a5a',hdr:'#3a3a3a',ink:'#f0f0f0',accent:'#88ccff'},{id:'black',label:'Night Ops',bg:'#000000',hdr:'#0a0a0a',ink:'#00ff41',accent:'#00ff41'},{id:'nvis',label:'NVG',bg:'#000800',hdr:'#001200',ink:'#00cc32',accent:'#00ff41'}];
+var colorFields=[{key:'bg',label:'Card BG'},{key:'headerBg',label:'Header BG'},{key:'accent',label:'Accent'},{key:'textBright',label:'Title Text'},{key:'text',label:'Body Text'},{key:'textDim',label:'Dim Text'},{key:'rowAlt',label:'Row Alt'},{key:'line',label:'Grid Lines'}];
+var main=document.createElement('div');
+main.style.cssText='display:flex;gap:16px;padding:16px;align-items:flex-start;';
+var lc=document.createElement('div');
+lc.style.cssText='flex:0 0 400px;display:flex;flex-direction:column;gap:12px;';
+var activeId=window._kbStyleId||'default';var activeTpl=window._kbTemplateName||'';
+var activeCard=document.createElement('div');activeCard.className='card';
+activeCard.innerHTML='<div class="card-header"><h2>Kneeboard Style</h2><span class="badge badge-cyan" id="kb-active-badge">ACTIVE: '+(activeTpl?activeTpl.replace(/\.(png|jpg|jpeg)$/i,'').toUpperCase():activeId.toUpperCase())+'</span></div>';
+var presetCard=document.createElement('div');presetCard.className='card';
+presetCard.innerHTML='<div style="padding:8px 12px 4px;font-size:10px;color:#5a7a90;letter-spacing:1px;text-transform:uppercase;">Color Presets</div>';
+var presetRow=document.createElement('div');presetRow.id='kb-presets-row';
+presetRow.style.cssText='display:flex;flex-wrap:wrap;gap:6px;padding:4px 12px 12px;';
+_KBPR.forEach(function(p){
+  var isA=(window._kbStyleId===p.id&&!window._kbTemplateName);
+  var btn=document.createElement('div');
+  btn.dataset.pid=p.id;
+  btn.style.cssText='cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 6px;border-radius:4px;border:2px solid '+(isA?T.accent:'#1e3d55')+';width:72px;box-sizing:border-box;';
+  btn.innerHTML='<div style="width:48px;height:28px;border-radius:3px;background:'+p.bg+';border:1px solid '+p.hdr+';"></div><div style="font-size:8px;color:#5a7a90;text-align:center;line-height:1.2;">'+p.label+'</div>';
+  btn.onclick=function(){
+    window._kbStyleId=p.id;window._kbTemplateName=null;window._kbBgImage=null;window._activeKbPreset=p;
+    T.bg=p.bg;T.headerBg=p.hdr;T.text=p.ink;T.textBright=p.ink;T.accent=p.accent;
+    T.accentDim=p.accent;T.headerLine=p.accent;T.rowAlt=p.bg;T.line=p.hdr;
+    document.querySelectorAll('[data-pid]').forEach(function(b){b.style.borderColor=(b.dataset.pid===p.id?T.accent:'#1e3d55');});
+    var ba=document.getElementById('kb-active-badge');if(ba)ba.textContent='ACTIVE: '+p.id.toUpperCase();
+    window._refreshColorPickers();window._refreshStylePreview();render();
+  };
+  btn.onmouseenter=function(){if(!isA)this.style.borderColor='#3a5a7a';};
+  btn.onmouseleave=function(){if(!isA)this.style.borderColor='#1e3d55';};
+  presetRow.appendChild(btn);
+});
+presetCard.appendChild(presetRow);
+var colorCard=document.createElement('div');colorCard.className='card';
+colorCard.innerHTML='<div style="padding:8px 12px 4px;font-size:10px;color:#5a7a90;letter-spacing:1px;text-transform:uppercase;">Color Theme</div>';
+var colorGrid=document.createElement('div');colorGrid.id='kb-color-grid';
+colorGrid.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 12px 12px;';
+colorFields.forEach(function(cf){
+  var row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;';
+  var picker=document.createElement('input');picker.type='color';picker.id='kb-cp-'+cf.key;picker.value=T[cf.key];
+  picker.style.cssText='width:32px;height:24px;border:none;cursor:pointer;border-radius:3px;padding:2px;background:#0a0e14;';
+  var lbl=document.createElement('span');lbl.style.cssText='font-size:9px;color:#5a7a90;';lbl.textContent=cf.label;
+  row.appendChild(picker);row.appendChild(lbl);colorGrid.appendChild(row);
+  picker.oninput=function(){T[cf.key]=this.value;window._refreshStylePreview();};
+});
+colorCard.appendChild(colorGrid);
+var tplCard=document.createElement('div');tplCard.className='card';
+tplCard.innerHTML='<div class="card-header"><h2>Templates</h2><button id="kb-load-folder" style="padding:3px 10px;background:#1e3d55;color:#00d4ff;border:1px solid #00d4ff;border-radius:3px;font-size:9px;cursor:pointer;letter-spacing:1px;">LOAD FOLDER</button></div>';
+var gal=document.createElement('div');gal.id='kb-tpl-gallery';gal.style.cssText='display:flex;flex-wrap:wrap;gap:6px;padding:12px;min-height:60px;';
+tplCard.appendChild(gal);
+lc.appendChild(activeCard);lc.appendChild(presetCard);lc.appendChild(colorCard);lc.appendChild(tplCard);
+var rc=document.createElement('div');rc.style.cssText='flex:1;min-width:280px;position:sticky;top:16px;';
+var prevCard=document.createElement('div');prevCard.className='card';
+prevCard.innerHTML='<div class="card-header"><h2>Live Preview</h2><span style="font-size:9px;color:#5a7a90;margin-left:auto;">Updates as you change colors</span></div>';
+var tabRow=document.createElement('div');tabRow.id='kb-pvtab-row';tabRow.style.cssText='display:flex;gap:6px;padding:8px 12px 0;';
+if(!window._pvTab)window._pvTab='msn';
+var pvTypes=['msn','comms','threats','presets'];
+var pvLabels=['MISSION','COMMS','THREATS','PRESETS'];
+pvTypes.forEach(function(pt,i){
+  var tb=document.createElement('button');tb.id='kb-pvtab-'+pt;tb.textContent=pvLabels[i];
+  tb.style.cssText='padding:3px 8px;font-size:9px;background:'+(window._pvTab===pt?'#00d4ff':'#1e3d55')+';color:'+(window._pvTab===pt?'#0a0e14':'#5a7a90')+';border:1px solid '+(window._pvTab===pt?'#00d4ff':'#1e3d55')+';border-radius:3px;cursor:pointer;letter-spacing:1px;';
+  tb.onclick=function(){window._pvTab=pt;pvTypes.forEach(function(t){var b=document.getElementById('kb-pvtab-'+t);if(b){b.style.background=(t===pt?T.accent:'#1e3d55');b.style.color=(t===pt?T.bg:T.textDim);b.style.borderColor=(t===pt?T.accent:'#1e3d55');}});window._refreshStylePreview();};
+  tabRow.appendChild(tb);
+});
+prevCard.appendChild(tabRow);
+var prevImg=document.createElement('img');prevImg.id='kb-style-preview';
+prevImg.style.cssText='width:100%;border-radius:3px;margin:8px 12px 12px;display:block;width:calc(100% - 24px);';
+prevImg.src='';
+prevCard.appendChild(prevImg);
+rc.appendChild(prevCard);
+main.appendChild(lc);main.appendChild(rc);
+wrap.appendChild(main);
+window._refreshColorPickers=function(){
+  colorFields.forEach(function(cf){var el=document.getElementById('kb-cp-'+cf.key);if(el)el.value=T[cf.key];});
+};
+window._refreshStylePreview=function(){
+  var pvt=window._pvTab||'msn';
+  var m=window._missionData||{callsign:'VIPER 1',mission_name:'Sample Mission',departure_airfield:'BATUMI',recovery_airfield:'BATUMI',awacs_callsign:'DARKSTAR',awacs_freq:'255.000',tac_freq:'270.000',frequencies:[{name:'GROUND',frequency:'121.000'},{name:'TOWER',frequency:'138.000'}]};
+  var fn=pvt==='msn'?renderMissionCard:pvt==='comms'?renderCommsCard:pvt==='threats'?renderThreatsCard:renderPresetCard;
+  try{var url=fn(m);var img=document.getElementById('kb-style-preview');if(img&&url){img.src=url;}}catch(e){}
+};
+setTimeout(function(){
+  window._refreshColorPickers();
+  window._refreshStylePreview();
+  document.querySelectorAll('[data-pid]').forEach(function(b){
+    b.style.borderColor=(b.dataset.pid===(window._kbStyleId||'default')&&!window._kbTemplateName)?T.accent:'#1e3d55';
+  });
+  var lfb=document.getElementById('kb-load-folder');
+  if(lfb){lfb.onclick=function(){
+    var inp=document.createElement('input');inp.type='file';inp.multiple=true;inp.accept='image/*';
+    inp.onchange=function(){
+      var g=document.getElementById('kb-tpl-gallery');if(!g)return;g.innerHTML='';
+      Array.from(inp.files).forEach(function(f){
+        var fr=new FileReader();
+        fr.onload=function(e){_addTplCard(g,f.name,e.target.result);};
+        fr.readAsDataURL(f);
+      });
+    };
+    inp.click();
+  };}
+},150);
+return wrap;}
 
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 //  EVENT BINDINGS
@@ -1032,3 +1135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </body>
 </html>
 
+
+Claude is active in this tab group
+Open chat
+Dismiss
