@@ -607,7 +607,7 @@ function renderFlightTab(){
     const body=document.createElement('div');body.style.cssText='padding:16px;';
     const lb=document.createElement('label');lb.className='section-label';lb.textContent='SELECT FLIGHT FROM MIZ';
     const sel=document.createElement('select');
-    sel.style.cssText='width:100%;margin-top:8px;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);padding:8px 10px;font-family:var(--font-mono);font-size:12px;border-radius:3px;';
+    sel.style.cssText='width:100%;margin-top:8px;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);padding:8px 10px;font-family:var(--font-mono);font-size:12px;border-radius:3px;display:block;';
     const o0=document.createElement('option');o0.value='-1';o0.textContent='Select flight...';sel.appendChild(o0);
     state.mission.flights.forEach(function(fl,i){
       const o=document.createElement('option');o.value=i;
@@ -633,9 +633,9 @@ function renderFlightTab(){
       const det=document.createElement('div');
       det.style.cssText='margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:11px;';
       det.innerHTML='<div class="section-label" style="margin-bottom:8px">SELECTED FLIGHT</div>'
-        +'<div style="color:var(--text-secondary)">TYPE: <span style="color:var(--text-primary)">'+fl.type+'</span></div>'
-        +'<div style="color:var(--text-secondary)">CALLSIGN: <span style="color:var(--accent-cyan,#0ff)">'+fl.name+'</span></div>'
-        +'<div style="color:var(--text-secondary)">WAYPOINTS: <span style="color:var(--text-primary)">'+fl.waypoints.length+'</span></div>'
+        +'<div style="color:var(--text-secondary);margin-bottom:4px">TYPE: <span style="color:var(--text-primary)">'+fl.type+'</span></div>'
+        +'<div style="color:var(--text-secondary);margin-bottom:4px">CALLSIGN: <span style="color:var(--accent-cyan,#0ff)">'+fl.name+'</span></div>'
+        +'<div style="color:var(--text-secondary);margin-bottom:4px">WAYPOINTS: <span style="color:var(--text-primary)">'+fl.waypoints.length+'</span></div>'
         +'<div style="color:var(--text-secondary)">COALITION: <span style="color:var(--text-primary)">'+fl.coalition.toUpperCase()+'</span></div>';
       body.appendChild(det);
     }
