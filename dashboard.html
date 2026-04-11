@@ -625,87 +625,159 @@ function makeTableTab(title,arrayKey,colDefs,newRowFn){const wrap=document.creat
 
 function renderWaypointsTab(){return makeTableTab('Waypoints','waypoints',[{label:'#',key:'number',width:'30px'},{label:'Name',key:'name',placeholder:'WP Name'},{label:'Lat',key:'lat',placeholder:"N 00\u00b000.0'"},{label:'Lon',key:'lon',placeholder:"E 000\u00b000.0'"},{label:'Elev (ft)',key:'elevation',placeholder:'0',width:'60px'},{label:'Notes',key:'notes',placeholder:'Notes'}],()=>({number:state.mission.waypoints.length+1,name:'',lat:'',lon:'',elevation:'',notes:''}));}
 function renderFrequenciesTab(){return makeTableTab('Frequencies','frequencies',[{label:'Name / Station',key:'name',placeholder:'Station name'},{label:'Frequency',key:'frequency',placeholder:'000.000'},{label:'Mod',key:'modulation',type:'select',options:['AM','FM']},{label:'Notes',key:'notes',placeholder:'Notes'}],()=>({name:'',frequency:'',modulation:'AM',notes:''}));}
-function renderFlightTab(){
-  const wrap=document.createElement('div');
-  if(state.mission.flights&&state.mission.flights.length>0){
-    const card=document.createElement('div');
-    card.style.cssText='background:#1a1a2e;border:1px solid #00d4ff33;border-radius:6px;padding:12px;margin-bottom:12px;';
-    const hdr=document.createElement('div');
-    hdr.style.cssText='color:#00d4ff;font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:10px;text-transform:uppercase;';
-    hdr.textContent='FLIGHT SELECTOR';
-    card.appendChild(hdr);
-    const toggleRow=document.createElement('div');
-    toggleRow.style.cssText='display:flex;gap:8px;margin-bottom:10px;';
-    const selAllBtn=document.createElement('button');
-    selAllBtn.textContent='SELECT ALL';
-    selAllBtn.style.cssText='background:#00d4ff22;border:1px solid #00d4ff55;color:#00d4ff;font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:4px;cursor:pointer;';
-    const clrAllBtn=document.createElement('button');
-    clrAllBtn.textContent='CLEAR ALL';
-    clrAllBtn.style.cssText='background:#ff4d4d22;border:1px solid #ff4d4d55;color:#ff4d4d;font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:4px;cursor:pointer;';
-    toggleRow.appendChild(selAllBtn);toggleRow.appendChild(clrAllBtn);
-    card.appendChild(toggleRow);
-    const listDiv=document.createElement('div');
-    listDiv.style.cssText='display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;';
-    const checkboxes=[];
-    state.mission.flights.forEach(function(fl,idx){
-      const rowEl=document.createElement('label');
-      rowEl.style.cssText='display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 8px;border-radius:4px;border:1px solid #ffffff11;background:#0d0d1a;';
-      const cb=document.createElement('input');
-      cb.type='checkbox';cb.value=idx;
-      cb.style.cssText='accent-color:#00d4ff;width:14px;height:14px;cursor:pointer;';
-      if(state.mission.selectedFlights&&state.mission.selectedFlights.includes(idx))cb.checked=true;
-      checkboxes.push(cb);
-      const lbl=document.createElement('span');
-      lbl.style.cssText='flex:1;display:flex;justify-content:space-between;align-items:center;';
-      const nameSpan=document.createElement('span');
-      nameSpan.style.cssText='color:#e0e0e0;font-size:11px;font-weight:700;';
-      nameSpan.textContent=fl.name||(fl.type+'#'+idx);
-      const typeSpan=document.createElement('span');
-      typeSpan.style.cssText='color:#888;font-size:10px;';
-      typeSpan.textContent=fl.type||'';
-      lbl.appendChild(nameSpan);lbl.appendChild(typeSpan);
-      rowEl.appendChild(cb);rowEl.appendChild(lbl);
-      cb.addEventListener('change',function(){
-        var sel=[];
-        checkboxes.forEach(function(c,i){if(c.checked)sel.push(i);});
-        state.mission.selectedFlights=sel;
-        if(sel.length>0){
-          state.mission.selectedFlight=sel[0];
-        }else{state.mission.selectedFlight=-1;}
-        render();
+function renderFlightTab() {
+  const wrap = document.createElement('div');
+  const m = state.mission;
+  const hasMiz = m.flights && m.flights.length > 0;
+
+  // ── FLIGHT MEMBERS card ──
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'card-header';
+  hdr.innerHTML = '<h2>Flight Members</h2>';
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'btn btn-sm btn-primary';
+  addBtn.textContent = '+ Add';
+  addBtn.addEventListener('click', () => {
+    // Remove any existing picker/add-row
+    const existing = card.querySelector('.fm-picker, .fm-addrow');
+    if(existing) { existing.remove(); return; }
+
+    if(hasMiz) {
+      // Show .miz flight picker
+      const picker = document.createElement('div');
+      picker.className = 'fm-picker';
+      picker.style.cssText = 'background:var(--bg-active);border:1px solid var(--accent-dim);border-radius:4px;padding:12px;margin-bottom:12px;';
+
+      const pickerTitle = document.createElement('div');
+      pickerTitle.style.cssText = 'font-size:10px;letter-spacing:2px;color:var(--accent-cyan);margin-bottom:8px;';
+      pickerTitle.textContent = 'SELECT FLIGHT FROM .MIZ';
+      picker.appendChild(pickerTitle);
+
+      const listWrap = document.createElement('div');
+      listWrap.style.cssText = 'display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto;margin-bottom:10px;';
+      m.flights.forEach((f, fi) => {
+        const already = (m.flight_members||[]).some(mem => mem.callsign === (f.name||f.callsign));
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--bg-card);border:1px solid var(--border);border-radius:3px;cursor:pointer;transition:background .15s;' + (already ? 'opacity:0.4;cursor:default;' : '');
+        row.innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--accent-cyan);flex-shrink:0;"></div><span style="font-size:11px;">' + (f.name||f.callsign||'Flight '+(fi+1)) + '</span>' + (already ? '<span style="font-size:9px;color:var(--accent-green);letter-spacing:1px;">ADDED</span>' : '') + '</div><span style="font-size:10px;color:var(--text-muted);letter-spacing:1px;">' + (f.type||f.aircraft_type||'') + '</span>';
+        if(!already) {
+          row.addEventListener('mouseenter', () => row.style.background = 'var(--bg-active)');
+          row.addEventListener('mouseleave', () => row.style.background = 'var(--bg-card)');
+          row.addEventListener('click', () => {
+            if(!m.flight_members) m.flight_members = [];
+            m.flight_members.push({
+              callsign: f.name || f.callsign || '',
+              role: 'WINGMAN',
+              aircraft: f.type || f.aircraft_type || '',
+              freq: f.freq || f.frequency || ''
+            });
+            picker.remove();
+            render();
+          });
+        }
+        listWrap.appendChild(row);
       });
-      listDiv.appendChild(rowEl);
+      picker.appendChild(listWrap);
+
+      const btnRow = document.createElement('div');
+      btnRow.style.cssText = 'display:flex;gap:8px;border-top:1px solid var(--border);padding-top:10px;';
+
+      const manualBtn = document.createElement('button');
+      manualBtn.className = 'btn btn-sm btn-secondary';
+      manualBtn.textContent = '✎ Manual Entry';
+      manualBtn.addEventListener('click', () => { picker.remove(); showAddRow(); });
+      btnRow.appendChild(manualBtn);
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'btn btn-sm btn-danger';
+      cancelBtn.textContent = '✕ Cancel';
+      cancelBtn.addEventListener('click', () => picker.remove());
+      btnRow.appendChild(cancelBtn);
+
+      picker.appendChild(btnRow);
+      card.insertBefore(picker, tbl);
+    } else {
+      showAddRow();
+    }
+  });
+  hdr.appendChild(addBtn);
+  card.appendChild(hdr);
+
+  // ── Table ──
+  const tbl = document.createElement('table');
+  tbl.className = 'data-table';
+  tbl.innerHTML = '<thead><tr><th>Callsign</th><th>Role</th><th>Aircraft</th><th>Freq</th><th></th></tr></thead>';
+  const tbody = document.createElement('tbody');
+
+  const members = m.flight_members || [];
+  if(members.length === 0) {
+    const emptyRow = document.createElement('tr');
+    emptyRow.className = 'fm-empty';
+    emptyRow.innerHTML = '<td colspan="5" style="text-align:center;color:var(--text-muted);font-size:11px;letter-spacing:1px;padding:16px 0;">NO MEMBERS — PRESS + ADD TO BEGIN</td>';
+    tbody.appendChild(emptyRow);
+  } else {
+    members.forEach((mem, i) => {
+      const tr = document.createElement('tr');
+      const roles = ['FLIGHT LEAD','WINGMAN','ELEMENT LEAD','ELEMENT 2','OTHER'];
+      tr.innerHTML =
+        '<td style="font-size:11px;">' + (mem.callsign||'—') + '</td>' +
+        '<td><select class="form-select form-select-sm" style="min-width:120px;">' + roles.map(r => '<option value="'+r+'"'+(mem.role===r?' selected':'')+'>'+r+'</option>').join('') + '</select></td>' +
+        '<td style="font-size:11px;">' + (mem.aircraft||'—') + '</td>' +
+        '<td style="font-size:11px;color:var(--accent-cyan);">' + (mem.freq ? mem.freq+' AM' : '—') + '</td>' +
+        '<td><button class="btn btn-sm btn-danger">✕</button></td>';
+      tr.querySelector('select').addEventListener('change', e => { m.flight_members[i].role = e.target.value; });
+      tr.querySelector('button').addEventListener('click', () => { m.flight_members.splice(i,1); render(); });
+      tbody.appendChild(tr);
     });
-    card.appendChild(listDiv);
-    selAllBtn.addEventListener('click',function(){
-      checkboxes.forEach(function(c){c.checked=true;});
-      var sel=state.mission.flights.map(function(_,i){return i;});
-      state.mission.selectedFlights=sel;
-      if(sel.length>0){
-        var primary=state.mission.flights[0];
-        state.mission.selectedFlight=0;
-        state.mission.waypoints=(primary.waypoints||[]).map(function(wp,wi){return{name:wp.name||('WP'+wi),lat:wp.lat,lon:wp.lon,alt:wp.alt||0,speed:wp.speed||0};});
-        state.mission.aircraft_type=primary.type||state.mission.aircraft_type;
-        state.mission.callsign=primary.name||state.mission.callsign;
-      }
-      render();
-    });
-    clrAllBtn.addEventListener('click',function(){
-      checkboxes.forEach(function(c){c.checked=false;});
-      state.mission.selectedFlights=[];state.mission.selectedFlight=-1;
-      render();
-    });
-    wrap.appendChild(card);
   }
-  const t=makeTableTab('Flight Members','flight_members',[
-    {label:'CALLSIGN',key:'callsign',placeholder:'VIPER 1-1'},
-    {label:'ROLE',key:'role',placeholder:'Lead'},
-    {label:'AIRCRAFT',key:'aircraft',placeholder:'F-16C'},
-    {label:'FREQ',key:'freq',placeholder:'305.000'}
-  ]);
-  Array.from(t.childNodes).forEach(function(n){wrap.appendChild(n);});
+  tbl.appendChild(tbody);
+  card.appendChild(tbl);
+  wrap.appendChild(card);
+
+  // ── Manual add-row helper ──
+  function showAddRow() {
+    const existing = card.querySelector('.fm-addrow');
+    if(existing) { existing.querySelector('input').focus(); return; }
+    const emptyRow = tbody.querySelector('.fm-empty');
+    if(emptyRow) emptyRow.remove();
+
+    const addRow = document.createElement('tr');
+    addRow.className = 'fm-addrow';
+    const roles = ['FLIGHT LEAD','WINGMAN','ELEMENT LEAD','ELEMENT 2','OTHER'];
+    addRow.innerHTML =
+      '<td><input class="form-input form-input-sm" placeholder="Callsign" autofocus></td>' +
+      '<td><select class="form-select form-select-sm"><option value="">Role…</option>' + roles.map(r=>'<option>'+r+'</option>').join('') + '</select></td>' +
+      '<td><input class="form-input form-input-sm" placeholder="F-16C"></td>' +
+      '<td><input class="form-input form-input-sm" placeholder="305.000"></td>' +
+      '<td style="white-space:nowrap;"><button class="btn btn-sm btn-primary save-fm">✓</button> <button class="btn btn-sm btn-danger cancel-fm">✕</button></td>';
+
+    addRow.querySelector('.save-fm').addEventListener('click', () => {
+      const inputs = addRow.querySelectorAll('input,select');
+      const cs = inputs[0].value.trim();
+      if(!cs) { inputs[0].focus(); return; }
+      if(!m.flight_members) m.flight_members = [];
+      m.flight_members.push({ callsign:cs, role:inputs[1].value, aircraft:inputs[2].value.trim(), freq:inputs[3].value.trim() });
+      render();
+    });
+    addRow.querySelector('.cancel-fm').addEventListener('click', () => {
+      addRow.remove();
+      if(!tbody.querySelector('tr:not(.fm-addrow)')) {
+        const er = document.createElement('tr'); er.className='fm-empty';
+        er.innerHTML='<td colspan="5" style="text-align:center;color:var(--text-muted);font-size:11px;letter-spacing:1px;padding:16px 0;">NO MEMBERS — PRESS + ADD TO BEGIN</td>';
+        tbody.appendChild(er);
+      }
+    });
+    tbody.appendChild(addRow);
+    addRow.querySelector('input').focus();
+  }
+
   return wrap;
 }
+
 function renderThreatsTab(){const wrap=document.createElement('div');const card=document.createElement('div');card.className='card';const hdr=document.createElement('div');hdr.className='card-header';hdr.innerHTML='<h2>Threat Order of Battle</h2>';const addBtn=document.createElement('button');addBtn.className='btn btn-sm btn-primary';addBtn.textContent='+ Add';addBtn.addEventListener('click',()=>{state.mission.threats.push({name:'',type:'SAM',radar_type:'',rwr:'',harm_tr:'',harm_sr:'',range_nm:'',max_alt_ft:'',location:'',notes:''});render();});hdr.appendChild(addBtn);card.appendChild(hdr);const tbl=document.createElement('table');tbl.className='data-table';tbl.innerHTML='<thead><tr><th>System</th><th>Type</th><th>Radar</th><th>RWR</th><th>HARM TR</th><th>HARM SR</th><th>Range</th><th>Alt (ft)</th><th>Location</th><th>Notes</th><th></th></tr></thead>';const tbody=document.createElement('tbody');state.mission.threats.forEach((item,i)=>{const tr=document.createElement('tr');const tdSys=document.createElement('td');const sel=document.createElement('select');sel.style.minWidth='140px';sel.innerHTML='<option value="">-- Select --</option>'+THREAT_DB.map(t=>'<option value="'+t.name+'"'+(item.name===t.name?' selected':'')+'>'+t.name+'</option>').join('');sel.addEventListener('change',e=>{const db=THREAT_DB.find(t=>t.name===e.target.value);if(db){state.mission.threats[i].name=db.name;state.mission.threats[i].type=db.type;state.mission.threats[i].radar_type=db.radar_type;state.mission.threats[i].rwr=db.rwr;state.mission.threats[i].harm_tr=db.harm_tr;state.mission.threats[i].harm_sr=db.harm_sr;state.mission.threats[i].range_nm=db.range_nm;state.mission.threats[i].max_alt_ft=db.max_alt_ft;}else{state.mission.threats[i].name='';}render();});tdSys.appendChild(sel);tr.appendChild(tdSys);const tdType=document.createElement('td');tdType.textContent=item.type||'';tdType.style.color='var(--accent-amber)';tr.appendChild(tdType);const tdRdr=document.createElement('td');tdRdr.textContent=item.radar_type||'';tdRdr.style.color='var(--accent-cyan)';tr.appendChild(tdRdr);const tdRwr=document.createElement('td');tdRwr.textContent=item.rwr||'\u2014';tdRwr.style.color=item.rwr?'var(--accent-amber)':'var(--text-muted)';tdRwr.style.fontWeight=item.rwr?'bold':'normal';tr.appendChild(tdRwr);const tdHTR=document.createElement('td');tdHTR.textContent=item.harm_tr||'\u2014';tdHTR.style.color=item.harm_tr?'var(--accent-green)':'var(--text-muted)';tr.appendChild(tdHTR);const tdHSR=document.createElement('td');tdHSR.textContent=item.harm_sr||'\u2014';tdHSR.style.color=item.harm_sr?'var(--accent-green)':'var(--text-muted)';tr.appendChild(tdHSR);const tdRng=document.createElement('td');tdRng.textContent=item.range_nm?item.range_nm+' nm':'';tr.appendChild(tdRng);const tdAlt=document.createElement('td');tdAlt.textContent=item.max_alt_ft?Number(item.max_alt_ft).toLocaleString():'';tr.appendChild(tdAlt);const tdLoc=document.createElement('td');const inpLoc=document.createElement('input');inpLoc.value=item.location||'';inpLoc.placeholder='Grid / MGRS';inpLoc.addEventListener('change',e=>{state.mission.threats[i].location=e.target.value;renderRightPanel();});tdLoc.appendChild(inpLoc);tr.appendChild(tdLoc);const tdNotes=document.createElement('td');const inpNotes=document.createElement('input');inpNotes.value=item.notes||'';inpNotes.placeholder='Notes';inpNotes.addEventListener('change',e=>{state.mission.threats[i].notes=e.target.value;});tdNotes.appendChild(inpNotes);tr.appendChild(tdNotes);const tdX=document.createElement('td');const btnX=document.createElement('button');btnX.className='btn btn-sm btn-danger';btnX.textContent='\u2715';btnX.addEventListener('click',()=>{state.mission.threats.splice(i,1);render();});tdX.appendChild(btnX);tr.appendChild(tdX);tbody.appendChild(tr);});tbl.appendChild(tbody);card.appendChild(tbl);wrap.appendChild(card);return wrap;}
 
 function renderPreviewTab(){const wrap=document.createElement('div');const card=document.createElement('div');card.className='card';card.innerHTML='<div class="card-header"><h2>Preview</h2><span class="badge badge-green">CLIENT-SIDE RENDERING</span></div>';const btnGroup=document.createElement('div');btnGroup.className='btn-group';btnGroup.style.marginBottom='16px';[['mission','Mission Card','btn-primary'],['comms','Comms Card','btn-ghost'],['threats','Threat Card','btn-ghost']].forEach(([type,label,cls])=>{const btn=document.createElement('button');btn.className='btn '+cls;btn.textContent=label;btn.addEventListener('click',()=>handlePreview(type));btnGroup.appendChild(btn);});card.appendChild(btnGroup);if(state.previewUrl){const meta=document.createElement('div');meta.style.marginBottom='8px';meta.innerHTML='<span class="badge badge-green">'+(state.previewType||'').toUpperCase()+'</span><span style="margin-left:8px;font-size:11px;color:var(--text-muted)">768 \u00d7 1024</span>';card.appendChild(meta);const img=document.createElement('img');img.src=state.previewUrl;img.alt='Kneeboard preview';img.style.maxWidth='100%';card.appendChild(img);const dlBtn=document.createElement('button');dlBtn.className='btn btn-success';dlBtn.textContent='Download PNG';dlBtn.style.marginTop='12px';dlBtn.addEventListener('click',()=>downloadPng(state.previewUrl,'kneeboard_'+state.previewType+'.png'));card.appendChild(dlBtn);}else{card.innerHTML+='<div class="preview-empty"><div class="icon">\uD83D\uDDBC</div><p>Click a button above to generate a preview</p><p style="margin-top:8px;font-size:11px">Fill in mission data first, then preview each page type</p></div>';}wrap.appendChild(card);return wrap;}
