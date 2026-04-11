@@ -1482,7 +1482,7 @@ function App(){
   const setBlocks=fn=>setPages(p=>{const np=[...p];np[pageIdx]=typeof fn==='function'?fn(np[pageIdx]):fn;return np;});
   const pushUndo=snap=>setUndo(s=>[...s.slice(-30),snap]);
   const [missionData,setMissionData]=useState(null);
-  useEffect(()=>{const _h=e=>{if(e&&e.data&&e.data.type==='mission-data')setMissionData(e.data.mission);};window.addEventListener('message',_h);return()=>window.removeEventListener('message',_h);},[]);
+  useEffect(()=>{const _h=e=>{if(e&&e.data&&e.data.type==='mission-data'){const md=e.data.mission;setMissionData(md);if(md)setPages(pp=>pp.map(pg=>pg.map(b=>{const af=getAutoFill(b.type,md);return af&&Object.keys(af).length?{...b,cfg:{...b.cfg,...af}}:b;})));}};window.addEventListener('message',_h);return()=>window.removeEventListener('message',_h);},[]);
   useEffect(()=>{const _l=e=>{if(e&&e.data&&e.data.type==='load-kneeboard'&&e.data.data){if(e.data.data.pages)setPages(e.data.data.pages);if(e.data.data.savedTemplates)setSavedTemplates(e.data.data.savedTemplates);}};window.addEventListener('message',_l);return()=>window.removeEventListener('message',_l);},[]);
   const doUndo=()=>{if(!undo.length)return;setBlocks(JSON.parse(undo[undo.length-1]));setUndo(s=>s.slice(0,-1));setSel(null);};
   const addBlock=(type,cfg)=>{pushUndo(JSON.stringify(blocks));const _af=missionData?getAutoFill(type,missionData):{};setBlocks(b=>[...b,mkBlock(type,20+(b.length%5)*6,20+(b.length%7)*8,Object.assign({},_af,cfg||{}))]);};  const delSel=()=>{if(!sel)return;const b=blocks.find(x=>x.id===sel);if(b?.locked)return;pushUndo(JSON.stringify(blocks));setBlocks(b=>b.filter(x=>x.id!==sel));setSel(null);};
