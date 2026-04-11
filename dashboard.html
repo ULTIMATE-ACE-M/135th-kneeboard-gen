@@ -1067,12 +1067,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.sidebar-item[data-page]').forEach(btn => {
     btn.addEventListener('click', () => { state.page = btn.dataset.page; render(); });
   });
-  document.getElementById('qg-mission').addEventListener('click', () => handlePreview('mission'));
-  document.getElementById('qg-comms').addEventListener('click', () => handlePreview('comms'));
-  document.getElementById('qg-threats').addEventListener('click', () => handlePreview('threats'));
-  document.getElementById('qg-presets').addEventListener('click', () => handlePreview('presets'));
-  document.getElementById('qg-download').addEventListener('click', downloadAllCards);
-  document.getElementById('sqn-input').addEventListener('change', e => { state.mission.squadron_name = e.target.value; renderRightPanel(); });
+  document.getElementById('qg-mission')?.addEventListener('click', () => handlePreview('mission'));
+  document.getElementById('qg-comms')?.addEventListener('click', () => handlePreview('comms'));
+  document.getElementById('qg-threats')?.addEventListener('click', () => handlePreview('threats'));
+  document.getElementById('qg-presets')?.addEventListener('click', () => handlePreview('presets'));
+  document.getElementById('qg-download')?.addEventListener('click', downloadAllCards);
+  document.getElementById('sqn-input')?.addEventListener('change', e => { state.mission.squadron_name = e.target.value; renderRightPanel(); });
   render();
 });
 
