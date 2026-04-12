@@ -1113,7 +1113,7 @@ if(data.awacs_freq)state.mission.awacs_freq=data.awacs_freq;
               else{autoThreats.push({name:key,type:'SAM',radar_type:'',rwr:'',harm_tr:'',harm_sr:'',range_nm:'',max_alt_ft:'',location:'',notes:''});}
             }
           });
-iframe.src = 'kneeboard-builder.html'        }
+        }
         addLog('MIZ','Found: '+(data.flights?data.flights.length:0)+' flights, '+(data.sams?data.sams.length:0)+' SAMs, '+(data.groundUnits?data.groundUnits.length:0)+' ground groups, '+(data.waypoints?data.waypoints.length:0)+' waypoints');status.innerHTML='<p class="success-msg">\u2713 Imported: '+(data.mission_name||file.name)+'</p>';addLog('MIZ','Imported: '+(data.mission_name||file.name)+' \u2014 '+((data.waypoints||[]).length)+' waypoints');setTimeout(()=>{state.page='map';render();},800);}catch(err){status.innerHTML='<p class="error-msg">\u2715 '+err.message+'</p>';addLog('ERR',err.message);}});card.appendChild(area);card.appendChild(status);wrap.appendChild(card);return wrap;}
 
 let refState={cardType:'checklist',title:'',columns:['name','value'],items:[],notes:'',previewUrl:null};
