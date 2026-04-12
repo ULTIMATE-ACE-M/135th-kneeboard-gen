@@ -376,12 +376,22 @@ function BlockContent({ type, config, w, h }) {
         <div style={{display:'grid', gridTemplateColumns:fw, gap:'2px', marginBottom:'3px'}}>
           {fc.map((c,i)=><div key={i} style={th()}>{c}</div>)}
         </div>
-        {Array.from({length:rows},(_,i)=>(
-          <div key={i} style={{display:'grid', gridTemplateColumns:fw, gap:'2px', marginBottom:'2px'}}>
-            <div style={{color:'#405060', fontSize:'16px', borderBottom:'1px solid #192a36'}}>{i+1}</div>
-            {[1,2,3].map(j=><div key={j} style={{borderBottom:'1px solid #192a36', minHeight:'13px'}}/>)}
-          </div>
-        ))}
+        {(function(){
+          var dataRows=cfg.rows||[];
+          var uhfArr=dataRows.filter(function(r){return parseFloat(r[1])>=225;});
+          var vhfArr=dataRows.filter(function(r){return parseFloat(r[1])<225;});
+          return Array.from({length:rows},function(_,i){
+            var u=uhfArr[i]||[];var v=vhfArr[i]||[];
+            var cs={borderBottom:'1px solid #192a36',minHeight:'13px',fontSize:'9px',color:'#b8ccd8',overflow:'hidden',whiteSpace:'nowrap'};
+            return React.createElement("div",{key:i,style:{display:'grid',gridTemplateColumns:'1fr 0.6fr 22px 1fr 0.6fr',gap:'2px',marginBottom:'2px'}},
+              React.createElement("div",{style:cs},u[0]||''),
+              React.createElement("div",{style:Object.assign({},cs,u[1]?{color:'#00d4ff'}:{})},u[1]||''),
+              React.createElement("div",{style:{color:'#354555',fontSize:'10px',textAlign:'center',borderBottom:'1px solid #192a36'}},i+1),
+              React.createElement("div",{style:cs},v[0]||''),
+              React.createElement("div",{style:Object.assign({},cs,v[1]?{color:'#00d4ff'}:{})},v[1]||'')
+            );
+          });
+        })()
       </div>
     );
   }
