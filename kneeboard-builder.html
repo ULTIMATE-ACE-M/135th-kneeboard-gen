@@ -376,25 +376,11 @@ function BlockContent({ type, config, w, h }) {
         <div style={{display:'grid', gridTemplateColumns:fw, gap:'2px', marginBottom:'3px'}}>
           {fc.map((c,i)=><div key={i} style={th()}>{c}</div>)}
         </div>
-        {(function(){
-          var dataRows=cfg.rows||[];
-          var uhfArr=dataRows.filter(function(r){return parseFloat(r[1])>=225;});
-          var vhfArr=dataRows.filter(function(r){return parseFloat(r[1])<225;});
-          return Array.from({length:rows},function(_,i){
-            var u=uhfArr[i]||[];var v=vhfArr[i]||[];
-            var cs={borderBottom:'1px solid #192a36',minHeight:'13px',fontSize:'9px',color:'#b8ccd8',overflow:'hidden',whiteSpace:'nowrap'};
-            return (<div key={i} style={{display:'grid',gridTemplateColumns:'1fr 0.6fr 22px 1fr 0.6fr',gap:'2px',marginBottom:'2px'}}>
-              <div style={cs}>{u[0]||''}</div>
-              <div style={Object.assign({},cs,u[1]?{color:'#00d4ff'}:{})}>{u[1]||''}</div>
-              <div style={{color:'#354555',fontSize:'10px',textAlign:'center',borderBottom:'1px solid #192a36'}}>{i+1}</div>
-              <div style={cs}>{v[0]||''}</div>
-              <div style={Object.assign({},cs,v[1]?{color:'#00d4ff'}:{})}>{v[1]||''}</div>
-            </div>);
-          });
-        })()
-      </div>
-    );
-  }
+        {Array.from({length:rows},(_,r)=>(
+          <div key={r} style={{display:'grid', gridTemplateColumns:fw.slice(0,fcols.length).join(' '), gap:'1px', marginBottom:'2px'}}>
+            {fcols.map((_,i)=><div key={i} style={{borderBottom:'1px solid #192a36', minHeight:'13px'}}/>)}
+          </div>
+        ))}
 
   /* ── COMM PLAN (7-col: AGENCY|CH|FREQ|TCN|ALT|SPEED|ICLS) ── */
   if (type==='commplan') {
@@ -820,22 +806,20 @@ function BlockContent({ type, config, w, h }) {
         </div>
         {Array.from({length:rows},(_,i)=>(
           <div key={i} style={{display:'grid',gridTemplateColumns:fw,gap:'2px',marginBottom:'2px'}}>
-            {fc.map((_,j)=><div key={j} style={{borderBottom:'1px solid #192a36',minHeight:'13px'}}/>)}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  /* ── UHF / VHF COMMS (agency+freq per preset, side by side) ── */
-  if (type==='uhfvhf') {
-    return (
-      <div style={s}>
-        <Hdr />
-        {/* Column headers */}
-        <div style={{display:'grid',gridTemplateColumns:'1fr 0.6fr 22px 1fr 0.6fr',gap:'2px',marginBottom:'3px'}}>
-          {['UHF AGENCY','UHF FREQ','#','VHF AGENCY','VHF FREQ'].map((c,i)=>(
-            <div key={i} style={{color:i===2?'#405060':accent,fontSize:'10px',borderBottom:`1px solid ${i===2?'#253545':accent}44`,paddingBottom:'1px',overflow:'hidden',whiteSpace:'nowrap'}}>{c}</div>
+{Array.from({length:rows},(_,i)=>{
+          var dataRows=cfg.rows||[];
+          var uhfArr=dataRows.filter(function(r){return parseFloat(r[1])>=225;});
+          var vhfArr=dataRows.filter(function(r){return parseFloat(r[1])<225;});
+          var u=uhfArr[i]||[];var v=vhfArr[i]||[];
+          var cs={borderBottom:'1px solid #192a36',minHeight:'13px',fontSize:'9px',color:'#b8ccd8',overflow:'hidden',whiteSpace:'nowrap'};
+          return (<div key={i} style={{display:'grid',gridTemplateColumns:'1fr 0.6fr 22px 1fr 0.6fr',gap:'2px',marginBottom:'2px'}}>
+            <div style={cs}>{u[0]||''}</div>
+            <div style={Object.assign({},cs,u[1]?{color:'#00d4ff'}:{})}>{u[1]||''}</div>
+            <div style={{color:'#354555',fontSize:'10px',textAlign:'center',borderBottom:'1px solid #192a36'}}>{i+1}</div>
+            <div style={cs}>{v[0]||''}</div>
+            <div style={Object.assign({},cs,v[1]?{color:'#00d4ff'}:{})}>{v[1]||''}</div>
+          </div>);
+        })}d ${i===2?'#253545':accent}44`,paddingBottom:'1px',overflow:'hidden',whiteSpace:'nowrap'}}>{c}</div>
           ))}
         </div>
         {Array.from({length:rows},(_,i)=>(
