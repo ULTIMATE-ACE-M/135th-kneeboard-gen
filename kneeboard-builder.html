@@ -383,13 +383,13 @@ function BlockContent({ type, config, w, h }) {
           return Array.from({length:rows},function(_,i){
             var u=uhfArr[i]||[];var v=vhfArr[i]||[];
             var cs={borderBottom:'1px solid #192a36',minHeight:'13px',fontSize:'9px',color:'#b8ccd8',overflow:'hidden',whiteSpace:'nowrap'};
-            return React.createElement("div",{key:i,style:{display:'grid',gridTemplateColumns:'1fr 0.6fr 22px 1fr 0.6fr',gap:'2px',marginBottom:'2px'}},
-              React.createElement("div",{style:cs},u[0]||''),
-              React.createElement("div",{style:Object.assign({},cs,u[1]?{color:'#00d4ff'}:{})},u[1]||''),
-              React.createElement("div",{style:{color:'#354555',fontSize:'10px',textAlign:'center',borderBottom:'1px solid #192a36'}},i+1),
-              React.createElement("div",{style:cs},v[0]||''),
-              React.createElement("div",{style:Object.assign({},cs,v[1]?{color:'#00d4ff'}:{})},v[1]||'')
-            );
+            return (<div key={i} style={{display:'grid',gridTemplateColumns:'1fr 0.6fr 22px 1fr 0.6fr',gap:'2px',marginBottom:'2px'}}>
+              <div style={cs}>{u[0]||''}</div>
+              <div style={Object.assign({},cs,u[1]?{color:'#00d4ff'}:{})}>{u[1]||''}</div>
+              <div style={{color:'#354555',fontSize:'10px',textAlign:'center',borderBottom:'1px solid #192a36'}}>{i+1}</div>
+              <div style={cs}>{v[0]||''}</div>
+              <div style={Object.assign({},cs,v[1]?{color:'#00d4ff'}:{})}>{v[1]||''}</div>
+            </div>);
           });
         })()
       </div>
