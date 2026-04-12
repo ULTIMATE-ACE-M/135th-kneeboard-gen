@@ -1459,7 +1459,7 @@ function getAutoFill(type,md){
   if(type==='header')return{title:[md.callsign,md.mission_name].filter(Boolean).join(' · ')||'135TH SQN · MISSION KNEEBOARD'};
   if(type==='mission')return{values:{CALLSIGN:v(md.callsign),MISSION:v(md.mission_name),DEPARTURE:v(md.departure_airfield),ARRIVAL:v(md.recovery_airfield),TOT:v(md.time_on_target),DATE:v(md.date),THEATER:v(md.theater),TYPE:v(md.mission_type),LEAD:v(md.flight_lead),PKG:v(md.callsign),SQUAWK:v(md.squawk),LASER:v(md.laser_code),BINGO:v(md.bingo_fuel),JOKER:v(md.joker_fuel),WEATHER:v(md.weather),ROE:v(md.roe)}};
   if(type==='flight')return{rows:[[1,[md.callsign,md.flight_lead].filter(Boolean).join(' / ')||'',v(md.mission_type),v(md.date)]]};
-  if(type==='comms')return{rows:[['AIRFIELD',v(md.airfield_comms),''],[v(md.awacs_callsign)||'AWACS',v(md.awacs_freq),''],['TAC',v(md.tac_freq),''],['ATIS/GUARD','121.500','']]};
+  if(type==='comms'){var _f=(md.frequencies||[]);if(!_f.length)return{rows:[['AIRFIELD',v(md.airfield_comms),''],[v(md.awacs_callsign)||'AWACS',v(md.awacs_freq),''],['TAC',v(md.tac_freq),''],['ATIS/GUARD','121.500','']]};return{rows:_f.map(function(x){return[x.name||'',x.frequency||'',x.modulation||''];})};}
   if(type==='iff')return{values:{'MODE 3':v(md.squawk),SQUAWK:v(md.squawk)}};
   if(type==='recovery')return{rows:[[v(md.departure_airfield),v(md.airfield_comms),'HOME'],[v(md.recovery_airfield),'','RCVY']]};
   if(type==='pilots')return{rows:[[1,v(md.callsign),'','']]};
