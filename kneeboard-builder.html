@@ -308,7 +308,25 @@ function _LoadoutVisBlock_REMOVED({ config, w, h, accent }) {
 /* ══════════════════════════════════════════
    CONTENT RENDERERS
 ══════════════════════════════════════════ */
-function BlockContent({ type, config, w, h }) {
+
+function EditableCell({ value, onChange, style, placeholder }) {
+  const [editing, setEditing] = useState(false);
+  const [text, setText] = useState(value || '');
+  useEffect(function(){ setText(value || ''); }, [value]);
+  if (editing) {
+    return (<input
+      style={Object.assign({}, style, {background:'rgba(0,212,255,0.08)', border:'1px solid #00d4ff44', outline:'none', padding:'0 2px', width:'100%', boxSizing:'border-box', color:'#e0e0e0', fontFamily:"'Courier New',monospace", fontSize: style&&style.fontSize||'inherit'})}
+      value={text}
+      autoFocus
+      onChange={function(e){setText(e.target.value);}}
+      onBlur={function(){setEditing(false); if(onChange)onChange(text);}}
+      onKeyDown={function(e){if(e.key==='Enter'){setEditing(false); if(onChange)onChange(text);} if(e.key==='Escape'){setEditing(false); setText(value||'');}}}
+    />);
+  }
+  return (<div style={Object.assign({}, style, {cursor:'text', minHeight: style&&style.minHeight || '13px'})} onClick={function(e){e.stopPropagation(); setEditing(true);}} title="Click to edit">{value || ''}</div>);
+}
+
+function BlockContent({ type, config, w, h, onEdit }) {
   const def = BLOCK_DEFS[type] || BLOCK_DEFS.custom;
   const cfg = { ...def.dC, ...config };
   const accent = cfg.accent || def.accent;
@@ -327,6 +345,12 @@ function BlockContent({ type, config, w, h }) {
                  fontSize:'18px', letterSpacing:'1px', fontWeight:'bold', whiteSpace:'nowrap',
                  overflow:'hidden', textOverflow:'ellipsis'}}>{t}</div>
   );
+
+  
+  var _vals = cfg.values || {};
+  var _rows = cfg.rows || [];
+  var editVal = function(field, val) { if(onEdit) { var nv = Object.assign({}, _vals); nv[field] = val; onEdit({values: nv}); }};
+  var editRow = function(ri, ci, val) { if(onEdit) { var nr = _rows.map(function(r){ return r.slice(); }); while(nr.length <= ri) nr.push([]); while(nr[ri].length <= ci) nr[ri].push(''); nr[ri][ci] = val; onEdit({rows: nr}); }};
 
   /* ── HEADER BAR ── */
   if (type==='header') return (
@@ -357,11 +381,11 @@ function BlockContent({ type, config, w, h }) {
         <div style={{display:'grid', gridTemplateColumns:fw.slice(0,fcols.length).join(' '), gap:'1px', marginBottom:'2px'}}>
           {fcols.map((c,i)=><div key={i} style={{color:accent, fontSize:'16px', borderBottom:`1px solid ${accent}44`, paddingBottom:'1px'}}>{c}</div>)}
         </div>
-        {Array.from({length:rows},(_,r)=>(
+        {Array.from({length:rows},function(_,r){return(
           <div key={r} style={{display:'grid', gridTemplateColumns:fw.slice(0,fcols.length).join(' '), gap:'1px', marginBottom:'2px'}}>
-            {fcols.map((_,i)=><div key={i} style={{borderBottom:'1px solid #192a36', minHeight:'13px'}}/>)}
+            {fcols.map(function(_,i){return <EditableCell key={i} value={(_rows[r]||[])[i]||''} onChange={function(v){editRow(r,i,v);}} style={{borderBottom:'1px solid #192a36', minHeight:'13px', fontSize:'9px', color:'#b8ccd8'}} />;})}
           </div>
-        ))}
+        );})}
       </div>
     );
   }
@@ -379,7 +403,7 @@ function BlockContent({ type, config, w, h }) {
         {Array.from({length:rows},(_,i)=>(
           <div key={i} style={{display:'grid', gridTemplateColumns:fw, gap:'2px', marginBottom:'2px'}}>
             <div style={{color:'#405060', fontSize:'16px', borderBottom:'1px solid #192a36'}}>{i+1}</div>
-            {[1,2,3].map(j=><div key={j} style={{borderBottom:'1px solid #192a36', minHeight:'13px'}}/>)}
+            {[1,2,3].map(function(j){return <EditableCell key={j} value={(_rows[i]||[])[j]||''} onChange={function(v){editRow(i,j,v);}} style={{borderBottom:'1px solid #192a36', minHeight:'13px', fontSize:'9px', color:'#b8ccd8'}} />;})}
           </div>
         ))}
       </div>
@@ -396,11 +420,11 @@ function BlockContent({ type, config, w, h }) {
         <div style={{display:'grid', gridTemplateColumns:fw, gap:'1px', marginBottom:'3px'}}>
           {fc.map((c,i)=><div key={i} style={{color:accent, fontSize:'12px', borderBottom:`1px solid ${accent}55`, paddingBottom:'1px', overflow:'hidden', whiteSpace:'nowrap'}}>{c}</div>)}
         </div>
-        {Array.from({length:rows},(_,i)=>(
+        {Array.from({length:rows},function(_,i){return(
           <div key={i} style={{display:'grid', gridTemplateColumns:fw, gap:'1px', marginBottom:'2px'}}>
-            {fc.map((_,j)=><div key={j} style={{borderBottom:'1px solid #192a36', minHeight:'14px'}}/>)}
+            {fc.map(function(_,j){return <EditableCell key={j} value={(_rows[i]||[])[j]||''} onChange={function(v){editRow(i,j,v);}} style={{borderBottom:'1px solid #192a36', minHeight:'14px', fontSize:'10px', color:'#b8ccd8'}} />;})}
           </div>
-        ))}
+        );})}
       </div>
     );
   }
@@ -455,7 +479,7 @@ function BlockContent({ type, config, w, h }) {
         </div>
         {Array.from({length:rows},(_,i)=>(
           <div key={i} style={{display:'grid', gridTemplateColumns:fw, gap:'2px', marginBottom:'2px'}}>
-            {fc.map((_,j)=><div key={j} style={{borderBottom:'1px solid #192a36',minHeight:'13px',color:cfg.rows&&cfg.rows[i]&&cfg.rows[i][j]?'#9de0b4':undefined}}>{cfg.rows&&cfg.rows[i]?cfg.rows[i][j]||'':''}</div>)}
+            {fc.map(function(_,j){return <EditableCell key={j} value={(_rows[i]||[])[j]||''} onChange={function(v){editRow(i,j,v);}} style={{borderBottom:'1px solid #192a36',minHeight:'13px',fontSize:'9px',color:(_rows[i]||[])[j]?'#9de0b4':'#b8ccd8'}} />;})}
           </div>
         ))}
       </div>
@@ -507,7 +531,7 @@ function BlockContent({ type, config, w, h }) {
         {states.slice(0,rows).map(st=>(
           <Row key={st}>
             <div style={{color:st==='BINGO'||st==='JOKER'?'#ffd080':st==='EMERGENCY'?'#ff4444':'#4a6070', flex:1, fontSize:'16px'}}>{st}</div>
-            <div style={cell()}/>
+            <EditableCell value={_vals[st]||''} onChange={function(v){editVal(st,v);}} style={cell()} />
           </Row>
         ))}
       </div>
@@ -523,7 +547,7 @@ function BlockContent({ type, config, w, h }) {
         {fields.slice(0,rows).map(f=>(
           <Row key={f}>
             <span style={label()}>{f}</span>
-            <div style={{...cell(),color:cfg.values&&cfg.values[f]?'#9de0b4':undefined}}>{cfg.values&&cfg.values[f]||''}</div>
+            <EditableCell value={_vals[f]||''} onChange={function(v){editVal(f,v);}} style={Object.assign({},cell(),_vals[f]?{color:'#9de0b4'}:{})} />
           </Row>
         ))}
       </div>
@@ -536,12 +560,12 @@ function BlockContent({ type, config, w, h }) {
     return (
       <div style={s}>
         <Hdr />
-        {fields.slice(0,rows).map(f=>(
+        {fields.slice(0,rows).map(function(f){return(
           <Row key={f}>
             <span style={label()}>{f}</span>
-            <div style={cell()}/>
+            <EditableCell value={_vals[f]||''} onChange={function(v){editVal(f,v);}} style={cell()} />
           </Row>
-        ))}
+        );})}
       </div>
     );
   }
@@ -551,7 +575,7 @@ function BlockContent({ type, config, w, h }) {
     <div style={s}>
       <Hdr />
       {Array.from({length:rows},(_,i)=>(
-        <div key={i} style={{borderBottom:'1px solid #192a36', minHeight:'16px', marginBottom:'2px'}}/>
+        <EditableCell key={i} value={(_rows[i]||[])[0]||''} onChange={function(v){editRow(i,0,v);}} style={{borderBottom:'1px solid #192a36', minHeight:'16px', marginBottom:'2px', fontSize:'9px', color:'#b8ccd8'}} />
       ))}
     </div>
   );
@@ -745,7 +769,7 @@ function BlockContent({ type, config, w, h }) {
         </div>
         {Array.from({length:rows},(_,i)=>(
           <div key={i} style={{display:'grid',gridTemplateColumns:fw,gap:'2px',marginBottom:'2px'}}>
-            <div style={{color:'#405060',fontSize:'10px',borderBottom:'1px solid #192a36'}}>{i+1}</div>            {[1,2,3].map(j=><div key={j} style={{borderBottom:'1px solid #192a36',minHeight:'13px'}}/>)}
+            <div style={{color:'#405060',fontSize:'10px',borderBottom:'1px solid #192a36'}}>{i+1}</div>            {[1,2,3].map(function(j){return <EditableCell key={j} value={(_rows[i]||[])[j]||''} onChange={function(v){editRow(i,j,v);}} style={{borderBottom:'1px solid #192a36',minHeight:'13px',fontSize:'9px',color:'#b8ccd8'}} />;})}
           </div>
         ))}
       </div>
@@ -808,11 +832,11 @@ function BlockContent({ type, config, w, h }) {
         <div style={{display:'grid',gridTemplateColumns:fw,gap:'2px',marginBottom:'3px'}}>
           {fc.map((c,i)=><div key={i} style={th()}>{c}</div>)}
         </div>
-        {Array.from({length:rows},(_,i)=>(
+        {Array.from({length:rows},function(_,i){return(
           <div key={i} style={{display:'grid',gridTemplateColumns:fw,gap:'2px',marginBottom:'2px'}}>
-            {fc.map((_,j)=><div key={j} style={{borderBottom:'1px solid #192a36',minHeight:'13px'}}/>)}
+            {fc.map(function(_,j){return <EditableCell key={j} value={(_rows[i]||[])[j]||''} onChange={function(v){editRow(i,j,v);}} style={{borderBottom:'1px solid #192a36',minHeight:'13px',fontSize:'9px',color:'#b8ccd8'}} />;})}
           </div>
-        ))}
+        );})}
       </div>
     );
   }
@@ -911,9 +935,10 @@ function BlockContent({ type, config, w, h }) {
   return (
     <div style={s}><Hdr />
       {cols.length>0&&<Row mb={3}>{cols.slice(0,4).map((c,i)=><div key={i} style={th(fx[i]||1)}>{c}</div>)}</Row>}
-      {Array.from({length:rows},(_,i)=>(
-        <Row key={i}>{cols.length>0?cols.slice(0,4).map((_,j)=><div key={j} style={cell(fx[j]||1)}/>):<div style={cell()}/>}</Row>
-      ))}
+      {Array.from({length:rows},function(_,i){return(
+        <Row key={i}>{cols.length>0?cols.slice(0,4).map(function(_,j){return <EditableCell key={j} value={(_rows[i]||[])[j]||''} onChange={function(v){editRow(i,j,v);}} style={cell(fx[j]||1)} />;}):
+        <EditableCell value={(_rows[i]||[])[0]||''} onChange={function(v){editRow(i,0,v);}} style={cell()} />}</Row>
+      );})}
     </div>
   );
 }
@@ -934,7 +959,7 @@ function mkBlock(type,x,y,extraCfg){
 /* ══════════════════════════════════════════
    DRAGGABLE BLOCK
 ══════════════════════════════════════════ */
-function KBBlock({block,selected,zIndex,onPointerDown,onSelect,onResizeStart}){
+function KBBlock({block,selected,zIndex,onPointerDown,onSelect,onResizeStart,onEdit}){
   const def=BLOCK_DEFS[block.type]||BLOCK_DEFS.custom;
   const accent=block.config?.accent||def.accent;
   return(
@@ -943,7 +968,7 @@ function KBBlock({block,selected,zIndex,onPointerDown,onSelect,onResizeStart}){
         cursor:block.locked?'default':'move',zIndex:selected?1000:zIndex,
         boxShadow:selected?`0 0 14px ${accent}44`:'none'}}
       onMouseDown={e=>{if(e.target.dataset.handle)return;e.stopPropagation();onSelect();if(!block.locked)onPointerDown(e);}}>
-      <BlockContent type={block.type} config={block.config} w={block.w} h={block.h}/>
+      <BlockContent type={block.type} config={block.config} w={block.w} h={block.h} onEdit={onEdit}/>
       {block.locked&&<div style={{position:'absolute',top:2,right:3,fontSize:'18px',opacity:0.4}}>🔒</div>}
       {selected&&HANDLES.map(h=>{const p=hPos(h,block.w,block.h);return(
         <div key={h} data-handle={h}
@@ -1467,6 +1492,16 @@ function getAutoFill(type,md){
   if(type==='iff')return{values:{'MODE 3':v(md.squawk),SQUAWK:v(md.squawk)}};
   if(type==='recovery')return{rows:[[v(md.departure_airfield),v(md.airfield_comms),'HOME'],[v(md.recovery_airfield),'','RCVY']]};
   if(type==='pilots')return{rows:[[1,v(md.callsign),'','']]};
+  if(type==='assets'){var _as=[];var _fl=(md.flights||[]).filter(function(f){return f.coalition==='blue';});_fl.forEach(function(f){if(f.task==='AWACS')_as.push(['AWACS',f.name||'',f.frequency?f.frequency+'':'','',f.bullseye||'']);if(f.task==='Refueling')_as.push(['TANKER',f.name||'',f.frequency?f.frequency+'':'','',f.bullseye||'']);});if(_as.length)return{rows:_as};return{};}
+  if(type==='waypoints'){var _w=(md.waypoints||[]);if(!_w.length)return{};return{rows:_w.map(function(w){return[w.number+'',w.name||'',w.lat&&w.lon?(w.lat+', '+w.lon):'',w.elevation||''];})}}
+  if(type==='flightplan'){var _w=(md.waypoints||[]);if(!_w.length)return{};return{rows:_w.map(function(w){return['',w.name||'',w.elevation||'',w.notes||''];})}}
+  if(type==='commplan'){var _f=(md.frequencies||[]);if(!_f.length)return{};return{rows:_f.map(function(x){return[x.name||'','',x.frequency||'','','','',''];})}}
+  if(type==='radio'){var _f=(md.frequencies||[]);if(!_f.length)return{};return{rows:_f.map(function(x,i){return['',(x.name||''),x.frequency||''];})}}
+  if(type==='weather'){var r={};if(md.weather)r.METAR=md.weather;return{values:r};}
+  if(type==='fuel'){var r={};if(md.bingo_fuel)r.BINGO=md.bingo_fuel;if(md.joker_fuel)r.JOKER=md.joker_fuel;return{values:r};}
+  if(type==='threats'){var _t=(md.threats||[]);if(!_t.length)return{};return{rows:_t.map(function(t){return[t.type||t.name||'',t.location||''];})}}
+  if(type==='notes'){var r=[];if(md.mission_description)r.push([md.mission_description]);if(md.roe)r.push([md.roe]);if(r.length)return{rows:r};return{};}
+  if(type==='airfield'){return{values:{DEP:v(md.departure_airfield),ARR:v(md.recovery_airfield)}};}
   return{};
 }
 function App(){
@@ -1667,7 +1702,8 @@ function App(){
               <KBBlock key={block.id} block={block} zIndex={idx+1} selected={sel===block.id}
                 onSelect={()=>setSel(block.id)}                onPointerDown={e=>{pushUndo(JSON.stringify(blocks));dragR.current={id:block.id,sx:e.clientX,sy:e.clientY,ox:block.x,oy:block.y,w:block.w,h:block.h};}}
                 onResizeStart={(e,handle)=>{pushUndo(JSON.stringify(blocks));resizeR.current={id:block.id,handle,sx:e.clientX,sy:e.clientY,ox:block.x,oy:block.y,ow:block.w,oh:block.h};}}
-              />
+              
+                onEdit={function(patch){var bid=block.id;setBlocks(function(bs){return bs.map(function(b){return b.id===bid?Object.assign({},b,{config:Object.assign({},b.config,patch)}):b;});});}}/>
             ))}
             {!blocks.length&&(
               <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:'8px',pointerEvents:'none'}}>
