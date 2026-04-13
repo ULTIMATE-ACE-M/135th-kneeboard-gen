@@ -154,7 +154,10 @@ const BLOCK_DEFS = {
   /* ── LAYOUT ── */
   header:    { label:'Header Bar',        group:'LAYOUT',   dW:460, dH:38,  accent:'#00d4ff', dC:{ title:'135TH SQN  ·  MISSION KNEEBOARD', rowCount:1, cols:[] }},
   divider:   { label:'Section Divider',   group:'LAYOUT',   dW:460, dH:22,  accent:'#304050', dC:{ title:'SECTION', rowCount:1, cols:[] }},
-  flight:    { label:'Flight Info',       group:'LAYOUT',   dW:460, dH:60,  accent:'#00d4ff', dC:{ title:'FLIGHT', rowCount:2, cols:['#','CALLSIGN / LEAD','MISSION','DATE'] }},
+  flight:    { label:'Flight Info',       group:'LAYOUT',   dW:460, dH:60,  accent:'#00d4ff', dC:{ title:'FLIGHT', rowCount:2, cols:['#','CALLSIGN / LEAD','MISSION','DATE'] }},  flightblock:{ label:'Flight (Standalone)', group:'LAYOUT',  dW:240, dH:150, accent:'#00d4ff', dC:{ title:'FLIGHT', rowCount:6, cols:['CALLSIGN','AIRCRAFT','# A/C','DEPARTURE','RECOVERY','MISSION'] }},
+  lineup:    { label:'Flight Lineup',      group:'LAYOUT',  dW:380, dH:140, accent:'#00d4ff', dC:{ title:'FLIGHT LINEUP', rowCount:4, cols:['POS','CALLSIGN','PILOT','TAIL#','LASER','TACAN'] }},
+  flightcard:{ label:'Flight Card',        group:'LAYOUT',  dW:240, dH:180, accent:'#00d4ff', dC:{ title:'FLIGHT CARD', rowCount:6, cols:['PILOT','SEAT','TAIL#','LASER','LOADOUT','REMARKS'] }},
+
   /* ── MISSION ── */
   mission:   { label:'Mission Info',      group:'MISSION',  dW:220, dH:170, accent:'#00d4ff', dC:{ title:'MISSION INFO',    rowCount:8,  cols:['CALLSIGN','MISSION','DEPARTURE','ARRIVAL','PACKAGE','TANKER','TOT','ALT'] }},
   timeline:  { label:'Timeline',          group:'MISSION',  dW:280, dH:190, accent:'#00d4ff', dC:{ title:'MISSION TIMELINE', rowCount:8, cols:['TIME','EVENT','REMARKS'] }},
@@ -404,6 +407,57 @@ function BlockContent({ type, config, w, h, onEdit }) {
           <div key={i} style={{display:'grid', gridTemplateColumns:fw, gap:'2px', marginBottom:'2px'}}>
             <div style={{color:'#405060', fontSize:'16px', borderBottom:'1px solid #192a36'}}>{i+1}</div>
             {[1,2,3].map(function(j){return <EditableCell key={j} value={(_rows[i]||[])[j]||''} onChange={function(v){editRow(i,j,v);}} style={{borderBottom:'1px solid #192a36', minHeight:'13px', fontSize:'9px', color:'#b8ccd8'}} />;})}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── FLIGHT (STANDALONE label/value) ── */
+  if (type==='flightblock') {
+    const fkeys = cols.length ? cols : ['CALLSIGN','AIRCRAFT','# A/C','DEPARTURE','RECOVERY','MISSION'];
+    return (
+      <div style={s}>
+        <Hdr />
+        {fkeys.map((k,i)=>(
+          <div key={i} style={{display:'flex',marginBottom:'2px',alignItems:'flex-end'}}>
+            <div style={label('74px',accent)}>{k}</div>
+            <EditableCell value={(_vals[k])||''} onChange={(v)=>editVal(k,v)} style={cell(1)} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── FLIGHT LINEUP (6-col dash positions) ── */
+  if (type==='lineup') {
+    const lc = cols.length ? cols : ['POS','CALLSIGN','PILOT','TAIL#','LASER','TACAN'];
+    const lw = '30px 70px 1fr 46px 46px 50px';
+    return (
+      <div style={s}>
+        <div style={{color:accent, fontSize:'18px', fontWeight:'bold', letterSpacing:'1px', background:'#132030', padding:'2px 4px', marginBottom:'2px'}}>{title}</div>
+        <div style={{display:'grid', gridTemplateColumns:lw, gap:'2px', marginBottom:'2px'}}>
+          {lc.map((c,i)=>(<div key={i} style={{color:accent, fontSize:'12px', borderBottom:`1px solid ${accent}55`, paddingBottom:'1px', whiteSpace:'nowrap', overflow:'hidden'}}>{c}</div>))}
+        </div>
+        {Array.from({length:rows},function(_,r){return(
+          <div key={r} style={{display:'grid', gridTemplateColumns:lw, gap:'2px', marginBottom:'2px'}}>
+            {[0,1,2,3,4,5].map(function(j){return <EditableCell key={j} value={(_rows[r]||[])[j]||''} onChange={function(v){editRow(r,j,v);}} style={{borderBottom:'1px solid #192a36', minHeight:'13px', fontSize:'11px', color:'#b8ccd8', overflow:'hidden', whiteSpace:'nowrap'}} />;})}
+          </div>
+        );})}
+      </div>
+    );
+  }
+
+  /* ── FLIGHT CARD (per-pilot vertical label/value) ── */
+  if (type==='flightcard') {
+    const fc = cols.length ? cols : ['PILOT','SEAT','TAIL#','LASER','LOADOUT','REMARKS'];
+    return (
+      <div style={s}>
+        <Hdr />
+        {fc.map((k,i)=>(
+          <div key={i} style={{display:'flex',marginBottom:'3px',alignItems:'flex-end'}}>
+            <div style={label('64px',accent)}>{k}</div>
+            <EditableCell value={(_vals[k])||''} onChange={(v)=>editVal(k,v)} style={cell(1)} />
           </div>
         ))}
       </div>
@@ -1502,6 +1556,9 @@ function getAutoFill(type,md){
   if(type==='threats'){var _t=(md.threats||[]);if(!_t.length)return{};return{rows:_t.map(function(t){return[t.type||t.name||'',t.location||''];})}}
   if(type==='notes'){var r=[];if(md.mission_description)r.push([md.mission_description]);if(md.roe)r.push([md.roe]);if(r.length)return{rows:r};return{};}
   if(type==='airfield'){return{values:{DEP:v(md.departure_airfield),ARR:v(md.recovery_airfield)}};}
+  if(type==='flightblock')return{values:{CALLSIGN:v(md.callsign),AIRCRAFT:v(md.aircraft_type),'# A/C':String(md.num_aircraft||''),DEPARTURE:v(md.departure_airfield),RECOVERY:v(md.recovery_airfield),MISSION:v(md.mission_type)}};
+  if(type==='lineup'){var _flt=(md.flights||[])[0]||{};var _pl=_flt.pilots||[];var _rr=[];for(var _i=0;_i<4;_i++){_rr.push(['-'+(_i+1),(_flt.name||'')+(_i+1),(_pl[_i]||{}).name||'','','','']);}return{rows:_rr};}
+  if(type==='flightcard')return{values:{PILOT:v(md.flight_lead),SEAT:'1',TAIL:'','LASER':v(md.laser_code),LOADOUT:'',REMARKS:v(md.callsign)}};
   return{};
 }
 function App(){
