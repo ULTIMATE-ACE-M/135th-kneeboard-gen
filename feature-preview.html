@@ -1,12 +1,12 @@
 <!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dashboard Integration Preview</title><style>:root{--bp:#06080c;--bs:#0a0e14;--bc:#0a1018;--ba:#0d2030;--cy:#00d4ff;--bd:#152535;--bb:#1e3d55;--tx:#b8ccd8;--ts:#7a9ab0;--mu:#3d5a70;--nw:#00ff88;--nb:#00aa55}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bp);color:var(--tx);font-family:Courier New,monospace;font-size:13px;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-.selbar{background:#050810;border-bottom:1px solid #0a1520;display:flex;align-items:stretch;flex-shrink:0}
-.sellbl{padding:0 12px;display:flex;align-items:center;color:var(--mu);font-size:10px;letter-spacing:2px;border-right:1px solid #0a1520;white-space:nowrap}
-.selbtn{padding:8px 12px;cursor:pointer;color:var(--mu);font-size:10px;letter-spacing:1px;border-right:1px solid #0a1520;border-bottom:2px solid transparent;white-space:nowrap}
+.selbar{background:#050810;border-bottom:1px solid #0a1520;display:flex;align-items:stretch;flex-shrink:0;flex-wrap:wrap}
+.sellbl{padding:0 14px;display:flex;align-items:center;color:var(--mu);font-size:11px;letter-spacing:2px;border-right:1px solid #0a1520;white-space:nowrap}
+.selbtn{padding:10px 16px;cursor:pointer;color:var(--mu);font-size:12px;letter-spacing:1px;border-right:1px solid #0a1520;border-bottom:3px solid transparent;white-space:nowrap;user-select:none;display:flex;align-items:center;gap:6px}
 .selbtn:hover{color:var(--ts);background:#080e18}
 .selbtn.on{color:var(--nw);border-bottom-color:var(--nw);background:#030c08}
-.selbtn .tg{display:inline-block;background:#002816;color:#00aa55;font-size:8px;padding:0 4px;margin-left:5px;border:1px solid #004428;vertical-align:middle}
+.selbtn .tg{display:inline-block;background:#002816;color:#00aa55;font-size:9px;padding:2px 5px;border:1px solid #004428}
 .layout{display:flex;flex:1;overflow:hidden}
 .dh{background:#04060a;border-bottom:1px solid #0d1e2a;padding:5px 14px;font-size:11px;color:var(--mu);letter-spacing:1.5px;flex-shrink:0;display:flex;justify-content:space-between}
 .dh .r{color:var(--cy);font-size:10px}
