@@ -1,0 +1,475 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Integration Options – 135th Kneeboard Gen</title><style>
+:root{--bp:#06080c;--bs:#0a0e14;--bc:#0a1018;--ba:#0d2030;--cy:#00d4ff;--bd:#152535;--mu:#7a9ab0;--nw:#b8ccd8;--ts:#a0b8c8;--am:#ffaa00;--gn:#00ff88;--rd:#ff2233}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bp);color:var(--nw);font-family:'Courier New',monospace;font-size:12px;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.optbar{background:#030609;border-bottom:2px solid #0c1828;display:flex;align-items:stretch;flex-shrink:0;flex-wrap:wrap}
+.optlbl{padding:0 14px;display:flex;align-items:center;color:var(--mu);font-size:10px;letter-spacing:2px;border-right:1px solid #0a1520;white-space:nowrap;font-weight:bold}
+.optbtn{padding:12px 18px;cursor:pointer;color:var(--mu);font-size:11px;letter-spacing:1px;border-right:1px solid #0a1520;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px;user-select:none;flex-direction:column;align-items:flex-start}
+.optbtn:hover{color:var(--ts);background:#0d1a28}
+.optbtn.on{color:var(--nw);border-bottom-color:var(--nw);background:#04100a}
+.optbtn .tag{font-size:9px;padding:2px 5px;letter-spacing:1px;font-weight:bold;margin-top:1px}
+.tag-min{background:#001830;color:var(--cy);border:1px solid #003355}
+.tag-rec{background:#1a1000;color:var(--am);border:1px solid #554400}
+.tag-new{background:#001810;color:var(--gn);border:1px solid #005520}
+.tag-fast{background:#1a0010;color:#ff88cc;border:1px solid #550033}
+.dbar{background:#040810;border-bottom:1px solid #0a1520;padding:5px 16px;font-size:10px;color:var(--mu);flex-shrink:0;display:flex;gap:20px}
+.dbar .hl{color:var(--am)}.dbar .hlg{color:var(--gn)}.dbar .hlc{color:var(--cy)}
+.svbar{background:#050a12;border-bottom:1px solid var(--bd);display:flex;flex-shrink:0}
+.svbtn{padding:6px 14px;cursor:pointer;color:var(--mu);font-size:10px;border-right:1px solid var(--bd);letter-spacing:1px;user-select:none;white-space:nowrap}
+.svbtn.on{color:var(--am);background:#0a0c00;border-bottom:2px solid var(--am)}
+.svbtn:hover{background:#0a1018}
+.chrome{display:flex;flex:1;overflow:hidden}
+.sb{width:100px;background:var(--bs);border-right:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0;padding-top:4px}
+.sbs{padding:4px 8px 2px;color:var(--mu);font-size:9px;letter-spacing:2px}
+.sbi{padding:6px 10px;color:var(--ts);font-size:10px;border-left:2px solid transparent;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbi.on{color:var(--cy);border-left-color:var(--cy);background:var(--ba)}
+.sbdiv{height:1px;background:var(--bd);margin:3px 0}
+.mc{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.dh{background:#04060a;border-bottom:1px solid #0d1e2a;padding:5px 14px;font-size:11px;color:var(--mu);letter-spacing:1px;flex-shrink:0;display:flex;justify-content:space-between}
+.dh .r{color:var(--cy);font-size:10px}
+.tabbar{display:flex;background:#040810;border-bottom:1px solid var(--bd);flex-shrink:0}
+.tab{padding:7px 13px;cursor:pointer;color:var(--mu);font-size:10px;letter-spacing:2px;border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:var(--cy);border-bottom-color:var(--cy)}
+.tab.new-tab{color:#88aaff}.tab.new-tab.on{color:#88aaff;border-bottom-color:#88aaff}
+.fs{flex:1;overflow-y:auto;padding:12px 14px}
+.rp{width:170px;background:var(--bs);border-left:1px solid var(--bd);padding:8px;overflow-y:auto;flex-shrink:0}
+.rph{color:var(--cy);font-size:10px;letter-spacing:2px;margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid var(--bd)}
+.rph.gn{color:var(--gn)}
+.rprow{display:flex;justify-content:space-between;margin-bottom:2px;font-size:10px}
+.rpk{color:var(--mu)}.rpv{color:var(--ts)}.rpv.gn{color:var(--gn)}
+.rpdiv{height:1px;background:var(--bd);margin:7px 0}
+.sec{border:1px solid var(--bd);margin-bottom:10px;background:var(--bc)}
+.sec.ns{border-color:#005522;background:#020e06}
+.seh{padding:6px 10px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.set{color:var(--cy);font-size:11px;letter-spacing:2px;font-weight:bold}.set.gn{color:var(--gn)}
+.badge{font-size:9px;padding:2px 6px;letter-spacing:1px;font-weight:bold}
+.badge-new{background:var(--gn);color:#000}.badge-ext{background:var(--am);color:#000}
+.seb{padding:10px 10px 8px}
+.frow{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.fg{display:flex;flex-direction:column;gap:2px}.fg.g{flex:1}
+.lbl{font-size:9px;color:var(--mu);letter-spacing:1px}.lbl.gn{color:var(--gn)}
+.inp{background:#060e16;border:1px solid var(--bd);color:var(--ts);padding:4px 6px;font-family:inherit;font-size:11px;min-width:80px}
+.inp.gn{border-color:var(--gn);color:var(--gn)}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{color:var(--cy);font-size:10px;border-bottom:1px solid var(--bd);padding:3px 6px;text-align:left;letter-spacing:1px}
+.tbl th.gn{color:var(--gn)}.tbl td{padding:4px 6px;border-bottom:1px solid #0d1820;color:var(--ts)}
+.tbl td.gn{color:var(--gn)}.tbl tr.nr td{color:var(--gn)}
+.note{background:#020c06;border:1px solid #004420;padding:7px 10px;font-size:10px;color:#00cc55;margin-bottom:10px}
+.note .nl{color:var(--gn);font-weight:bold;margin-right:5px}
+.acc{border:1px solid var(--bd);margin-bottom:6px}
+.acch{padding:7px 10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#06101a;user-select:none}
+.acch .at{font-size:11px;letter-spacing:2px;color:var(--cy);display:flex;align-items:center;gap:8px}
+.acch .at.gn{color:var(--gn)}.acch .ar{color:var(--mu);font-size:11px}
+.acch.open .ar{transform:rotate(90deg)}
+.accb{padding:10px;border-top:1px solid var(--bd);background:var(--bc)}.accb.closed{display:none}
+.fltb{border:1px solid var(--bd);margin-bottom:8px}
+.flth{padding:7px 10px;background:#08141e;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.flth .fn{font-size:11px;color:var(--cy);letter-spacing:1px}.flth .fa{font-size:10px;color:var(--mu)}
+.fltbody{padding:8px 10px}
+.pgrid{display:grid;grid-template-columns:70px 60px 60px 80px 1fr;gap:4px;margin-bottom:5px;align-items:end}
+.pgrid-hdr{display:grid;grid-template-columns:70px 60px 60px 80px 1fr;gap:4px;margin-bottom:3px}
+.pgrid-hdr div{font-size:9px;color:var(--gn);letter-spacing:1px;border-bottom:1px solid #005522;padding-bottom:2px}
+.ov{display:none;flex:1;flex-direction:column;overflow:hidden}.ov.show{display:flex}
+.sv{display:none;flex:1;flex-direction:column;overflow:hidden}.sv.show{display:flex}
+</style></head><body>
+<div class="optbar">
+  <div class="optlbl">OPTION</div>
+  <div class="optbtn on" onclick="so('1',this)"><span>1 &nbsp;EXTEND EXISTING TABS</span><span class="tag tag-min">LEAST CHANGE</span></div>
+  <div class="optbtn" onclick="so('2',this)"><span>2 &nbsp;PACKAGE TAB</span><span class="tag tag-rec">&#9733; RECOMMENDED</span></div>
+  <div class="optbtn" onclick="so('3',this)"><span>3 &nbsp;NEW SUPPORT TAB</span><span class="tag tag-new">CLEAN SPLIT</span></div>
+  <div class="optbtn" onclick="so('4',this)"><span>4 &nbsp;ACCORDION SECTIONS</span><span class="tag tag-new">PROGRESSIVE</span></div>
+  <div class="optbtn" onclick="so('5',this)"><span>5 &nbsp;QUICK WINS ONLY</span><span class="tag tag-fast">FASTEST TO BUILD</span></div>
+</div>
+<!-- OPTION 1 -->
+<div id="opt1" class="ov show">
+  <div class="dbar"><span>Extend <span class="hl">existing tabs</span> — drop new fields inline where they already belong.</span><span class="hlg">&#9632; green = new</span><span class="hlc">&#9632; normal = exists</span></div>
+  <div class="svbar">
+    <div class="svbtn on" onclick="ssv('1','flight',this)">&#10022; FLIGHT TAB</div>
+    <div class="svbtn" onclick="ssv('1','comms',this)">&#10022; COMMS TAB</div>
+    <div class="svbtn" onclick="ssv('1','threats',this)">&#10022; THREATS TAB</div>
+  </div>
+  <div id="sv1-flight" class="sv show"><div class="chrome">
+    <div class="sb"><div class="sbs">NAVIGATION</div><div class="sbi on">Kneeboard</div><div class="sbi">Import .miz</div><div class="sbdiv"></div><div class="sbi">Kneeboard Bui...</div><div class="sbi">Threat DB</div></div>
+    <div class="mc">
+      <div class="dh"><span>KNEEBOARD GENERATOR</span><span class="r">ENCRYPTION: VERIFIED OPERATIONAL</span></div>
+      <div class="tabbar"><div class="tab">MISSION</div><div class="tab">WAYPOINTS</div><div class="tab">COMMS</div><div class="tab on">FLIGHT</div><div class="tab">THREATS</div><div class="tab">PREVIEW</div></div>
+      <div class="fs">
+        <div class="sec"><div class="seh"><span class="set">FLIGHT INFO</span></div><div class="seb">
+          <div class="frow">
+            <div class="fg g"><div class="lbl">CALLSIGN</div><div class="inp">Viper 1-1</div></div>
+            <div class="fg g"><div class="lbl">FLIGHT LEAD</div><div class="inp">Maj. ACE-M</div></div>
+            <div class="fg g"><div class="lbl">DEPARTURE</div><div class="inp">Batumi</div></div>
+            <div class="fg g"><div class="lbl">RECOVERY</div><div class="inp">Batumi</div></div>
+          </div>
+          <div class="frow"><div class="fg g"><div class="lbl">AWACS</div><div class="inp">DARKSTAR 269.000</div></div><div class="fg g"><div class="lbl">TAC FREQ</div><div class="inp">302.000</div></div></div>
+        </div></div>
+        <div class="sec"><div class="seh"><span class="set">FLIGHT CODES</span></div><div class="seb">
+          <div class="frow">
+            <div class="fg g"><div class="lbl">LASER CODE</div><div class="inp">1688</div></div>
+            <div class="fg g"><div class="lbl">SQUAWK</div><div class="inp">5081</div></div>
+            <div class="fg g"><div class="lbl gn">TACAN CHANNEL</div><div class="inp gn">74</div></div>
+            <div class="fg g"><div class="lbl gn">TACAN MODE</div><div class="inp gn">X</div></div>
+          </div>
+          <div class="frow">
+            <div class="fg g"><div class="lbl gn">TACAN CALLSIGN</div><div class="inp gn">VPR</div></div>
+            <div class="fg g"><div class="lbl gn">IFF MODE 3</div><div class="inp gn">5081</div></div>
+            <div class="fg g"><div class="lbl">BINGO FUEL</div><div class="inp">4500</div></div>
+            <div class="fg g"><div class="lbl">JOKER FUEL</div><div class="inp">6000</div></div>
+          </div>
+        </div></div>
+        <div class="sec ns"><div class="seh"><span class="set gn">LOADOUT</span><span class="badge badge-new">AUTO-FILL FROM .MIZ</span></div><div class="seb">
+          <div class="note"><span class="nl">NEW SECTION:</span> Per-pilot loadout from payload.pylons in .miz. Weapon names and quantities auto-populated on import.</div>
+          <table class="tbl"><tr><th>PILOT</th><th class="gn">A/G LOADOUT</th><th class="gn">A/A</th><th class="gn">CHAFF</th><th class="gn">FLARES</th><th class="gn">LASER</th></tr>
+            <tr class="nr"><td>VIPER 1-1</td><td>2x GBU-12, 2x JDAM</td><td>2x AIM-120C</td><td>60</td><td>60</td><td>1688</td></tr>
+            <tr class="nr"><td>VIPER 1-2</td><td>4x Mk-82, 2x GBU-38</td><td>2x AIM-120C</td><td>60</td><td>60</td><td>1689</td></tr>
+            <tr class="nr"><td>VIPER 1-3</td><td>2x GBU-12, 2x JDAM</td><td>2x AIM-120C</td><td>60</td><td>60</td><td>1690</td></tr>
+            <tr class="nr"><td>VIPER 1-4</td><td>6x GBU-54</td><td>2x AIM-120C</td><td>60</td><td>60</td><td>1691</td></tr>
+          </table>
+        </div></div>
+      </div>
+    </div>
+    <div class="rp"><div class="rph">MISSION INFO</div>
+      <div class="rprow"><span class="rpk">OPERATION</span><span class="rpv">WILD WEASEL</span></div>
+      <div class="rprow"><span class="rpk">THEATER</span><span class="rpv">CAUCASUS</span></div>
+      <div class="rprow"><span class="rpk">A/C</span><span class="rpv">F-16C</span></div>
+      <div class="rpdiv"></div><div class="rph">CODES</div>
+      <div class="rprow"><span class="rpk gn">TACAN</span><span class="rpv gn">74X / VPR</span></div>
+      <div class="rprow"><span class="rpk">LASER</span><span class="rpv">1688</span></div>
+      <div class="rprow"><span class="rpk">SQUAWK</span><span class="rpv">5081</span></div>
+      <div class="rprow"><span class="rpk">BINGO</span><span class="rpv">4500 LBS</span></div>
+    </div>
+  </div></div>
+  <div id="sv1-comms" class="sv"><div class="chrome">
+    <div class="sb"><div class="sbs">NAVIGATION</div><div class="sbi on">Kneeboard</div><div class="sbi">Import .miz</div><div class="sbdiv"></div><div class="sbi">Kneeboard Bui...</div></div>
+    <div class="mc">
+      <div class="dh"><span>KNEEBOARD GENERATOR</span><span class="r">ENCRYPTION: VERIFIED OPERATIONAL</span></div>
+      <div class="tabbar"><div class="tab">MISSION</div><div class="tab">WAYPOINTS</div><div class="tab on">COMMS</div><div class="tab">FLIGHT</div><div class="tab">THREATS</div><div class="tab">PREVIEW</div></div>
+      <div class="fs">
+        <div class="sec"><div class="seh"><span class="set">FREQUENCIES</span></div><div class="seb">
+          <table class="tbl"><tr><th>USE</th><th>CALLSIGN</th><th>FREQ</th><th>NOTES</th></tr>
+            <tr><td>GND CTRL</td><td>BATUMI TWR</td><td>131.000 AM</td><td>Primary</td></tr>
+            <tr><td>AWACS</td><td>DARKSTAR</td><td>269.000 AM</td><td>Overlay</td></tr>
+            <tr><td>PACKAGE</td><td>VIPER FLIGHT</td><td>302.000 AM</td><td>Tactical</td></tr>
+          </table>
+        </div></div>
+        <div class="sec ns"><div class="seh"><span class="set gn">TANKER PLAN</span><span class="badge badge-new">AUTO-FILL FROM .MIZ</span></div><div class="seb">
+          <div class="note"><span class="nl">NEW SECTION:</span> Tanker flights auto-populated from coalition aircraft with tanker role. TACAN, freq, and track from route tasks.</div>
+          <table class="tbl"><tr><th>CALLSIGN</th><th class="gn">A/C</th><th class="gn">FREQ</th><th class="gn">TACAN</th><th class="gn">TRACK / REMARKS</th><th class="gn">ALT</th></tr>
+            <tr class="nr"><td>TEXACO</td><td>KC-135</td><td>270.000 AM</td><td>55Y / TC</td><td>ANCHOR NORTH 21K</td><td>21,000 FT</td></tr>
+            <tr class="nr"><td>ARCO</td><td>KC-135</td><td>290.000 AM</td><td>57Y / AR</td><td>ANCHOR SOUTH 19K</td><td>19,000 FT</td></tr>
+          </table>
+        </div></div>
+        <div class="sec ns"><div class="seh"><span class="set gn">RADIO PRESETS</span><span class="badge badge-new">AUTO-FILL FROM .MIZ</span></div><div class="seb">
+          <div class="note"><span class="nl">NEW SECTION:</span> Parsed from unit.Radio[n].channels in .miz Lua. All preset channels for the player aircraft.</div>
+          <table class="tbl"><tr><th class="gn">CH</th><th class="gn">FREQ</th><th class="gn">USE / LABEL</th><th class="gn">MOD</th></tr>
+            <tr class="nr"><td>1</td><td>305.000</td><td>GUARD</td><td>AM</td></tr>
+            <tr class="nr"><td>2</td><td>131.000</td><td>BATUMI TWR</td><td>AM</td></tr>
+            <tr class="nr"><td>3</td><td>269.000</td><td>DARKSTAR AWACS</td><td>AM</td></tr>
+            <tr class="nr"><td>4</td><td>302.000</td><td>VIPER FLIGHT</td><td>AM</td></tr>
+            <tr class="nr"><td>5</td><td>270.000</td><td>TEXACO TANKER</td><td>AM</td></tr>
+            <tr class="nr"><td>6</td><td>290.000</td><td>ARCO TANKER</td><td>AM</td></tr>
+          </table>
+        </div></div>
+      </div>
+    </div>
+    <div class="rp"><div class="rph">MISSION INFO</div>
+      <div class="rprow"><span class="rpk">TYPE</span><span class="rpv">SEAD</span></div>
+      <div class="rpdiv"></div><div class="rph gn">TANKERS (NEW)</div>
+      <div class="rprow"><span class="rpk gn">TEXACO</span><span class="rpv gn">270.0/55Y</span></div>
+      <div class="rprow"><span class="rpk gn">ARCO</span><span class="rpv gn">290.0/57Y</span></div>
+      <div class="rpdiv"></div><div class="rph gn">PRESETS (NEW)</div>
+      <div class="rprow"><span class="rpk gn">CH 3</span><span class="rpv gn">DARKSTAR</span></div>
+      <div class="rprow"><span class="rpk gn">CH 4</span><span class="rpv gn">VIPER FLT</span></div>
+    </div>
+  </div></div>
+  <div id="sv1-threats" class="sv"><div class="chrome">
+    <div class="sb"><div class="sbs">NAVIGATION</div><div class="sbi on">Kneeboard</div><div class="sbi">Import .miz</div><div class="sbdiv"></div><div class="sbi">Kneeboard Bui...</div></div>
+    <div class="mc">
+      <div class="dh"><span>KNEEBOARD GENERATOR</span><span class="r">ENCRYPTION: VERIFIED OPERATIONAL</span></div>
+      <div class="tabbar"><div class="tab">MISSION</div><div class="tab">WAYPOINTS</div><div class="tab">COMMS</div><div class="tab">FLIGHT</div><div class="tab on">THREATS</div><div class="tab">PREVIEW</div></div>
+      <div class="fs">
+        <div class="sec"><div class="seh"><span class="set">ENEMY THREATS</span></div><div class="seb">
+          <table class="tbl"><tr><th>TYPE</th><th>SYSTEM</th><th>POSITION</th><th>RANGE NM</th></tr>
+            <tr><td>SAM</td><td>SA-10 / S-300</td><td>N42 18 E43 44</td><td>90</td></tr>
+            <tr><td>SAM</td><td>SA-6 KUBS</td><td>N41 55 E43 31</td><td>15</td></tr>
+            <tr><td>AAA</td><td>ZSU-23-4</td><td>N41 51 E43 28</td><td>2</td></tr>
+          </table>
+        </div></div>
+        <div class="sec ns"><div class="seh"><span class="set gn">NAVAL ASSETS</span><span class="badge badge-new">AUTO-FILL FROM .MIZ</span></div><div class="seb">
+          <div class="note"><span class="nl">NEW SECTION:</span> Ships from coalition.blue/red.country.X.ship.group[] in .miz Lua.</div>
+          <table class="tbl"><tr><th>NAME</th><th class="gn">TYPE</th><th class="gn">COALITION</th><th class="gn">POSITION</th><th class="gn">THREAT</th></tr>
+            <tr class="nr"><td>CVN-74</td><td>Nimitz Class</td><td>BLUE</td><td>N41 32 E40 11</td><td>---</td></tr>
+            <tr class="nr"><td>MOSKVA</td><td>Slava Class</td><td>RED</td><td>N41 44 E41 28</td><td>S-300F / AK-630</td></tr>
+          </table>
+        </div></div>
+        <div class="sec ns"><div class="seh"><span class="set gn">FARPs</span><span class="badge badge-new">AUTO-FILL FROM .MIZ</span></div><div class="seb">
+          <div class="note"><span class="nl">NEW SECTION:</span> FARPs from static objects with FARP type in .miz. Includes freq and location.</div>
+          <table class="tbl"><tr><th>NAME</th><th class="gn">FREQ</th><th class="gn">POSITION</th><th class="gn">ALT</th><th class="gn">NOTES</th></tr>
+            <tr class="nr"><td>FARP ALPHA</td><td>127.500 AM</td><td>N41 42 E43 15</td><td>1,200 FT</td><td>FORWARD FUEL</td></tr>
+            <tr class="nr"><td>FARP BRAVO</td><td>130.000 AM</td><td>N41 38 E43 22</td><td>950 FT</td><td>REARM / REFUEL</td></tr>
+          </table>
+        </div></div>
+      </div>
+    </div>
+    <div class="rp"><div class="rph">THREATS</div>
+      <div class="rprow"><span class="rpk">SA-10</span><span class="rpv" style="color:var(--rd)">90NM</span></div>
+      <div class="rpdiv"></div><div class="rph gn">SHIPS (NEW)</div>
+      <div class="rprow"><span class="rpk gn">CVN-74</span><span class="rpv gn">BLUE</span></div>
+      <div class="rprow"><span class="rpk gn">MOSKVA</span><span class="rpv" style="color:var(--rd)">RED</span></div>
+      <div class="rpdiv"></div><div class="rph gn">FARPs (NEW)</div>
+      <div class="rprow"><span class="rpk gn">ALPHA</span><span class="rpv gn">127.5</span></div>
+      <div class="rprow"><span class="rpk gn">BRAVO</span><span class="rpv gn">130.0</span></div>
+    </div>
+  </div></div>
+</div>
+<!-- OPTION 2: PACKAGE TAB -->
+<div id="opt2" class="ov">
+  <div class="dbar"><span>Replace <span class="hl">Flight tab</span> with a <span class="hl">Package tab</span> — per-flight sub-sections, per-pilot loadout nested inside.</span><span class="hlg">&#9632; entirely new structure</span></div>
+  <div class="chrome">
+    <div class="sb"><div class="sbs">NAVIGATION</div><div class="sbi on">Kneeboard</div><div class="sbi">Import .miz</div><div class="sbdiv"></div><div class="sbi">Kneeboard Bui...</div></div>
+    <div class="mc">
+      <div class="dh"><span>KNEEBOARD GENERATOR</span><span class="r">ENCRYPTION: VERIFIED OPERATIONAL</span></div>
+      <div class="tabbar"><div class="tab">MISSION</div><div class="tab">WAYPOINTS</div><div class="tab">COMMS</div><div class="tab on new-tab">PACKAGE</div><div class="tab">THREATS</div><div class="tab">PREVIEW</div></div>
+      <div class="fs">
+        <div class="note"><span class="nl">NEW TAB:</span> Replaces the Flight tab. All flights in the package listed as sub-sections. Per-pilot laser, IFF, and loadout live inside each flight block. Mirrors how DCS actually organizes a mission.</div>
+        <div class="sec ns"><div class="seh"><span class="set gn">PACKAGE HEADER</span><span class="badge badge-new">AUTO-FILL FROM .MIZ</span></div><div class="seb">
+          <div class="frow">
+            <div class="fg g"><div class="lbl gn">PKG CALLSIGN</div><div class="inp gn">VIPER PKG</div></div>
+            <div class="fg g"><div class="lbl gn">COMMANDER</div><div class="inp gn">Maj. ACE-M</div></div>
+            <div class="fg g"><div class="lbl gn">PUSH TIME</div><div class="inp gn">13:45:00Z</div></div>
+            <div class="fg g"><div class="lbl gn">MISSION TYPE</div><div class="inp gn">SEAD / DEAD</div></div>
+            <div class="fg g"><div class="lbl gn"># FLIGHTS</div><div class="inp gn">2</div></div>
+          </div>
+        </div></div>
+        <div class="fltb"><div class="flth"><span class="fn">&#9660; &nbsp;FLIGHT 1 — VIPER &nbsp;<span style="color:var(--mu);font-size:10px">F-16C x4 &nbsp;&#183;&nbsp; SEAD</span></span><span class="fa">DEP: BATUMI &nbsp;|&nbsp; LASER BASE: 1688</span></div>
+          <div class="fltbody">
+            <div class="frow" style="margin-bottom:8px">
+              <div class="fg g"><div class="lbl">CALLSIGN</div><div class="inp">Viper 1-X</div></div>
+              <div class="fg g"><div class="lbl">TAC FREQ</div><div class="inp">302.000</div></div>
+              <div class="fg g"><div class="lbl gn">TACAN</div><div class="inp gn">74X / VPR</div></div>
+              <div class="fg g"><div class="lbl">SQUAWK</div><div class="inp">5081</div></div>
+              <div class="fg g"><div class="lbl">BINGO</div><div class="inp">4500</div></div>
+            </div>
+            <div style="color:var(--gn);font-size:10px;letter-spacing:1px;margin-bottom:4px;border-bottom:1px solid #004422;padding-bottom:3px">PILOTS</div>
+            <div class="pgrid-hdr"><div>CALLSIGN</div><div>LASER</div><div>IFF</div><div>LOADOUT</div><div>REMARKS</div></div>
+            <div class="pgrid"><div class="inp gn" style="font-size:10px">VIPER 1-1</div><div class="inp gn" style="font-size:10px">1688</div><div class="inp gn" style="font-size:10px">5081</div><div class="inp gn" style="font-size:10px">2xGBU-12 2xJDAM</div><div class="inp gn" style="font-size:10px">LEAD</div></div>
+            <div class="pgrid"><div class="inp gn" style="font-size:10px">VIPER 1-2</div><div class="inp gn" style="font-size:10px">1689</div><div class="inp gn" style="font-size:10px">5082</div><div class="inp gn" style="font-size:10px">4xMk-82 2xGBU-38</div><div class="inp gn" style="font-size:10px">WING</div></div>
+            <div class="pgrid"><div class="inp gn" style="font-size:10px">VIPER 1-3</div><div class="inp gn" style="font-size:10px">1690</div><div class="inp gn" style="font-size:10px">5083</div><div class="inp gn" style="font-size:10px">2xGBU-12 2xJDAM</div><div class="inp gn" style="font-size:10px"></div></div>
+            <div class="pgrid"><div class="inp gn" style="font-size:10px">VIPER 1-4</div><div class="inp gn" style="font-size:10px">1691</div><div class="inp gn" style="font-size:10px">5084</div><div class="inp gn" style="font-size:10px">6xGBU-54</div><div class="inp gn" style="font-size:10px"></div></div>
+          </div>
+        </div>
+        <div class="fltb"><div class="flth"><span class="fn">&#9658; &nbsp;FLIGHT 2 — ENFIELD &nbsp;<span style="color:var(--mu);font-size:10px">F/A-18C x2 &nbsp;&#183;&nbsp; ESCORT</span></span><span class="fa">DEP: BATUMI &nbsp;|&nbsp; LASER BASE: 1788 &nbsp;(click to expand)</span></div></div>
+      </div>
+    </div>
+    <div class="rp">
+      <div class="rph">MISSION INFO</div><div class="rprow"><span class="rpk">TYPE</span><span class="rpv">SEAD</span></div>
+      <div class="rpdiv"></div><div class="rph gn">PACKAGE (NEW)</div>
+      <div class="rprow"><span class="rpk gn">PKG</span><span class="rpv gn">VIPER PKG</span></div>
+      <div class="rprow"><span class="rpk gn">PUSH</span><span class="rpv gn">13:45Z</span></div>
+      <div class="rprow"><span class="rpk gn">FLIGHTS</span><span class="rpv gn">2</span></div>
+      <div class="rpdiv"></div><div class="rph">CODES</div>
+      <div class="rprow"><span class="rpk gn">TACAN</span><span class="rpv gn">74X / VPR</span></div>
+      <div class="rprow"><span class="rpk">LASER</span><span class="rpv">1688</span></div>
+    </div>
+  </div>
+</div>
+<!-- OPTION 3: SUPPORT TAB -->
+<div id="opt3" class="ov">
+  <div class="dbar"><span>Add a <span class="hl">new Support tab</span> between Comms and Threats. Keeps existing tabs clean. Tankers, FARPs, ships live here.</span><span class="hlg">&#9632; new tab only — no existing tabs touched</span></div>
+  <div class="chrome">
+    <div class="sb"><div class="sbs">NAVIGATION</div><div class="sbi on">Kneeboard</div><div class="sbi">Import .miz</div><div class="sbdiv"></div><div class="sbi">Kneeboard Bui...</div></div>
+    <div class="mc">
+      <div class="dh"><span>KNEEBOARD GENERATOR</span><span class="r">ENCRYPTION: VERIFIED OPERATIONAL</span></div>
+      <div class="tabbar"><div class="tab">MISSION</div><div class="tab">WAYPOINTS</div><div class="tab">COMMS</div><div class="tab">FLIGHT</div><div class="tab on new-tab">SUPPORT</div><div class="tab">THREATS</div><div class="tab">PREVIEW</div></div>
+      <div class="fs">
+        <div class="note"><span class="nl">NEW TAB:</span> Dedicated tab for friendly support assets. Keeps Threats focused on enemy-only. Comms and Flight are completely unchanged.</div>
+        <div class="sec ns"><div class="seh"><span class="set gn">TANKER SUPPORT</span><span class="badge badge-new">AUTO-FILL FROM .MIZ</span></div><div class="seb">
+          <table class="tbl"><tr><th>CALLSIGN</th><th class="gn">A/C</th><th class="gn">FREQ</th><th class="gn">TACAN</th><th class="gn">ANCHOR TRACK</th><th class="gn">ALT</th></tr>
+            <tr class="nr"><td>TEXACO</td><td>KC-135</td><td>270.000 AM</td><td>55Y / TC</td><td>NORTH ANCHOR 21K</td><td>21,000 FT</td></tr>
+            <tr class="nr"><td>ARCO</td><td>KC-135</td><td>290.000 AM</td><td>57Y / AR</td><td>SOUTH ANCHOR 19K</td><td>19,000 FT</td></tr>
+          </table>
+        </div></div>
+        <div class="sec ns"><div class="seh"><span class="set gn">FARPs</span><span class="badge badge-new">AUTO-FILL FROM .MIZ</span></div><div class="seb">
+          <table class="tbl"><tr><th>NAME</th><th class="gn">FREQ</th><th class="gn">POSITION</th><th class="gn">ALT</th><th class="gn">CAPABILITY</th></tr>
+            <tr class="nr"><td>FARP ALPHA</td><td>127.500 AM</td><td>N41 42 E43 15</td><td>1,200 FT</td><td>FUEL ONLY</td></tr>
+            <tr class="nr"><td>FARP BRAVO</td><td>130.000 AM</td><td>N41 38 E43 22</td><td>950 FT</td><td>REARM / REFUEL</td></tr>
+          </table>
+        </div></div>
+        <div class="sec ns"><div class="seh"><span class="set gn">NAVAL ASSETS</span><span class="badge badge-new">AUTO-FILL FROM .MIZ</span></div><div class="seb">
+          <table class="tbl"><tr><th>NAME</th><th class="gn">TYPE</th><th class="gn">COALITION</th><th class="gn">POSITION</th><th class="gn">TACAN / FREQ</th></tr>
+            <tr class="nr"><td>CVN-74 STENNIS</td><td>Nimitz</td><td>BLUE</td><td>N41 32 E40 11</td><td>74X / 264.0</td></tr>
+            <tr class="nr"><td>MOSKVA</td><td>Slava Cruiser</td><td>RED</td><td>N41 44 E41 28</td><td>---</td></tr>
+          </table>
+        </div></div>
+      </div>
+    </div>
+    <div class="rp">
+      <div class="rph gn">SUPPORT (NEW)</div>
+      <div class="rprow"><span class="rpk gn">TEXACO</span><span class="rpv gn">270.0/55Y</span></div>
+      <div class="rprow"><span class="rpk gn">ARCO</span><span class="rpv gn">290.0/57Y</span></div>
+      <div class="rprow"><span class="rpk gn">CVN-74</span><span class="rpv gn">BLUE</span></div>
+      <div class="rprow"><span class="rpk gn">F-ALPHA</span><span class="rpv gn">127.5</span></div>
+    </div>
+  </div>
+</div>
+<!-- OPTION 4: ACCORDION -->
+<div id="opt4" class="ov">
+  <div class="dbar"><span><span class="hl">Accordion sections</span> within existing tabs — new features collapsed by default, click to expand. Zero extra tabs.</span><span class="hlg">&#9632; new sections collapsed by default &nbsp;|&nbsp; click headers to toggle</span></div>
+  <div class="chrome">
+    <div class="sb"><div class="sbs">NAVIGATION</div><div class="sbi on">Kneeboard</div><div class="sbi">Import .miz</div><div class="sbdiv"></div><div class="sbi">Kneeboard Bui...</div></div>
+    <div class="mc">
+      <div class="dh"><span>KNEEBOARD GENERATOR</span><span class="r">ENCRYPTION: VERIFIED OPERATIONAL</span></div>
+      <div class="tabbar"><div class="tab">MISSION</div><div class="tab">WAYPOINTS</div><div class="tab">COMMS</div><div class="tab on">FLIGHT</div><div class="tab">THREATS</div><div class="tab">PREVIEW</div></div>
+      <div class="fs">
+        <div class="acc"><div class="acch open" onclick="tog(this)"><span class="at">FLIGHT INFO</span><span class="ar">&#9658;</span></div>
+          <div class="accb">
+            <div class="frow">
+              <div class="fg g"><div class="lbl">CALLSIGN</div><div class="inp">Viper 1-1</div></div>
+              <div class="fg g"><div class="lbl">FLIGHT LEAD</div><div class="inp">Maj. ACE-M</div></div>
+              <div class="fg g"><div class="lbl">DEPARTURE</div><div class="inp">Batumi</div></div>
+              <div class="fg g"><div class="lbl">RECOVERY</div><div class="inp">Batumi</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="acc"><div class="acch open" onclick="tog(this)"><span class="at">FLIGHT CODES &nbsp;<span style="color:var(--gn);font-size:9px">+TACAN NEW</span></span><span class="ar">&#9658;</span></div>
+          <div class="accb">
+            <div class="frow">
+              <div class="fg g"><div class="lbl">LASER CODE</div><div class="inp">1688</div></div>
+              <div class="fg g"><div class="lbl">SQUAWK</div><div class="inp">5081</div></div>
+              <div class="fg g"><div class="lbl gn">TACAN CH</div><div class="inp gn">74</div></div>
+              <div class="fg g"><div class="lbl gn">TACAN MODE</div><div class="inp gn">X</div></div>
+              <div class="fg g"><div class="lbl gn">TACAN CS</div><div class="inp gn">VPR</div></div>
+              <div class="fg g"><div class="lbl gn">IFF MODE 3</div><div class="inp gn">5081</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="acc"><div class="acch" onclick="tog(this)" style="border-left:2px solid var(--gn)">
+          <span class="at gn">LOADOUT &nbsp;<span class="badge badge-new" style="font-size:8px">NEW</span></span><span class="ar">&#9658;</span></div>
+          <div class="accb closed">
+            <table class="tbl"><tr><th>PILOT</th><th class="gn">A/G</th><th class="gn">A/A</th><th class="gn">CHAFF</th><th class="gn">FLARES</th></tr>
+              <tr class="nr"><td>VIPER 1-1</td><td>2xGBU-12, 2xJDAM</td><td>2xAIM-120C</td><td>60</td><td>60</td></tr>
+              <tr class="nr"><td>VIPER 1-2</td><td>4xMk-82, 2xGBU-38</td><td>2xAIM-120C</td><td>60</td><td>60</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="acc"><div class="acch" onclick="tog(this)" style="border-left:2px solid var(--gn)">
+          <span class="at gn">PACKAGE INFO &nbsp;<span class="badge badge-new" style="font-size:8px">NEW</span></span><span class="ar">&#9658;</span></div>
+          <div class="accb closed">
+            <div class="frow">
+              <div class="fg g"><div class="lbl gn">PKG CALLSIGN</div><div class="inp gn">VIPER PKG</div></div>
+              <div class="fg g"><div class="lbl gn">PUSH TIME</div><div class="inp gn">13:45:00Z</div></div>
+              <div class="fg g"><div class="lbl gn"># FLIGHTS</div><div class="inp gn">2</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="acc"><div class="acch" onclick="tog(this)" style="border-left:2px solid var(--gn)">
+          <span class="at gn">TANKER PLAN &nbsp;<span class="badge badge-new" style="font-size:8px">NEW</span></span><span class="ar">&#9658;</span></div>
+          <div class="accb closed">
+            <table class="tbl"><tr><th>CALLSIGN</th><th class="gn">FREQ</th><th class="gn">TACAN</th><th class="gn">TRACK</th></tr>
+              <tr class="nr"><td>TEXACO</td><td>270.000</td><td>55Y</td><td>ANCHOR NORTH 21K</td></tr>
+              <tr class="nr"><td>ARCO</td><td>290.000</td><td>57Y</td><td>ANCHOR SOUTH 19K</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="rp">
+      <div class="rph">CODES</div>
+      <div class="rprow"><span class="rpk gn">TACAN</span><span class="rpv gn">74X / VPR</span></div>
+      <div class="rprow"><span class="rpk">LASER</span><span class="rpv">1688</span></div>
+      <div class="rpdiv"></div>
+      <div style="font-size:9px;color:var(--gn);line-height:1.6">Click any section header to expand / collapse it</div>
+    </div>
+  </div>
+</div>
+<!-- OPTION 5: QUICK WINS -->
+<div id="opt5" class="ov">
+  <div class="dbar"><span><span class="hl">Quick wins</span> — 3 highest-value, lowest-effort additions. Ship fast, iterate later.</span><span class="hlg">TACAN (Flight) + Tankers + Radio Presets (Comms)</span></div>
+  <div class="svbar">
+    <div class="svbtn on" onclick="ssv('5','flight',this)">&#10022; FLIGHT TAB — TACAN</div>
+    <div class="svbtn" onclick="ssv('5','comms',this)">&#10022; COMMS TAB — TANKERS + PRESETS</div>
+  </div>
+  <div id="sv5-flight" class="sv show"><div class="chrome">
+    <div class="sb"><div class="sbs">NAVIGATION</div><div class="sbi on">Kneeboard</div><div class="sbi">Import .miz</div><div class="sbdiv"></div><div class="sbi">Kneeboard Bui...</div></div>
+    <div class="mc">
+      <div class="dh"><span>KNEEBOARD GENERATOR</span><span class="r">ENCRYPTION: VERIFIED OPERATIONAL</span></div>
+      <div class="tabbar"><div class="tab">MISSION</div><div class="tab">WAYPOINTS</div><div class="tab">COMMS</div><div class="tab on">FLIGHT</div><div class="tab">THREATS</div><div class="tab">PREVIEW</div></div>
+      <div class="fs">
+        <div class="note"><span class="nl">CHANGE:</span> 4 fields added to existing FLIGHT CODES section. Parsed from ActivateBeacon task in .miz route. Estimated: ~2-3 hrs total.</div>
+        <div class="sec"><div class="seh"><span class="set">FLIGHT INFO</span></div><div class="seb">
+          <div class="frow">
+            <div class="fg g"><div class="lbl">CALLSIGN</div><div class="inp">Viper 1-1</div></div>
+            <div class="fg g"><div class="lbl">FLIGHT LEAD</div><div class="inp">Maj. ACE-M</div></div>
+            <div class="fg g"><div class="lbl">AWACS</div><div class="inp">DARKSTAR 269.000</div></div>
+            <div class="fg g"><div class="lbl">TAC FREQ</div><div class="inp">302.000</div></div>
+          </div>
+        </div></div>
+        <div class="sec"><div class="seh"><span class="set">FLIGHT CODES</span><span class="badge badge-new">+4 NEW FIELDS</span></div><div class="seb">
+          <div class="frow">
+            <div class="fg g"><div class="lbl">LASER CODE</div><div class="inp">1688</div></div>
+            <div class="fg g"><div class="lbl">SQUAWK</div><div class="inp">5081</div></div>
+            <div class="fg g"><div class="lbl gn">TACAN CHANNEL</div><div class="inp gn">74</div></div>
+            <div class="fg g"><div class="lbl gn">TACAN MODE</div><div class="inp gn">X</div></div>
+          </div>
+          <div class="frow">
+            <div class="fg g"><div class="lbl gn">TACAN CALLSIGN</div><div class="inp gn">VPR</div></div>
+            <div class="fg g"><div class="lbl gn">IFF MODE 3</div><div class="inp gn">5081</div></div>
+            <div class="fg g"><div class="lbl">BINGO FUEL</div><div class="inp">4500</div></div>
+            <div class="fg g"><div class="lbl">JOKER FUEL</div><div class="inp">6000</div></div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+    <div class="rp">
+      <div class="rph">CODES</div>
+      <div class="rprow"><span class="rpk gn">TACAN</span><span class="rpv gn">74X / VPR</span></div>
+      <div class="rprow"><span class="rpk gn">IFF</span><span class="rpv gn">5081</span></div>
+      <div class="rprow"><span class="rpk">LASER</span><span class="rpv">1688</span></div>
+      <div class="rpdiv"></div>
+      <div style="font-size:9px;color:var(--gn);line-height:1.8">Est. build time:<br>TACAN fields: ~1-2 hrs<br>Parser update: ~1 hr</div>
+    </div>
+  </div></div>
+  <div id="sv5-comms" class="sv"><div class="chrome">
+    <div class="sb"><div class="sbs">NAVIGATION</div><div class="sbi on">Kneeboard</div><div class="sbi">Import .miz</div><div class="sbdiv"></div><div class="sbi">Kneeboard Bui...</div></div>
+    <div class="mc">
+      <div class="dh"><span>KNEEBOARD GENERATOR</span><span class="r">ENCRYPTION: VERIFIED OPERATIONAL</span></div>
+      <div class="tabbar"><div class="tab">MISSION</div><div class="tab">WAYPOINTS</div><div class="tab on">COMMS</div><div class="tab">FLIGHT</div><div class="tab">THREATS</div><div class="tab">PREVIEW</div></div>
+      <div class="fs">
+        <div class="note"><span class="nl">CHANGE:</span> 2 new tables appended to Comms tab. Tankers from coalition aircraft with tanker task. Presets from unit.Radio[n].channels. Estimated: ~4-5 hrs total.</div>
+        <div class="sec"><div class="seh"><span class="set">FREQUENCIES</span></div><div class="seb">
+          <table class="tbl"><tr><th>USE</th><th>CALLSIGN</th><th>FREQ</th></tr>
+            <tr><td>GND CTRL</td><td>BATUMI TWR</td><td>131.000 AM</td></tr>
+            <tr><td>AWACS</td><td>DARKSTAR</td><td>269.000 AM</td></tr>
+          </table>
+        </div></div>
+        <div class="sec ns"><div class="seh"><span class="set gn">TANKER PLAN</span><span class="badge badge-new">NEW</span></div><div class="seb">
+          <table class="tbl"><tr><th>CALLSIGN</th><th class="gn">A/C</th><th class="gn">FREQ</th><th class="gn">TACAN</th><th class="gn">ANCHOR / TRACK</th></tr>
+            <tr class="nr"><td>TEXACO</td><td>KC-135</td><td>270.000 AM</td><td>55Y / TC</td><td>NORTH 21K</td></tr>
+            <tr class="nr"><td>ARCO</td><td>KC-135</td><td>290.000 AM</td><td>57Y / AR</td><td>SOUTH 19K</td></tr>
+          </table>
+        </div></div>
+        <div class="sec ns"><div class="seh"><span class="set gn">RADIO PRESETS</span><span class="badge badge-new">NEW</span></div><div class="seb">
+          <table class="tbl"><tr><th class="gn">CH</th><th class="gn">FREQ</th><th class="gn">USE</th></tr>
+            <tr class="nr"><td>1</td><td>305.000</td><td>GUARD</td></tr>
+            <tr class="nr"><td>2</td><td>131.000</td><td>BATUMI TWR</td></tr>
+            <tr class="nr"><td>3</td><td>269.000</td><td>DARKSTAR AWACS</td></tr>
+            <tr class="nr"><td>4</td><td>302.000</td><td>VIPER FLIGHT</td></tr>
+            <tr class="nr"><td>5</td><td>270.000</td><td>TEXACO TANKER</td></tr>
+          </table>
+        </div></div>
+      </div>
+    </div>
+    <div class="rp">
+      <div class="rph gn">TANKERS (NEW)</div>
+      <div class="rprow"><span class="rpk gn">TEXACO</span><span class="rpv gn">270.0/55Y</span></div>
+      <div class="rprow"><span class="rpk gn">ARCO</span><span class="rpv gn">290.0/57Y</span></div>
+      <div class="rpdiv"></div>
+      <div style="font-size:9px;color:var(--gn);line-height:1.8">Est. Phase 1:<br>~4-6 hours total</div>
+    </div>
+  </div></div>
+</div>
+<script>
+function so(opt,el){document.querySelectorAll(".ov").forEach(function(v){v.classList.remove("show")});document.querySelectorAll(".optbtn").forEach(function(b){b.classList.remove("on")});document.getElementById("opt"+opt).classList.add("show");el.classList.add("on")}
+function ssv(opt,view,el){var p="sv"+opt+"-";document.querySelectorAll("[id^="+JSON.stringify(p)+"]").forEach(function(v){v.classList.remove("show")});el.parentElement.querySelectorAll(".svbtn").forEach(function(b){b.classList.remove("on")});document.getElementById(p+view).classList.add("show");el.classList.add("on")}
+function tog(h){h.classList.toggle("open");h.nextElementSibling.classList.toggle("closed")}
+</script></body></html>
